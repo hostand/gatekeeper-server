@@ -87,18 +87,25 @@ public class Gatekeeper extends Application
 
 		// Attach the url handlers
 		attachToRouter(routerAuth, "/stat/count", StatCountResource.class);
+
 		attachToRouter(routerAuth, "/database", DatabaseResource.class);
 		attachToRouter(routerAuth, "/database/{databaseId}", DatabaseResource.class);
+
 		attachToRouter(routerAuth, "/request/existing", ExistingRequestResource.class);
+		attachToRouter(routerAuth, "/request/existing/{requestId}", ExistingRequestResource.class);
 		attachToRouter(routerAuth, "/request/new", NewRequestResource.class);
+		attachToRouter(routerAuth, "/request/new/{requestId}", NewRequestResource.class);
+
 		attachToRouter(routerAuth, "/user", UserResource.class);
 		attachToRouter(routerAuth, "/user/{userId}", UserResource.class);
 		attachToRouter(routerAuth, "/user/{userId}/email", UserEmailResource.class);
 		attachToRouter(routerAuth, "/user/{userId}/gatekeeper", UserGatekeeperResource.class);
 		attachToRouter(routerAuth, "/user/{userId}/password", UserPasswordResource.class);
 		attachToRouter(routerAuth, "/user/{userId}/permission", UserPermissionResource.class);
-		attachToRouter(routerUnauth, "/token", TokenResource.class);
+
 		attachToRouter(routerUnauth, "/passwordreset", PasswordResetResource.class);
+
+		attachToRouter(routerUnauth, "/token", TokenResource.class);
 
 		// CORS first, then encoder
 		corsFilter.setNext(routerUnauth);
