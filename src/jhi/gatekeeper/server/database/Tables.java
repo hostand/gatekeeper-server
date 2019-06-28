@@ -75,7 +75,17 @@ public class Tables {
     /**
      * VIEW
      */
+    public static final ViewAccessRequestUserDetails VIEW_ACCESS_REQUEST_USER_DETAILS = jhi.gatekeeper.server.database.tables.ViewAccessRequestUserDetails.VIEW_ACCESS_REQUEST_USER_DETAILS;
+
+    /**
+     * VIEW
+     */
     public static final ViewCounts VIEW_COUNTS = jhi.gatekeeper.server.database.tables.ViewCounts.VIEW_COUNTS;
+
+    /**
+     * VIEW
+     */
+    public static final ViewUnapprovedUserDetails VIEW_UNAPPROVED_USER_DETAILS = jhi.gatekeeper.server.database.tables.ViewUnapprovedUserDetails.VIEW_UNAPPROVED_USER_DETAILS;
 
     /**
      * VIEW

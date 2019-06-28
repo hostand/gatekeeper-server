@@ -29,39 +29,56 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Users extends TableImpl<UsersRecord> {
 
+    private static final long serialVersionUID = 1736472017;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.users</code>
      */
     public static final Users USERS = new Users();
-    private static final long serialVersionUID = 1736472017;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<UsersRecord> getRecordType() {
+        return UsersRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.users.id</code>.
      */
     public final TableField<UsersRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.username</code>.
      */
     public final TableField<UsersRecord, String> USERNAME = createField("username", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.password</code>.
      */
     public final TableField<UsersRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.full_name</code>.
      */
     public final TableField<UsersRecord, String> FULL_NAME = createField("full_name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.email_address</code>.
      */
     public final TableField<UsersRecord, String> EMAIL_ADDRESS = createField("email_address", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.created_on</code>.
      */
     public final TableField<UsersRecord, Timestamp> CREATED_ON = createField("created_on", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.institution_id</code>.
      */
     public final TableField<UsersRecord, Integer> INSTITUTION_ID = createField("institution_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.users.has_access_to_gatekeeper</code>.
      */
@@ -98,14 +115,6 @@ public class Users extends TableImpl<UsersRecord> {
 
     public <O extends Record> Users(Table<O> child, ForeignKey<O, UsersRecord> key) {
         super(child, key, USERS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<UsersRecord> getRecordType() {
-        return UsersRecord.class;
     }
 
     /**

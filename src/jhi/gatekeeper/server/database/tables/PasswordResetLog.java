@@ -29,19 +29,31 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PasswordResetLog extends TableImpl<PasswordResetLogRecord> {
 
+    private static final long serialVersionUID = -945645829;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.password_reset_log</code>
      */
     public static final PasswordResetLog PASSWORD_RESET_LOG = new PasswordResetLog();
-    private static final long serialVersionUID = -945645829;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<PasswordResetLogRecord> getRecordType() {
+        return PasswordResetLogRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.password_reset_log.user_id</code>.
      */
     public final TableField<PasswordResetLogRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.password_reset_log.timestamp</code>.
      */
     public final TableField<PasswordResetLogRecord, Timestamp> TIMESTAMP = createField("timestamp", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.password_reset_log.ip_address</code>.
      */
@@ -78,14 +90,6 @@ public class PasswordResetLog extends TableImpl<PasswordResetLogRecord> {
 
     public <O extends Record> PasswordResetLog(Table<O> child, ForeignKey<O, PasswordResetLogRecord> key) {
         super(child, key, PASSWORD_RESET_LOG);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<PasswordResetLogRecord> getRecordType() {
-        return PasswordResetLogRecord.class;
     }
 
     /**

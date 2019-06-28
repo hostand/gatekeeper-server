@@ -35,6 +35,13 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.user_types.id</code>.
+     */
+    public Integer getId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised UserTypesRecord
      */
     public UserTypesRecord(Integer id, String description) {
@@ -45,24 +52,6 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.user_types.id</code>.
-     */
-    public Integer getId() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.user_types.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
-
-    /**
      * Getter for <code>germinate_gatekeeper.user_types.description</code>.
      */
     public String getDescription() {
@@ -70,15 +59,8 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
     }
 
     // -------------------------------------------------------------------------
-    // Record2 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.user_types.description</code>.
-     */
-    public void setDescription(String value) {
-        set(1, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -87,6 +69,10 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
     public Record1<Integer> key() {
         return (Record1) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record2 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -161,10 +147,6 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -182,5 +164,23 @@ public class UserTypesRecord extends UpdatableRecordImpl<UserTypesRecord> implem
         value1(value1);
         value2(value2);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Setter for <code>germinate_gatekeeper.user_types.id</code>.
+     */
+    public void setId(Integer value) {
+        set(0, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.user_types.description</code>.
+     */
+    public void setDescription(String value) {
+        set(1, value);
     }
 }

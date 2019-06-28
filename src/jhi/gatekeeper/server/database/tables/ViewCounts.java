@@ -26,19 +26,31 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewCounts extends TableImpl<ViewCountsRecord> {
 
+    private static final long serialVersionUID = -1039865860;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.view_counts</code>
      */
     public static final ViewCounts VIEW_COUNTS = new ViewCounts();
-    private static final long serialVersionUID = -1039865860;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<ViewCountsRecord> getRecordType() {
+        return ViewCountsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.view_counts.users</code>.
      */
     public final TableField<ViewCountsRecord, Long> USERS = createField("users", org.jooq.impl.SQLDataType.BIGINT, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_counts.requests</code>.
      */
     public final TableField<ViewCountsRecord, Long> REQUESTS = createField("requests", org.jooq.impl.SQLDataType.BIGINT, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_counts.databases</code>.
      */
@@ -75,14 +87,6 @@ public class ViewCounts extends TableImpl<ViewCountsRecord> {
 
     public <O extends Record> ViewCounts(Table<O> child, ForeignKey<O, ViewCountsRecord> key) {
         super(child, key, VIEW_COUNTS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<ViewCountsRecord> getRecordType() {
-        return ViewCountsRecord.class;
     }
 
     /**

@@ -29,63 +29,86 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UnapprovedUsers extends TableImpl<UnapprovedUsersRecord> {
 
+    private static final long serialVersionUID = 869364206;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.unapproved_users</code>
      */
     public static final UnapprovedUsers UNAPPROVED_USERS = new UnapprovedUsers();
-    private static final long serialVersionUID = 869364206;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<UnapprovedUsersRecord> getRecordType() {
+        return UnapprovedUsersRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.id</code>.
      */
     public final TableField<UnapprovedUsersRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.user_username</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> USER_USERNAME = createField("user_username", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.user_password</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> USER_PASSWORD = createField("user_password", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.user_full_name</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> USER_FULL_NAME = createField("user_full_name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.user_email_address</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> USER_EMAIL_ADDRESS = createField("user_email_address", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.institution_id</code>.
      */
     public final TableField<UnapprovedUsersRecord, Integer> INSTITUTION_ID = createField("institution_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.institution_name</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> INSTITUTION_NAME = createField("institution_name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.institution_acronym</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> INSTITUTION_ACRONYM = createField("institution_acronym", org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.institution_address</code>.
      */
     public final TableField<UnapprovedUsersRecord, String> INSTITUTION_ADDRESS = createField("institution_address", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.database_system_id</code>.
      */
     public final TableField<UnapprovedUsersRecord, Integer> DATABASE_SYSTEM_ID = createField("database_system_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.created_on</code>.
      */
     public final TableField<UnapprovedUsersRecord, Timestamp> CREATED_ON = createField("created_on", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.has_been_rejected</code>.
      */
     public final TableField<UnapprovedUsersRecord, Byte> HAS_BEEN_REJECTED = createField("has_been_rejected", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.needs_approval</code>.
      */
     public final TableField<UnapprovedUsersRecord, Byte> NEEDS_APPROVAL = createField("needs_approval", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.unapproved_users.activation_key</code>.
      */
@@ -122,14 +145,6 @@ public class UnapprovedUsers extends TableImpl<UnapprovedUsersRecord> {
 
     public <O extends Record> UnapprovedUsers(Table<O> child, ForeignKey<O, UnapprovedUsersRecord> key) {
         super(child, key, UNAPPROVED_USERS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<UnapprovedUsersRecord> getRecordType() {
-        return UnapprovedUsersRecord.class;
     }
 
     /**

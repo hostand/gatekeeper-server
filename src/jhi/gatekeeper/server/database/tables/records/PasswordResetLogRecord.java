@@ -37,6 +37,13 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.password_reset_log.user_id</code>.
+     */
+    public Integer getUserId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised PasswordResetLogRecord
      */
     public PasswordResetLogRecord(Integer userId, Timestamp timestamp, String ipAddress) {
@@ -48,10 +55,10 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.password_reset_log.user_id</code>.
+     * Getter for <code>germinate_gatekeeper.password_reset_log.timestamp</code>.
      */
-    public Integer getUserId() {
-        return (Integer) get(0);
+    public Timestamp getTimestamp() {
+        return (Timestamp) get(1);
     }
 
     /**
@@ -62,24 +69,6 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.password_reset_log.timestamp</code>.
-     */
-    public Timestamp getTimestamp() {
-        return (Timestamp) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.password_reset_log.timestamp</code>.
-     */
-    public void setTimestamp(Timestamp value) {
-        set(1, value);
-    }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
-
-    /**
      * Getter for <code>germinate_gatekeeper.password_reset_log.ip_address</code>.
      */
     public String getIpAddress() {
@@ -87,15 +76,8 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
     }
 
     // -------------------------------------------------------------------------
-    // Record3 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.password_reset_log.ip_address</code>.
-     */
-    public void setIpAddress(String value) {
-        set(2, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -104,6 +86,10 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
     public Record2<Integer, Timestamp> key() {
         return (Record2) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -211,10 +197,6 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -233,5 +215,23 @@ public class PasswordResetLogRecord extends UpdatableRecordImpl<PasswordResetLog
         value2(value2);
         value3(value3);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Setter for <code>germinate_gatekeeper.password_reset_log.timestamp</code>.
+     */
+    public void setTimestamp(Timestamp value) {
+        set(1, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.password_reset_log.ip_address</code>.
+     */
+    public void setIpAddress(String value) {
+        set(2, value);
     }
 }

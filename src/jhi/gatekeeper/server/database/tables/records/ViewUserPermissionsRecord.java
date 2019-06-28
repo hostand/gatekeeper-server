@@ -28,10 +28,24 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     private static final long serialVersionUID = -2036324624;
 
     /**
+     * Setter for <code>germinate_gatekeeper.view_user_permissions.user_id</code>.
+     */
+    public void setUserId(Integer value) {
+        set(0, value);
+    }
+
+    /**
      * Create a detached ViewUserPermissionsRecord
      */
     public ViewUserPermissionsRecord() {
         super(ViewUserPermissions.VIEW_USER_PERMISSIONS);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.view_user_permissions.username</code>.
+     */
+    public void setUsername(String value) {
+        set(1, value);
     }
 
     /**
@@ -50,41 +64,6 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_id</code>.
-     */
-    public Integer getUserId() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_user_permissions.user_id</code>.
-     */
-    public void setUserId(Integer value) {
-        set(0, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.username</code>.
-     */
-    public String getUsername() {
-        return (String) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_user_permissions.username</code>.
-     */
-    public void setUsername(String value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.database_id</code>.
-     */
-    public Integer getDatabaseId() {
-        return (Integer) get(2);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.view_user_permissions.database_id</code>.
      */
     public void setDatabaseId(Integer value) {
@@ -92,10 +71,10 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.system_name</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_id</code>.
      */
-    public String getSystemName() {
-        return (String) get(3);
+    public Integer getUserId() {
+        return (Integer) get(0);
     }
 
     /**
@@ -106,10 +85,10 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.server_name</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.username</code>.
      */
-    public String getServerName() {
-        return (String) get(4);
+    public String getUsername() {
+        return (String) get(1);
     }
 
     /**
@@ -120,10 +99,10 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_type_id</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.database_id</code>.
      */
-    public Integer getUserTypeId() {
-        return (Integer) get(5);
+    public Integer getDatabaseId() {
+        return (Integer) get(2);
     }
 
     /**
@@ -133,15 +112,11 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
         set(5, value);
     }
 
-    // -------------------------------------------------------------------------
-    // Record7 type implementation
-    // -------------------------------------------------------------------------
-
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_type</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.system_name</code>.
      */
-    public String getUserType() {
-        return (String) get(6);
+    public String getSystemName() {
+        return (String) get(3);
     }
 
     /**
@@ -150,6 +125,17 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     public void setUserType(String value) {
         set(6, value);
     }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.server_name</code>.
+     */
+    public String getServerName() {
+        return (String) get(4);
+    }
+
+    // -------------------------------------------------------------------------
+    // Record7 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -389,10 +375,6 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -415,5 +397,23 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
         value6(value6);
         value7(value7);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_type_id</code>.
+     */
+    public Integer getUserTypeId() {
+        return (Integer) get(5);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_permissions.user_type</code>.
+     */
+    public String getUserType() {
+        return (String) get(6);
     }
 }

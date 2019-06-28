@@ -37,6 +37,13 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.users.id</code>.
+     */
+    public Integer getId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised UsersRecord
      */
     public UsersRecord(Integer id, String username, String password, String fullName, String emailAddress, Timestamp createdOn, Integer institutionId, Byte hasAccessToGatekeeper) {
@@ -53,38 +60,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.users.id</code>.
-     */
-    public Integer getId() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.users.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.users.username</code>.
      */
     public String getUsername() {
         return (String) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.users.username</code>.
-     */
-    public void setUsername(String value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.users.password</code>.
-     */
-    public String getPassword() {
-        return (String) get(2);
     }
 
     /**
@@ -95,10 +74,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.users.full_name</code>.
+     * Setter for <code>germinate_gatekeeper.users.id</code>.
      */
-    public String getFullName() {
-        return (String) get(3);
+    public void setId(Integer value) {
+        set(0, value);
     }
 
     /**
@@ -109,10 +88,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.users.email_address</code>.
+     * Setter for <code>germinate_gatekeeper.users.username</code>.
      */
-    public String getEmailAddress() {
-        return (String) get(4);
+    public void setUsername(String value) {
+        set(1, value);
     }
 
     /**
@@ -123,10 +102,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.users.created_on</code>.
+     * Getter for <code>germinate_gatekeeper.users.password</code>.
      */
-    public Timestamp getCreatedOn() {
-        return (Timestamp) get(5);
+    public String getPassword() {
+        return (String) get(2);
     }
 
     /**
@@ -137,6 +116,20 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.users.full_name</code>.
+     */
+    public String getFullName() {
+        return (String) get(3);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.users.email_address</code>.
+     */
+    public String getEmailAddress() {
+        return (String) get(4);
+    }
+
+    /**
      * Getter for <code>germinate_gatekeeper.users.institution_id</code>.
      */
     public Integer getInstitutionId() {
@@ -144,15 +137,11 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.users.institution_id</code>.
+     * Getter for <code>germinate_gatekeeper.users.created_on</code>.
      */
-    public void setInstitutionId(Integer value) {
-        set(6, value);
+    public Timestamp getCreatedOn() {
+        return (Timestamp) get(5);
     }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
 
     /**
      * Getter for <code>germinate_gatekeeper.users.has_access_to_gatekeeper</code>.
@@ -162,15 +151,8 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     // -------------------------------------------------------------------------
-    // Record8 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.users.has_access_to_gatekeeper</code>.
-     */
-    public void setHasAccessToGatekeeper(Byte value) {
-        set(7, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -179,6 +161,10 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     public Record1<Integer> key() {
         return (Record1) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record8 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -451,10 +437,6 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -478,5 +460,23 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
         value7(value7);
         value8(value8);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Setter for <code>germinate_gatekeeper.users.institution_id</code>.
+     */
+    public void setInstitutionId(Integer value) {
+        set(6, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.users.has_access_to_gatekeeper</code>.
+     */
+    public void setHasAccessToGatekeeper(Byte value) {
+        set(7, value);
     }
 }

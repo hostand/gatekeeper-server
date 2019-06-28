@@ -30,10 +30,24 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     private static final long serialVersionUID = 40935023;
 
     /**
+     * Setter for <code>germinate_gatekeeper.view_user_details.id</code>.
+     */
+    public void setId(Integer value) {
+        set(0, value);
+    }
+
+    /**
      * Create a detached ViewUserDetailsRecord
      */
     public ViewUserDetailsRecord() {
         super(ViewUserDetails.VIEW_USER_DETAILS);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.view_user_details.username</code>.
+     */
+    public void setUsername(String value) {
+        set(1, value);
     }
 
     /**
@@ -54,41 +68,6 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.id</code>.
-     */
-    public Integer getId() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_user_details.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.username</code>.
-     */
-    public String getUsername() {
-        return (String) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_user_details.username</code>.
-     */
-    public void setUsername(String value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.full_name</code>.
-     */
-    public String getFullName() {
-        return (String) get(2);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.view_user_details.full_name</code>.
      */
     public void setFullName(String value) {
@@ -96,10 +75,10 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.email_address</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.id</code>.
      */
-    public String getEmailAddress() {
-        return (String) get(3);
+    public Integer getId() {
+        return (Integer) get(0);
     }
 
     /**
@@ -110,10 +89,10 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.created_on</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.username</code>.
      */
-    public Timestamp getCreatedOn() {
-        return (Timestamp) get(4);
+    public String getUsername() {
+        return (String) get(1);
     }
 
     /**
@@ -124,10 +103,10 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.gatekeeper_access</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.full_name</code>.
      */
-    public Byte getGatekeeperAccess() {
-        return (Byte) get(5);
+    public String getFullName() {
+        return (String) get(2);
     }
 
     /**
@@ -138,10 +117,10 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.name</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.email_address</code>.
      */
-    public String getName() {
-        return (String) get(6);
+    public String getEmailAddress() {
+        return (String) get(3);
     }
 
     /**
@@ -152,10 +131,10 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.acronym</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.created_on</code>.
      */
-    public String getAcronym() {
-        return (String) get(7);
+    public Timestamp getCreatedOn() {
+        return (Timestamp) get(4);
     }
 
     /**
@@ -165,15 +144,11 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
         set(7, value);
     }
 
-    // -------------------------------------------------------------------------
-    // Record9 type implementation
-    // -------------------------------------------------------------------------
-
     /**
-     * Getter for <code>germinate_gatekeeper.view_user_details.address</code>.
+     * Getter for <code>germinate_gatekeeper.view_user_details.gatekeeper_access</code>.
      */
-    public String getAddress() {
-        return (String) get(8);
+    public Byte getGatekeeperAccess() {
+        return (Byte) get(5);
     }
 
     /**
@@ -182,6 +157,17 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
     public void setAddress(String value) {
         set(8, value);
     }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_details.name</code>.
+     */
+    public String getName() {
+        return (String) get(6);
+    }
+
+    // -------------------------------------------------------------------------
+    // Record9 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -487,10 +473,6 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -515,5 +497,23 @@ public class ViewUserDetailsRecord extends TableRecordImpl<ViewUserDetailsRecord
         value8(value8);
         value9(value9);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_details.acronym</code>.
+     */
+    public String getAcronym() {
+        return (String) get(7);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_user_details.address</code>.
+     */
+    public String getAddress() {
+        return (String) get(8);
     }
 }

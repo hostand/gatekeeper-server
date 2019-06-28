@@ -26,35 +26,51 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewUserPermissions extends TableImpl<ViewUserPermissionsRecord> {
 
+    private static final long serialVersionUID = 995926209;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.view_user_permissions</code>
      */
     public static final ViewUserPermissions VIEW_USER_PERMISSIONS = new ViewUserPermissions();
-    private static final long serialVersionUID = 995926209;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<ViewUserPermissionsRecord> getRecordType() {
+        return ViewUserPermissionsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.user_id</code>.
      */
     public final TableField<ViewUserPermissionsRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.username</code>.
      */
     public final TableField<ViewUserPermissionsRecord, String> USERNAME = createField("username", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.database_id</code>.
      */
     public final TableField<ViewUserPermissionsRecord, Integer> DATABASE_ID = createField("database_id", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.system_name</code>.
      */
     public final TableField<ViewUserPermissionsRecord, String> SYSTEM_NAME = createField("system_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.server_name</code>.
      */
     public final TableField<ViewUserPermissionsRecord, String> SERVER_NAME = createField("server_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.user_type_id</code>.
      */
     public final TableField<ViewUserPermissionsRecord, Integer> USER_TYPE_ID = createField("user_type_id", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_user_permissions.user_type</code>.
      */
@@ -91,14 +107,6 @@ public class ViewUserPermissions extends TableImpl<ViewUserPermissionsRecord> {
 
     public <O extends Record> ViewUserPermissions(Table<O> child, ForeignKey<O, ViewUserPermissionsRecord> key) {
         super(child, key, VIEW_USER_PERMISSIONS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<ViewUserPermissionsRecord> getRecordType() {
-        return ViewUserPermissionsRecord.class;
     }
 
     /**

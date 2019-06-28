@@ -28,19 +28,31 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabasesRecord> {
 
+    private static final long serialVersionUID = 2146042450;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.user_has_access_to_databases</code>
      */
     public static final UserHasAccessToDatabases USER_HAS_ACCESS_TO_DATABASES = new UserHasAccessToDatabases();
-    private static final long serialVersionUID = 2146042450;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<UserHasAccessToDatabasesRecord> getRecordType() {
+        return UserHasAccessToDatabasesRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.user_has_access_to_databases.user_id</code>.
      */
     public final TableField<UserHasAccessToDatabasesRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.user_has_access_to_databases.database_id</code>.
      */
     public final TableField<UserHasAccessToDatabasesRecord, Integer> DATABASE_ID = createField("database_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.user_has_access_to_databases.user_type_id</code>.
      */
@@ -77,14 +89,6 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
 
     public <O extends Record> UserHasAccessToDatabases(Table<O> child, ForeignKey<O, UserHasAccessToDatabasesRecord> key) {
         super(child, key, USER_HAS_ACCESS_TO_DATABASES);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<UserHasAccessToDatabasesRecord> getRecordType() {
-        return UserHasAccessToDatabasesRecord.class;
     }
 
     /**

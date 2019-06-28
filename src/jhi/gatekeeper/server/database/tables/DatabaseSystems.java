@@ -28,23 +28,36 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DatabaseSystems extends TableImpl<DatabaseSystemsRecord> {
 
+    private static final long serialVersionUID = 149993397;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.database_systems</code>
      */
     public static final DatabaseSystems DATABASE_SYSTEMS = new DatabaseSystems();
-    private static final long serialVersionUID = 149993397;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<DatabaseSystemsRecord> getRecordType() {
+        return DatabaseSystemsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.database_systems.id</code>.
      */
     public final TableField<DatabaseSystemsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.database_systems.system_name</code>.
      */
     public final TableField<DatabaseSystemsRecord, String> SYSTEM_NAME = createField("system_name", org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.database_systems.server_name</code>.
      */
     public final TableField<DatabaseSystemsRecord, String> SERVER_NAME = createField("server_name", org.jooq.impl.SQLDataType.VARCHAR(64).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.database_systems.description</code>.
      */
@@ -81,14 +94,6 @@ public class DatabaseSystems extends TableImpl<DatabaseSystemsRecord> {
 
     public <O extends Record> DatabaseSystems(Table<O> child, ForeignKey<O, DatabaseSystemsRecord> key) {
         super(child, key, DATABASE_SYSTEMS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<DatabaseSystemsRecord> getRecordType() {
-        return DatabaseSystemsRecord.class;
     }
 
     /**

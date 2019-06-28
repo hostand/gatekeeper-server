@@ -28,10 +28,24 @@ public class ViewCountsRecord extends TableRecordImpl<ViewCountsRecord> implemen
     private static final long serialVersionUID = 579758023;
 
     /**
+     * Setter for <code>germinate_gatekeeper.view_counts.users</code>.
+     */
+    public void setUsers(Long value) {
+        set(0, value);
+    }
+
+    /**
      * Create a detached ViewCountsRecord
      */
     public ViewCountsRecord() {
         super(ViewCounts.VIEW_COUNTS);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.view_counts.requests</code>.
+     */
+    public void setRequests(Long value) {
+        set(1, value);
     }
 
     /**
@@ -46,50 +60,22 @@ public class ViewCountsRecord extends TableRecordImpl<ViewCountsRecord> implemen
     }
 
     /**
+     * Setter for <code>germinate_gatekeeper.view_counts.databases</code>.
+     */
+    public void setDatabases(Long value) {
+        set(2, value);
+    }
+
+    /**
      * Getter for <code>germinate_gatekeeper.view_counts.users</code>.
      */
     public Long getUsers() {
         return (Long) get(0);
     }
 
-    /**
-     * Setter for <code>germinate_gatekeeper.view_counts.users</code>.
-     */
-    public void setUsers(Long value) {
-        set(0, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_counts.requests</code>.
-     */
-    public Long getRequests() {
-        return (Long) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_counts.requests</code>.
-     */
-    public void setRequests(Long value) {
-        set(1, value);
-    }
-
     // -------------------------------------------------------------------------
     // Record3 type implementation
     // -------------------------------------------------------------------------
-
-    /**
-     * Getter for <code>germinate_gatekeeper.view_counts.databases</code>.
-     */
-    public Long getDatabases() {
-        return (Long) get(2);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.view_counts.databases</code>.
-     */
-    public void setDatabases(Long value) {
-        set(2, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -197,10 +183,6 @@ public class ViewCountsRecord extends TableRecordImpl<ViewCountsRecord> implemen
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -219,5 +201,23 @@ public class ViewCountsRecord extends TableRecordImpl<ViewCountsRecord> implemen
         value2(value2);
         value3(value3);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_counts.requests</code>.
+     */
+    public Long getRequests() {
+        return (Long) get(1);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.view_counts.databases</code>.
+     */
+    public Long getDatabases() {
+        return (Long) get(2);
     }
 }

@@ -35,6 +35,13 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.database_systems.id</code>.
+     */
+    public Integer getId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised DatabaseSystemsRecord
      */
     public DatabaseSystemsRecord(Integer id, String systemName, String serverName, String description) {
@@ -47,10 +54,17 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.database_systems.id</code>.
+     * Getter for <code>germinate_gatekeeper.database_systems.system_name</code>.
      */
-    public Integer getId() {
-        return (Integer) get(0);
+    public String getSystemName() {
+        return (String) get(1);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.database_systems.server_name</code>.
+     */
+    public void setServerName(String value) {
+        set(2, value);
     }
 
     /**
@@ -61,36 +75,11 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.database_systems.system_name</code>.
-     */
-    public String getSystemName() {
-        return (String) get(1);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.database_systems.system_name</code>.
      */
     public void setSystemName(String value) {
         set(1, value);
     }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.database_systems.server_name</code>.
-     */
-    public String getServerName() {
-        return (String) get(2);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.database_systems.server_name</code>.
-     */
-    public void setServerName(String value) {
-        set(2, value);
-    }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
 
     /**
      * Getter for <code>germinate_gatekeeper.database_systems.description</code>.
@@ -100,15 +89,8 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
     }
 
     // -------------------------------------------------------------------------
-    // Record4 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.database_systems.description</code>.
-     */
-    public void setDescription(String value) {
-        set(3, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -117,6 +99,10 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
     public Record1<Integer> key() {
         return (Record1) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record4 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -257,10 +243,6 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -280,5 +262,23 @@ public class DatabaseSystemsRecord extends UpdatableRecordImpl<DatabaseSystemsRe
         value3(value3);
         value4(value4);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.database_systems.server_name</code>.
+     */
+    public String getServerName() {
+        return (String) get(2);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.database_systems.description</code>.
+     */
+    public void setDescription(String value) {
+        set(3, value);
     }
 }

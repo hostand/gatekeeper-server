@@ -27,11 +27,13 @@ import jhi.gatekeeper.server.database.tables.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class GerminateGatekeeper extends SchemaImpl {
 
+    private static final long serialVersionUID = 1297546346;
+
     /**
      * The reference instance of <code>germinate_gatekeeper</code>
      */
     public static final GerminateGatekeeper GERMINATE_GATEKEEPER = new GerminateGatekeeper();
-    private static final long serialVersionUID = -275385402;
+
     /**
      * The table <code>germinate_gatekeeper.access_requests</code>.
      */
@@ -85,7 +87,17 @@ public class GerminateGatekeeper extends SchemaImpl {
     /**
      * VIEW
      */
+    public final ViewAccessRequestUserDetails VIEW_ACCESS_REQUEST_USER_DETAILS = jhi.gatekeeper.server.database.tables.ViewAccessRequestUserDetails.VIEW_ACCESS_REQUEST_USER_DETAILS;
+
+    /**
+     * VIEW
+     */
     public final ViewCounts VIEW_COUNTS = jhi.gatekeeper.server.database.tables.ViewCounts.VIEW_COUNTS;
+
+    /**
+     * VIEW
+     */
+    public final ViewUnapprovedUserDetails VIEW_UNAPPROVED_USER_DETAILS = jhi.gatekeeper.server.database.tables.ViewUnapprovedUserDetails.VIEW_UNAPPROVED_USER_DETAILS;
 
     /**
      * VIEW
@@ -132,7 +144,9 @@ public class GerminateGatekeeper extends SchemaImpl {
             Users.USERS,
             UserHasAccessToDatabases.USER_HAS_ACCESS_TO_DATABASES,
             UserTypes.USER_TYPES,
+            ViewAccessRequestUserDetails.VIEW_ACCESS_REQUEST_USER_DETAILS,
             ViewCounts.VIEW_COUNTS,
+            ViewUnapprovedUserDetails.VIEW_UNAPPROVED_USER_DETAILS,
             ViewUserDetails.VIEW_USER_DETAILS,
             ViewUserPermissions.VIEW_USER_PERMISSIONS);
     }

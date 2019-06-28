@@ -35,6 +35,13 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.institutions.id</code>.
+     */
+    public Integer getId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised InstitutionsRecord
      */
     public InstitutionsRecord(Integer id, String name, String acronym, String address) {
@@ -47,10 +54,17 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.institutions.id</code>.
+     * Getter for <code>germinate_gatekeeper.institutions.name</code>.
      */
-    public Integer getId() {
-        return (Integer) get(0);
+    public String getName() {
+        return (String) get(1);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.institutions.acronym</code>.
+     */
+    public void setAcronym(String value) {
+        set(2, value);
     }
 
     /**
@@ -61,36 +75,11 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.institutions.name</code>.
-     */
-    public String getName() {
-        return (String) get(1);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.institutions.name</code>.
      */
     public void setName(String value) {
         set(1, value);
     }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.institutions.acronym</code>.
-     */
-    public String getAcronym() {
-        return (String) get(2);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.institutions.acronym</code>.
-     */
-    public void setAcronym(String value) {
-        set(2, value);
-    }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
 
     /**
      * Getter for <code>germinate_gatekeeper.institutions.address</code>.
@@ -100,15 +89,8 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
     }
 
     // -------------------------------------------------------------------------
-    // Record4 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.institutions.address</code>.
-     */
-    public void setAddress(String value) {
-        set(3, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -117,6 +99,10 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
     public Record1<Integer> key() {
         return (Record1) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record4 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -257,10 +243,6 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -280,5 +262,23 @@ public class InstitutionsRecord extends UpdatableRecordImpl<InstitutionsRecord> 
         value3(value3);
         value4(value4);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.institutions.acronym</code>.
+     */
+    public String getAcronym() {
+        return (String) get(2);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.institutions.address</code>.
+     */
+    public void setAddress(String value) {
+        set(3, value);
     }
 }

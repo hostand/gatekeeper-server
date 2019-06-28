@@ -28,15 +28,26 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DatabaseVersion extends TableImpl<DatabaseVersionRecord> {
 
+    private static final long serialVersionUID = 122565039;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.database_version</code>
      */
     public static final DatabaseVersion DATABASE_VERSION = new DatabaseVersion();
-    private static final long serialVersionUID = 122565039;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<DatabaseVersionRecord> getRecordType() {
+        return DatabaseVersionRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.database_version.version</code>. The version number of this database. Incrementing starting from '1'.
      */
     public final TableField<DatabaseVersionRecord, Integer> VERSION = createField("version", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "The version number of this database. Incrementing starting from '1'.");
+
     /**
      * The column <code>germinate_gatekeeper.database_version.updated_on</code>. The timestamp of the last update.
      */
@@ -73,14 +84,6 @@ public class DatabaseVersion extends TableImpl<DatabaseVersionRecord> {
 
     public <O extends Record> DatabaseVersion(Table<O> child, ForeignKey<O, DatabaseVersionRecord> key) {
         super(child, key, DATABASE_VERSION);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<DatabaseVersionRecord> getRecordType() {
-        return DatabaseVersionRecord.class;
     }
 
     /**

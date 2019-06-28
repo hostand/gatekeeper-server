@@ -37,6 +37,13 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.access_requests.id</code>.
+     */
+    public Integer getId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised AccessRequestsRecord
      */
     public AccessRequestsRecord(Integer id, Integer userId, Integer databaseSystemId, Byte hasBeenRejected, Byte needsApproval, String activationKey, Timestamp createdOn) {
@@ -52,38 +59,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.access_requests.id</code>.
-     */
-    public Integer getId() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.access_requests.user_id</code>.
      */
     public Integer getUserId() {
         return (Integer) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
-     */
-    public void setUserId(Integer value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.access_requests.database_system_id</code>.
-     */
-    public Integer getDatabaseSystemId() {
-        return (Integer) get(2);
     }
 
     /**
@@ -94,10 +73,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
+     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
      */
-    public Byte getHasBeenRejected() {
-        return (Byte) get(3);
+    public void setId(Integer value) {
+        set(0, value);
     }
 
     /**
@@ -108,10 +87,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
+     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
      */
-    public Byte getNeedsApproval() {
-        return (Byte) get(4);
+    public void setUserId(Integer value) {
+        set(1, value);
     }
 
     /**
@@ -122,10 +101,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
+     * Getter for <code>germinate_gatekeeper.access_requests.database_system_id</code>.
      */
-    public String getActivationKey() {
-        return (String) get(5);
+    public Integer getDatabaseSystemId() {
+        return (Integer) get(2);
     }
 
     /**
@@ -135,9 +114,19 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
         set(5, value);
     }
 
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
+     */
+    public Byte getHasBeenRejected() {
+        return (Byte) get(3);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
+     */
+    public Byte getNeedsApproval() {
+        return (Byte) get(4);
+    }
 
     /**
      * Getter for <code>germinate_gatekeeper.access_requests.created_on</code>.
@@ -147,15 +136,8 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     // -------------------------------------------------------------------------
-    // Record7 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.created_on</code>.
-     */
-    public void setCreatedOn(Timestamp value) {
-        set(6, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -164,6 +146,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     public Record1<Integer> key() {
         return (Record1) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record7 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -403,10 +389,6 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -429,5 +411,23 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
         value6(value6);
         value7(value7);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
+     */
+    public String getActivationKey() {
+        return (String) get(5);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.access_requests.created_on</code>.
+     */
+    public void setCreatedOn(Timestamp value) {
+        set(6, value);
     }
 }

@@ -28,23 +28,36 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Institutions extends TableImpl<InstitutionsRecord> {
 
+    private static final long serialVersionUID = 767958368;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.institutions</code>
      */
     public static final Institutions INSTITUTIONS = new Institutions();
-    private static final long serialVersionUID = 767958368;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<InstitutionsRecord> getRecordType() {
+        return InstitutionsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.institutions.id</code>.
      */
     public final TableField<InstitutionsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.institutions.name</code>.
      */
     public final TableField<InstitutionsRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.institutions.acronym</code>.
      */
     public final TableField<InstitutionsRecord, String> ACRONYM = createField("acronym", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.institutions.address</code>.
      */
@@ -81,14 +94,6 @@ public class Institutions extends TableImpl<InstitutionsRecord> {
 
     public <O extends Record> Institutions(Table<O> child, ForeignKey<O, InstitutionsRecord> key) {
         super(child, key, INSTITUTIONS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<InstitutionsRecord> getRecordType() {
-        return InstitutionsRecord.class;
     }
 
     /**

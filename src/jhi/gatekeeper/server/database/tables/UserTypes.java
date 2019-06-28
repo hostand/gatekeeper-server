@@ -28,15 +28,26 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserTypes extends TableImpl<UserTypesRecord> {
 
+    private static final long serialVersionUID = 2077346835;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.user_types</code>
      */
     public static final UserTypes USER_TYPES = new UserTypes();
-    private static final long serialVersionUID = 2077346835;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<UserTypesRecord> getRecordType() {
+        return UserTypesRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.user_types.id</code>.
      */
     public final TableField<UserTypesRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.user_types.description</code>.
      */
@@ -73,14 +84,6 @@ public class UserTypes extends TableImpl<UserTypesRecord> {
 
     public <O extends Record> UserTypes(Table<O> child, ForeignKey<O, UserTypesRecord> key) {
         super(child, key, USER_TYPES);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<UserTypesRecord> getRecordType() {
-        return UserTypesRecord.class;
     }
 
     /**

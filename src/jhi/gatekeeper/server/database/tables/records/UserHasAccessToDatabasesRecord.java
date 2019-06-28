@@ -35,6 +35,13 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.user_has_access_to_databases.user_id</code>.
+     */
+    public Integer getUserId() {
+        return (Integer) get(0);
+    }
+
+    /**
      * Create a detached, initialised UserHasAccessToDatabasesRecord
      */
     public UserHasAccessToDatabasesRecord(Integer userId, Integer databaseId, Integer userTypeId) {
@@ -46,10 +53,10 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.user_has_access_to_databases.user_id</code>.
+     * Getter for <code>germinate_gatekeeper.user_has_access_to_databases.database_id</code>.
      */
-    public Integer getUserId() {
-        return (Integer) get(0);
+    public Integer getDatabaseId() {
+        return (Integer) get(1);
     }
 
     /**
@@ -60,24 +67,6 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.user_has_access_to_databases.database_id</code>.
-     */
-    public Integer getDatabaseId() {
-        return (Integer) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.user_has_access_to_databases.database_id</code>.
-     */
-    public void setDatabaseId(Integer value) {
-        set(1, value);
-    }
-
-    // -------------------------------------------------------------------------
-    // Primary key information
-    // -------------------------------------------------------------------------
-
-    /**
      * Getter for <code>germinate_gatekeeper.user_has_access_to_databases.user_type_id</code>.
      */
     public Integer getUserTypeId() {
@@ -85,15 +74,8 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
     }
 
     // -------------------------------------------------------------------------
-    // Record3 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
-
-    /**
-     * Setter for <code>germinate_gatekeeper.user_has_access_to_databases.user_type_id</code>.
-     */
-    public void setUserTypeId(Integer value) {
-        set(2, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -102,6 +84,10 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
     public Record2<Integer, Integer> key() {
         return (Record2) super.key();
     }
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -209,10 +195,6 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -231,5 +213,23 @@ public class UserHasAccessToDatabasesRecord extends UpdatableRecordImpl<UserHasA
         value2(value2);
         value3(value3);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Setter for <code>germinate_gatekeeper.user_has_access_to_databases.database_id</code>.
+     */
+    public void setDatabaseId(Integer value) {
+        set(1, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.user_has_access_to_databases.user_type_id</code>.
+     */
+    public void setUserTypeId(Integer value) {
+        set(2, value);
     }
 }

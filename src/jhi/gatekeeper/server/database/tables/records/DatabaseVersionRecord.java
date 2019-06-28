@@ -30,10 +30,24 @@ public class DatabaseVersionRecord extends TableRecordImpl<DatabaseVersionRecord
     private static final long serialVersionUID = -2002060393;
 
     /**
+     * Setter for <code>germinate_gatekeeper.database_version.version</code>. The version number of this database. Incrementing starting from '1'.
+     */
+    public void setVersion(Integer value) {
+        set(0, value);
+    }
+
+    /**
      * Create a detached DatabaseVersionRecord
      */
     public DatabaseVersionRecord() {
         super(DatabaseVersion.DATABASE_VERSION);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.database_version.updated_on</code>. The timestamp of the last update.
+     */
+    public void setUpdatedOn(Timestamp value) {
+        set(1, value);
     }
 
     /**
@@ -46,37 +60,9 @@ public class DatabaseVersionRecord extends TableRecordImpl<DatabaseVersionRecord
         set(1, updatedOn);
     }
 
-    /**
-     * Getter for <code>germinate_gatekeeper.database_version.version</code>. The version number of this database. Incrementing starting from '1'.
-     */
-    public Integer getVersion() {
-        return (Integer) get(0);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.database_version.version</code>. The version number of this database. Incrementing starting from '1'.
-     */
-    public void setVersion(Integer value) {
-        set(0, value);
-    }
-
     // -------------------------------------------------------------------------
     // Record2 type implementation
     // -------------------------------------------------------------------------
-
-    /**
-     * Getter for <code>germinate_gatekeeper.database_version.updated_on</code>. The timestamp of the last update.
-     */
-    public Timestamp getUpdatedOn() {
-        return (Timestamp) get(1);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.database_version.updated_on</code>. The timestamp of the last update.
-     */
-    public void setUpdatedOn(Timestamp value) {
-        set(1, value);
-    }
 
     /**
      * {@inheritDoc}
@@ -151,10 +137,6 @@ public class DatabaseVersionRecord extends TableRecordImpl<DatabaseVersionRecord
         return this;
     }
 
-    // -------------------------------------------------------------------------
-    // Constructors
-    // -------------------------------------------------------------------------
-
     /**
      * {@inheritDoc}
      */
@@ -172,5 +154,23 @@ public class DatabaseVersionRecord extends TableRecordImpl<DatabaseVersionRecord
         value1(value1);
         value2(value2);
         return this;
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructors
+    // -------------------------------------------------------------------------
+
+    /**
+     * Getter for <code>germinate_gatekeeper.database_version.version</code>. The version number of this database. Incrementing starting from '1'.
+     */
+    public Integer getVersion() {
+        return (Integer) get(0);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.database_version.updated_on</code>. The timestamp of the last update.
+     */
+    public Timestamp getUpdatedOn() {
+        return (Timestamp) get(1);
     }
 }

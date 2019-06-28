@@ -29,35 +29,51 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccessRequests extends TableImpl<AccessRequestsRecord> {
 
+    private static final long serialVersionUID = -1344072783;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.access_requests</code>
      */
     public static final AccessRequests ACCESS_REQUESTS = new AccessRequests();
-    private static final long serialVersionUID = -1344072783;
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<AccessRequestsRecord> getRecordType() {
+        return AccessRequestsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.id</code>.
      */
     public final TableField<AccessRequestsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.user_id</code>.
      */
     public final TableField<AccessRequestsRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.database_system_id</code>.
      */
     public final TableField<AccessRequestsRecord, Integer> DATABASE_SYSTEM_ID = createField("database_system_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
      */
     public final TableField<AccessRequestsRecord, Byte> HAS_BEEN_REJECTED = createField("has_been_rejected", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.needs_approval</code>.
      */
     public final TableField<AccessRequestsRecord, Byte> NEEDS_APPROVAL = createField("needs_approval", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.activation_key</code>.
      */
     public final TableField<AccessRequestsRecord, String> ACTIVATION_KEY = createField("activation_key", org.jooq.impl.SQLDataType.VARCHAR(36), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.access_requests.created_on</code>.
      */
@@ -94,14 +110,6 @@ public class AccessRequests extends TableImpl<AccessRequestsRecord> {
 
     public <O extends Record> AccessRequests(Table<O> child, ForeignKey<O, AccessRequestsRecord> key) {
         super(child, key, ACCESS_REQUESTS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<AccessRequestsRecord> getRecordType() {
-        return AccessRequestsRecord.class;
     }
 
     /**
