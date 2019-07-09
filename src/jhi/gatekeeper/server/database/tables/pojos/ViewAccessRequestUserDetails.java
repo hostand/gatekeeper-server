@@ -23,7 +23,7 @@ import javax.annotation.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewAccessRequestUserDetails implements Serializable {
 
-    private static final long serialVersionUID = 235869545;
+    private static final long serialVersionUID = -1289460093;
 
     private Integer   id;
     private String    username;
@@ -36,6 +36,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
     private String    address;
     private String    databaseSystemName;
     private String    databaseServerName;
+    private Byte      hasBeenRejected;
     private String    activationKey;
 
     public ViewAccessRequestUserDetails() {}
@@ -52,6 +53,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.address = value.address;
         this.databaseSystemName = value.databaseSystemName;
         this.databaseServerName = value.databaseServerName;
+        this.hasBeenRejected = value.hasBeenRejected;
         this.activationKey = value.activationKey;
     }
 
@@ -67,6 +69,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         String    address,
         String    databaseSystemName,
         String    databaseServerName,
+        Byte      hasBeenRejected,
         String    activationKey
     ) {
         this.id = id;
@@ -80,6 +83,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.address = address;
         this.databaseSystemName = databaseSystemName;
         this.databaseServerName = databaseServerName;
+        this.hasBeenRejected = hasBeenRejected;
         this.activationKey = activationKey;
     }
 
@@ -171,6 +175,14 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.databaseServerName = databaseServerName;
     }
 
+    public Byte getHasBeenRejected() {
+        return this.hasBeenRejected;
+    }
+
+    public void setHasBeenRejected(Byte hasBeenRejected) {
+        this.hasBeenRejected = hasBeenRejected;
+    }
+
     public String getActivationKey() {
         return this.activationKey;
     }
@@ -194,6 +206,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         sb.append(", ").append(address);
         sb.append(", ").append(databaseSystemName);
         sb.append(", ").append(databaseServerName);
+        sb.append(", ").append(hasBeenRejected);
         sb.append(", ").append(activationKey);
 
         sb.append(")");

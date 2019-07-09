@@ -73,34 +73,6 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
-     */
-    public void setHasBeenRejected(Byte value) {
-        set(3, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
-     */
-    public void setUserId(Integer value) {
-        set(1, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
-     */
-    public void setNeedsApproval(Byte value) {
-        set(4, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.access_requests.database_system_id</code>.
      */
     public Integer getDatabaseSystemId() {
@@ -108,10 +80,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
+     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
      */
-    public void setActivationKey(String value) {
-        set(5, value);
+    public void setId(Integer value) {
+        set(0, value);
     }
 
     /**
@@ -122,10 +94,38 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
+     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
+     */
+    public void setUserId(Integer value) {
+        set(1, value);
+    }
+
+    /**
      * Getter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
      */
     public Byte getNeedsApproval() {
         return (Byte) get(4);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
+     */
+    public void setHasBeenRejected(Byte value) {
+        set(3, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
+     */
+    public void setNeedsApproval(Byte value) {
+        set(4, value);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
+     */
+    public String getActivationKey() {
+        return (String) get(5);
     }
 
     /**
@@ -418,10 +418,10 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     // -------------------------------------------------------------------------
 
     /**
-     * Getter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
+     * Setter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
      */
-    public String getActivationKey() {
-        return (String) get(5);
+    public void setActivationKey(String value) {
+        set(5, value);
     }
 
     /**

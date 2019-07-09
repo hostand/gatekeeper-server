@@ -40,7 +40,7 @@ import static jhi.gatekeeper.server.database.tables.Users.*;
  */
 public class CustomVerifier implements Verifier
 {
-	public static final long AGE = 18000000;
+	public static final long AGE = 1800000;
 
 	private static Map<String, UserDetails> tokenToTimestamp = new ConcurrentHashMap<>();
 
@@ -105,13 +105,9 @@ public class CustomVerifier implements Verifier
 										  .collect(Collectors.toList());
 
 			if (cookies.size() > 0)
-			{
 				return Objects.equals(token, cookies.get(0).getValue()) ? token : null;
-			}
 			else
-			{
 				return null;
-			}
 		}
 
 		return null;

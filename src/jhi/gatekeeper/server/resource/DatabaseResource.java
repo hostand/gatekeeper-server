@@ -22,7 +22,12 @@ import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
  */
 public class DatabaseResource extends PaginatedServerResource
 {
+	public static final String PARAM_DATABASE = "database";
+	public static final String PARAM_SERVER   = "server";
+
 	private Integer id = null;
+	private String  queryDatabase;
+	private String  queryServer;
 
 	@Override
 	public void doInit()
@@ -36,6 +41,9 @@ public class DatabaseResource extends PaginatedServerResource
 		catch (NullPointerException | NumberFormatException e)
 		{
 		}
+
+		this.queryDatabase = getQueryValue(PARAM_DATABASE);
+		this.queryServer = getQueryValue(PARAM_SERVER);
 	}
 
 	@Post("json")
@@ -56,6 +64,7 @@ public class DatabaseResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
@@ -79,6 +88,7 @@ public class DatabaseResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
@@ -109,6 +119,11 @@ public class DatabaseResource extends PaginatedServerResource
 														   .or(DATABASE_SYSTEMS.SYSTEM_NAME.like(query))
 														   .or(DATABASE_SYSTEMS.DESCRIPTION.like(query)));
 				}
+				else if (queryServer != null && queryDatabase != null)
+				{
+					step.where(DATABASE_SYSTEMS.SERVER_NAME.eq(queryServer)
+														   .and(DATABASE_SYSTEMS.SYSTEM_NAME.eq(queryDatabase)));
+				}
 
 				if (ascending != null && orderBy != null)
 				{
@@ -133,6 +148,7 @@ public class DatabaseResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}

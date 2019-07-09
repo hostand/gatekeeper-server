@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- The contents of this file will be loaded for each web application -->
+<Context>
+    <!-- Default set of monitored resources. If one of these changes, the    -->
+    <!-- web application will be reloaded.                                   -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+    <Parameter name="database" override="true" value="@database.url@" />
+    <Parameter name="username" override="true" value="@database.username@" />
+    <Parameter name="password" override="true" value="@database.password@" />
+    <Parameter name="version"  override="true" value="@api.version@" />
+
+    <Parameter name="email.server"  override="true" value="@email.server@" />
+    <Parameter name="email.username"  override="true" value="@email.username@" />
+    <Parameter name="email.address"  override="true" value="@email.address@" />
+    <Parameter name="email.password"  override="true" value="@email.password@" />
+    <Parameter name="email.port"  override="true" value="@email.port@" />
+</Context>

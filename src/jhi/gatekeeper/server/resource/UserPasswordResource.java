@@ -11,7 +11,9 @@ import java.util.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
-import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.exception.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
@@ -50,14 +52,12 @@ public class UserPasswordResource extends PaginatedServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			Optional<UsersRecord> optional = context.selectFrom(USERS)
-													.where(USERS.ID.eq(sessionUser.getId()))
-													.fetchOptional();
+			Users user = context.selectFrom(USERS)
+								.where(USERS.ID.eq(sessionUser.getId()))
+								.fetchOneInto(Users.class);
 
-			if (optional.isPresent())
+			if (user != null)
 			{
-				UsersRecord user = optional.get();
-
 				// Check if they are the same
 				boolean same = BCrypt.checkpw(update.getOldPassword(), user.getPassword());
 
@@ -73,6 +73,8 @@ public class UserPasswordResource extends PaginatedServerResource
 					// Terminate this "session".
 					CustomVerifier.removeToken(getRequest());
 
+					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
+
 					return true;
 				}
 				else
@@ -87,7 +89,13 @@ public class UserPasswordResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+		}
+		catch (EmailException e)
+		{
+			e.printStackTrace();
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
 		}
 	}
 }

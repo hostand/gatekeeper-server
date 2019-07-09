@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * @author Sebastian Raubach
  */
-public class PasswordResetRequest implements Serializable
+public class PasswordResetRequest extends LocaleRequest implements Serializable
 {
 	private String username;
 	private String email;

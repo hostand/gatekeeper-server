@@ -5,7 +5,7 @@ import java.io.*;
 /**
  * @author Sebastian Raubach
  */
-public class PasswordUpdate implements Serializable
+public class PasswordUpdate extends LocaleRequest implements Serializable
 {
 	private String oldPassword;
 	private String newPassword;

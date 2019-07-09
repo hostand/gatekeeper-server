@@ -88,38 +88,17 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.users.username</code>.
-     */
-    public void setUsername(String value) {
-        set(1, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.users.email_address</code>.
-     */
-    public void setEmailAddress(String value) {
-        set(4, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.users.password</code>.
-     */
-    public String getPassword() {
-        return (String) get(2);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.users.created_on</code>.
-     */
-    public void setCreatedOn(Timestamp value) {
-        set(5, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.users.full_name</code>.
      */
     public String getFullName() {
         return (String) get(3);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.users.username</code>.
+     */
+    public void setUsername(String value) {
+        set(1, value);
     }
 
     /**
@@ -130,10 +109,17 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.users.institution_id</code>.
+     * Getter for <code>germinate_gatekeeper.users.password</code>.
      */
-    public Integer getInstitutionId() {
-        return (Integer) get(6);
+    public String getPassword() {
+        return (String) get(2);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.users.email_address</code>.
+     */
+    public void setEmailAddress(String value) {
+        set(4, value);
     }
 
     /**
@@ -141,6 +127,20 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
      */
     public Timestamp getCreatedOn() {
         return (Timestamp) get(5);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.users.institution_id</code>.
+     */
+    public Integer getInstitutionId() {
+        return (Integer) get(6);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.users.created_on</code>.
+     */
+    public void setCreatedOn(Timestamp value) {
+        set(5, value);
     }
 
     /**

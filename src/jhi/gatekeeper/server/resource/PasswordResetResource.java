@@ -28,7 +28,10 @@ import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.exception.*;
+import jhi.gatekeeper.server.util.*;
 
+import static jhi.gatekeeper.server.database.tables.PasswordResetLog.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
@@ -44,19 +47,18 @@ public class PasswordResetResource extends ServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			Optional<UsersRecord> optional = context.selectFrom(USERS)
-													.where(USERS.USERNAME.eq(request.getUsername())
-																		 .and(USERS.EMAIL_ADDRESS.eq(request.getEmail())))
-													.fetchOptional();
+			UsersRecord user = context.selectFrom(USERS)
+									  .where(USERS.USERNAME.eq(request.getUsername())
+														   .and(USERS.EMAIL_ADDRESS.eq(request.getEmail())))
+									  .fetchOneInto(UsersRecord.class);
 
-			if (optional.isPresent())
+			if (user != null)
 			{
-				UsersRecord user = optional.get();
-
 				String newPassword = UUID.randomUUID().toString();
 
-				// TODO: Email
-				PasswordResetLogRecord record = new PasswordResetLogRecord();
+				Email.sendNewPassword(request.getJavaLocale(), user, newPassword);
+
+				PasswordResetLogRecord record = context.newRecord(PASSWORD_RESET_LOG);
 				record.setUserId(user.getId());
 				record.setIpAddress(getRequest().getClientInfo().getUpstreamAddress());
 				record.setTimestamp(new Timestamp(System.currentTimeMillis()));
@@ -65,10 +67,9 @@ public class PasswordResetResource extends ServerResource
 				// The salt may have changed since the last time, so update the password in the database with the new salt.
 				String saltedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(TokenResource.SALT));
 
-				context.update(USERS)
-					   .set(USERS.PASSWORD, saltedPassword)
-					   .where(USERS.ID.eq(user.getId()))
-					   .execute();
+				// Update the password in the database
+				user.setPassword(saltedPassword);
+				user.store(USERS.PASSWORD);
 
 				return true;
 			}
@@ -76,10 +77,17 @@ public class PasswordResetResource extends ServerResource
 			{
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 			}
+
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+		}
+		catch (EmailException e)
+		{
+			e.printStackTrace();
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
 		}
 	}
 }

@@ -122,6 +122,20 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.unapproved_users.institution_id</code>.
+     */
+    public Integer getInstitutionId() {
+        return (Integer) get(5);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_name</code>.
+     */
+    public void setInstitutionName(String value) {
+        set(6, value);
+    }
+
+    /**
      * Setter for <code>germinate_gatekeeper.unapproved_users.user_full_name</code>.
      */
     public void setUserFullName(String value) {
@@ -136,52 +150,17 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.unapproved_users.institution_name</code>.
-     */
-    public String getInstitutionName() {
-        return (String) get(6);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_acronym</code>.
-     */
-    public void setInstitutionAcronym(String value) {
-        set(7, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.unapproved_users.institution_id</code>.
-     */
-    public Integer getInstitutionId() {
-        return (Integer) get(5);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_address</code>.
-     */
-    public void setInstitutionAddress(String value) {
-        set(8, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_name</code>.
-     */
-    public void setInstitutionName(String value) {
-        set(6, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.unapproved_users.database_system_id</code>.
-     */
-    public void setDatabaseSystemId(Integer value) {
-        set(9, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.unapproved_users.institution_acronym</code>.
      */
     public String getInstitutionAcronym() {
         return (String) get(7);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.unapproved_users.institution_name</code>.
+     */
+    public String getInstitutionName() {
+        return (String) get(6);
     }
 
     /**
@@ -192,10 +171,10 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.unapproved_users.created_on</code>.
+     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_acronym</code>.
      */
-    public Timestamp getCreatedOn() {
-        return (Timestamp) get(10);
+    public void setInstitutionAcronym(String value) {
+        set(7, value);
     }
 
     /**
@@ -206,13 +185,6 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.unapproved_users.has_been_rejected</code>.
-     */
-    public Byte getHasBeenRejected() {
-        return (Byte) get(11);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.unapproved_users.created_on</code>.
      */
     public void setCreatedOn(Timestamp value) {
@@ -220,10 +192,10 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.unapproved_users.needs_approval</code>.
+     * Setter for <code>germinate_gatekeeper.unapproved_users.institution_address</code>.
      */
-    public Byte getNeedsApproval() {
-        return (Byte) get(12);
+    public void setInstitutionAddress(String value) {
+        set(8, value);
     }
 
     /**
@@ -231,6 +203,34 @@ public class UnapprovedUsersRecord extends UpdatableRecordImpl<UnapprovedUsersRe
      */
     public void setHasBeenRejected(Byte value) {
         set(11, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.unapproved_users.database_system_id</code>.
+     */
+    public void setDatabaseSystemId(Integer value) {
+        set(9, value);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.unapproved_users.created_on</code>.
+     */
+    public Timestamp getCreatedOn() {
+        return (Timestamp) get(10);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.unapproved_users.has_been_rejected</code>.
+     */
+    public Byte getHasBeenRejected() {
+        return (Byte) get(11);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.unapproved_users.needs_approval</code>.
+     */
+    public Byte getNeedsApproval() {
+        return (Byte) get(12);
     }
 
     /**

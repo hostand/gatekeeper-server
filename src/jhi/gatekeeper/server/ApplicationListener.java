@@ -3,6 +3,7 @@ package jhi.gatekeeper.server;
 import javax.servlet.*;
 
 import jhi.gatekeeper.server.resource.*;
+import jhi.gatekeeper.server.util.*;
 
 public class ApplicationListener implements ServletContextListener
 {
@@ -15,14 +16,21 @@ public class ApplicationListener implements ServletContextListener
 		String password = ctx.getInitParameter("password");
 		Database.init(database, username, password);
 
-		Integer salt = 10;
+		String emailServer = ctx.getInitParameter("email.server");
+		String emailAddress = ctx.getInitParameter("email.address");
+		String emailUsername = ctx.getInitParameter("email.username");
+		String emailPassword = ctx.getInitParameter("email.password");
+		String emailPort = ctx.getInitParameter("email.port");
+		Email.init(emailServer, emailAddress, emailUsername, emailPassword, emailPort);
+
+		Integer salt;
 		try
 		{
 			salt = Integer.parseInt(ctx.getInitParameter("salt"));
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			salt = 10;
 		}
 
 		TokenResource.SALT = salt;

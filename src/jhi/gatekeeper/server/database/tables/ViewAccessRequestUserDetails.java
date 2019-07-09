@@ -28,55 +28,80 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewAccessRequestUserDetails extends TableImpl<ViewAccessRequestUserDetailsRecord> {
 
+    private static final long serialVersionUID = -1010007847;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.view_access_request_user_details</code>
      */
     public static final ViewAccessRequestUserDetails VIEW_ACCESS_REQUEST_USER_DETAILS = new ViewAccessRequestUserDetails();
-    private static final long serialVersionUID = -1416329862;
+    /**
+     * The column <code>germinate_gatekeeper.view_access_request_user_details.has_been_rejected</code>.
+     */
+    public final TableField<ViewAccessRequestUserDetailsRecord, Byte> HAS_BEEN_REJECTED = createField("has_been_rejected", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.id</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.username</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> USERNAME = createField("username", org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.full_name</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> FULL_NAME = createField("full_name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.email_address</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> EMAIL_ADDRESS = createField("email_address", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.created_on</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, Timestamp> CREATED_ON = createField("created_on", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.institution_id</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, Integer> INSTITUTION_ID = createField("institution_id", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.name</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.acronym</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> ACRONYM = createField("acronym", org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.address</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> ADDRESS = createField("address", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.database_system_name</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> DATABASE_SYSTEM_NAME = createField("database_system_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.database_server_name</code>.
      */
     public final TableField<ViewAccessRequestUserDetailsRecord, String> DATABASE_SERVER_NAME = createField("database_server_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<ViewAccessRequestUserDetailsRecord> getRecordType() {
+        return ViewAccessRequestUserDetailsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.view_access_request_user_details.activation_key</code>.
      */
@@ -113,14 +138,6 @@ public class ViewAccessRequestUserDetails extends TableImpl<ViewAccessRequestUse
 
     public <O extends Record> ViewAccessRequestUserDetails(Table<O> child, ForeignKey<O, ViewAccessRequestUserDetailsRecord> key) {
         super(child, key, VIEW_ACCESS_REQUEST_USER_DETAILS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<ViewAccessRequestUserDetailsRecord> getRecordType() {
-        return ViewAccessRequestUserDetailsRecord.class;
     }
 
     /**

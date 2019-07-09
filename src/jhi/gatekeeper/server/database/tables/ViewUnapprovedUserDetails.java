@@ -28,55 +28,80 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewUnapprovedUserDetails extends TableImpl<ViewUnapprovedUserDetailsRecord> {
 
+    private static final long serialVersionUID = -1266396651;
+
     /**
      * The reference instance of <code>germinate_gatekeeper.view_unapproved_user_details</code>
      */
     public static final ViewUnapprovedUserDetails VIEW_UNAPPROVED_USER_DETAILS = new ViewUnapprovedUserDetails();
-    private static final long serialVersionUID = -1367092405;
+    /**
+     * The column <code>germinate_gatekeeper.view_unapproved_user_details.has_been_rejected</code>.
+     */
+    public final TableField<ViewUnapprovedUserDetailsRecord, Byte> HAS_BEEN_REJECTED = createField("has_been_rejected", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.TINYINT)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.id</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.inline("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.username</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> USERNAME = createField("username", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.full_name</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> FULL_NAME = createField("full_name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.email_address</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> EMAIL_ADDRESS = createField("email_address", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.created_on</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, Timestamp> CREATED_ON = createField("created_on", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.institution_id</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, Integer> INSTITUTION_ID = createField("institution_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.name</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.acronym</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> ACRONYM = createField("acronym", org.jooq.impl.SQLDataType.VARCHAR(45), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.address</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> ADDRESS = createField("address", org.jooq.impl.SQLDataType.VARCHAR(255), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.database_system_name</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> DATABASE_SYSTEM_NAME = createField("database_system_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.database_server_name</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> DATABASE_SERVER_NAME = createField("database_server_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+
+    /**
+     * The class holding records for this type
+     */
+    @Override
+    public Class<ViewUnapprovedUserDetailsRecord> getRecordType() {
+        return ViewUnapprovedUserDetailsRecord.class;
+    }
+
     /**
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.activation_key</code>.
      */
@@ -113,14 +138,6 @@ public class ViewUnapprovedUserDetails extends TableImpl<ViewUnapprovedUserDetai
 
     public <O extends Record> ViewUnapprovedUserDetails(Table<O> child, ForeignKey<O, ViewUnapprovedUserDetailsRecord> key) {
         super(child, key, VIEW_UNAPPROVED_USER_DETAILS);
-    }
-
-    /**
-     * The class holding records for this type
-     */
-    @Override
-    public Class<ViewUnapprovedUserDetailsRecord> getRecordType() {
-        return ViewUnapprovedUserDetailsRecord.class;
     }
 
     /**

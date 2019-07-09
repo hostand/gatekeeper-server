@@ -59,6 +59,7 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
@@ -84,6 +85,7 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
@@ -109,6 +111,7 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
@@ -160,6 +163,7 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}

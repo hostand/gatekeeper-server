@@ -47,15 +47,23 @@
 		<jar jarfile="${jar}">
 			<fileset dir="${cls}"/>
 			<manifest>
-				<attribute name="Main-Class" value="jhi.seedstore.server.Seedstore"/>
+				<attribute name="Main-Class" value="jhi.gatekeeper.server.Gatekeeper"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
 			</manifest>
 		</jar>
 	</target>
 
-	<target name="war" depends="jar">
+	<target name="jar-client" depends="compile8">
+		<jar jarfile="gatekeeper-client.jar">
+			<fileset dir="${cls}">
+				<include name="**/pojos/**"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="war" depends="jar, jar-client">
 		<copy
-			file="web/context.xml.template"
+			file="web/context.template.xml"
 			overwrite="true"
 			tofile="web/context.xml">
 			<filterset>
@@ -63,17 +71,23 @@
 				<filter token="database.password" value="${database.password}"/>
 				<filter token="database.url" value="${database.url}"/>
 				<filter token="api.version" value="${api.version}"/>
+				<filter token="email.server" value="${email.server}"/>
+				<filter token="email.username" value="${email.username}"/>
+				<filter token="email.address" value="${email.address}"/>
+				<filter token="email.password" value="${email.password}"/>
+				<filter token="email.port" value="${email.port}"/>
 			</filterset>
 		</copy>
 
-		<war destfile="${war}" update="false">
-			<webinf dir="web/WEB-INF" excludes="**/classes/**"/>
+		<war destfile="${war}" update="false" webxml="${web}/WEB-INF/web.xml">
+			<webinf dir="${web}/WEB-INF" excludes="**/classes/**"/>
 			<lib dir="${lib}" excludes="**/lib-dev/**"/>
 			<lib file="${jar}"/>
 
+			<zipfileset dir="${res}" includes="Gatekeeper**.properties" prefix="WEB-INF/classes"/>
 			<zipfileset dir="." includes="logging.properties" prefix="WEB-INF/classes"/>
 
-			<metainf file="web/context.xml"/>
+			<metainf file="${web}/context.xml"/>
 		</war>
 	</target>
 

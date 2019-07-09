@@ -11,7 +11,7 @@ import java.util.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
-import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.database.tables.pojos.*;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
@@ -50,14 +50,12 @@ public class UserEmailResource extends PaginatedServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			Optional<UsersRecord> optional = context.selectFrom(USERS)
-													.where(USERS.ID.eq(sessionUser.getId()))
-													.fetchOptional();
+			Users user = context.selectFrom(USERS)
+								.where(USERS.ID.eq(sessionUser.getId()))
+								.fetchOneInto(Users.class);
 
-			if (optional.isPresent())
+			if (user != null)
 			{
-				UsersRecord user = optional.get();
-
 				if (Objects.equals(user.getEmailAddress(), update.getOldEmail()))
 				{
 					context.update(USERS)
@@ -79,6 +77,7 @@ public class UserEmailResource extends PaginatedServerResource
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}

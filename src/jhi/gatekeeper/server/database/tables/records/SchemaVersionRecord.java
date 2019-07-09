@@ -104,34 +104,6 @@ public class SchemaVersionRecord extends UpdatableRecordImpl<SchemaVersionRecord
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.schema_version.description</code>.
-     */
-    public void setDescription(String value) {
-        set(2, value);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.schema_version.checksum</code>.
-     */
-    public void setChecksum(Integer value) {
-        set(5, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.schema_version.type</code>.
-     */
-    public String getType() {
-        return (String) get(3);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.schema_version.installed_by</code>.
-     */
-    public void setInstalledBy(String value) {
-        set(6, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.schema_version.script</code>.
      */
     public String getScript() {
@@ -139,10 +111,10 @@ public class SchemaVersionRecord extends UpdatableRecordImpl<SchemaVersionRecord
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.schema_version.installed_on</code>.
+     * Setter for <code>germinate_gatekeeper.schema_version.description</code>.
      */
-    public void setInstalledOn(Timestamp value) {
-        set(7, value);
+    public void setDescription(String value) {
+        set(2, value);
     }
 
     /**
@@ -153,10 +125,38 @@ public class SchemaVersionRecord extends UpdatableRecordImpl<SchemaVersionRecord
     }
 
     /**
+     * Getter for <code>germinate_gatekeeper.schema_version.type</code>.
+     */
+    public String getType() {
+        return (String) get(3);
+    }
+
+    /**
      * Getter for <code>germinate_gatekeeper.schema_version.installed_by</code>.
      */
     public String getInstalledBy() {
         return (String) get(6);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.schema_version.checksum</code>.
+     */
+    public void setChecksum(Integer value) {
+        set(5, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.schema_version.installed_by</code>.
+     */
+    public void setInstalledBy(String value) {
+        set(6, value);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.schema_version.installed_on</code>.
+     */
+    public Timestamp getInstalledOn() {
+        return (Timestamp) get(7);
     }
 
     /**
@@ -167,10 +167,10 @@ public class SchemaVersionRecord extends UpdatableRecordImpl<SchemaVersionRecord
     }
 
     /**
-     * Getter for <code>germinate_gatekeeper.schema_version.installed_on</code>.
+     * Setter for <code>germinate_gatekeeper.schema_version.installed_on</code>.
      */
-    public Timestamp getInstalledOn() {
-        return (Timestamp) get(7);
+    public void setInstalledOn(Timestamp value) {
+        set(7, value);
     }
 
     /**

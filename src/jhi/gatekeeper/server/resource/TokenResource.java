@@ -29,7 +29,6 @@ import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
-import jhi.gatekeeper.server.database.tables.records.*;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
@@ -67,24 +66,19 @@ public class TokenResource extends ServerResource
 	{
 		boolean canAccess;
 		String token;
-		UsersRecord user;
+		Users user;
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			Optional<UsersRecord> optional = context.selectFrom(USERS)
-													.where(USERS.USERNAME.eq(request.getUsername()))
-													.fetchOptional();
+			user = context.selectFrom(USERS)
+								.where(USERS.USERNAME.eq(request.getUsername()))
+								.fetchOneInto(Users.class);
 
-			if (optional.isPresent())
-			{
-				user = optional.get();
+			if (user != null)
 				canAccess = BCrypt.checkpw(request.getPassword(), user.getPassword());
-			}
 			else
-			{
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-			}
 		}
 		catch (SQLException e)
 		{

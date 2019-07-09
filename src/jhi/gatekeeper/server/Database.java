@@ -24,7 +24,6 @@ public class Database
 		{
 			// The newInstance() call is a work around for some
 			// broken Java implementations
-
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 		}
 		catch (Exception ex)

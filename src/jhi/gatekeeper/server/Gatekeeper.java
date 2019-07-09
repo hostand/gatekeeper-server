@@ -93,8 +93,10 @@ public class Gatekeeper extends Application
 
 		attachToRouter(routerAuth, "/request/existing", ExistingRequestResource.class);
 		attachToRouter(routerAuth, "/request/existing/{requestId}", ExistingRequestResource.class);
+		attachToRouter(routerAuth, "/request/existing/{requestId}/decision", ExistingRequestDecisionResource.class);
 		attachToRouter(routerAuth, "/request/new", NewRequestResource.class);
 		attachToRouter(routerAuth, "/request/new/{requestId}", NewRequestResource.class);
+		attachToRouter(routerAuth, "/request/new/{requestId}/decision", NewRequestDecisionResource.class);
 
 		attachToRouter(routerAuth, "/user", UserResource.class);
 		attachToRouter(routerAuth, "/user/{userId}", UserResource.class);
