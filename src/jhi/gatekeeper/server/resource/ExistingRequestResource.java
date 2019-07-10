@@ -108,6 +108,7 @@ public class ExistingRequestResource extends ServerResource
 				RequestDecision decision = new RequestDecision(record.getId(), Decision.APPROVE, null);
 				decision.setJavaLocale(locale);
 				ExistingRequestDecisionResource.decide(record.getId(), decision);
+				Email.sendAdministratorNotification(locale, database, false);
 				return true;
 			}
 		}

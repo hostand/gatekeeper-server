@@ -70,6 +70,7 @@
 				<filter token="database.username" value="${database.username}"/>
 				<filter token="database.password" value="${database.password}"/>
 				<filter token="database.url" value="${database.url}"/>
+				<filter token="web.base" value="${web.base}"/>
 				<filter token="api.version" value="${api.version}"/>
 				<filter token="email.server" value="${email.server}"/>
 				<filter token="email.username" value="${email.username}"/>

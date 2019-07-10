@@ -68,14 +68,6 @@ public class Email
 				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
 	}
 
-	public static void sendAdministratorNotification(Locale locale, DatabaseSystems system)
-		throws EmailException
-	{
-		send(address,
-			I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_REGISTRATION_ADMIN_NOTIFICATION),
-			I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_REGISTRATION_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
-	}
-
 	public static void sendNewPassword(Locale locale, UsersRecord user, String password)
 		throws EmailException
 	{
@@ -108,7 +100,7 @@ public class Email
 			I18n.getString(locale, I18n.EMAIL_MESSAGE_USER_REQUEST_PENDING));
 	}
 
-	public static void sendAwaitingApproval(Locale locale, UnapprovedUsers user)
+	public static void sendAwaitingApproval(Locale locale, UnapprovedUsersRecord user)
 		throws EmailException
 	{
 		send(user.getUserEmailAddress(),
@@ -116,7 +108,7 @@ public class Email
 			I18n.getString(locale, I18n.EMAIL_MESSAGE_USER_REQUEST_PENDING));
 	}
 
-	public static void sendActivationPrompt(Locale locale, UnapprovedUsers user, String url)
+	public static void sendActivationPrompt(Locale locale, UnapprovedUsersRecord user, String url)
 		throws EmailException
 	{
 		send(user.getUserEmailAddress(),

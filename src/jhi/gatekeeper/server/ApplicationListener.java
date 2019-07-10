@@ -16,6 +16,8 @@ public class ApplicationListener implements ServletContextListener
 		String password = ctx.getInitParameter("password");
 		Database.init(database, username, password);
 
+		Gatekeeper.WEB_BASE = ctx.getInitParameter("web.base");
+
 		String emailServer = ctx.getInitParameter("email.server");
 		String emailAddress = ctx.getInitParameter("email.address");
 		String emailUsername = ctx.getInitParameter("email.username");

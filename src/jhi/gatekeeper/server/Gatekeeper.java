@@ -18,6 +18,8 @@ import jhi.gatekeeper.server.resource.*;
  */
 public class Gatekeeper extends Application
 {
+	public static String WEB_BASE = null;
+
 	private static CustomVerifier         verifier = new CustomVerifier();
 	private        ChallengeAuthenticator authenticator;
 	private        MethodAuthorizer       authorizer;
@@ -91,6 +93,7 @@ public class Gatekeeper extends Application
 		attachToRouter(routerAuth, "/database", DatabaseResource.class);
 		attachToRouter(routerAuth, "/database/{databaseId}", DatabaseResource.class);
 
+		attachToRouter(routerUnauth, "/request/activation", ActivationRequestResource.class);
 		attachToRouter(routerAuth, "/request/existing", ExistingRequestResource.class);
 		attachToRouter(routerAuth, "/request/existing/{requestId}", ExistingRequestResource.class);
 		attachToRouter(routerAuth, "/request/existing/{requestId}/decision", ExistingRequestDecisionResource.class);

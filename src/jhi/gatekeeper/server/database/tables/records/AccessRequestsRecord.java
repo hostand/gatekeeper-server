@@ -80,38 +80,17 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
-     */
-    public void setId(Integer value) {
-        set(0, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
-     */
-    public Byte getHasBeenRejected() {
-        return (Byte) get(3);
-    }
-
-    /**
-     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
-     */
-    public void setUserId(Integer value) {
-        set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
-     */
-    public Byte getNeedsApproval() {
-        return (Byte) get(4);
-    }
-
-    /**
      * Setter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
      */
     public void setHasBeenRejected(Byte value) {
         set(3, value);
+    }
+
+    /**
+     * Setter for <code>germinate_gatekeeper.access_requests.id</code>.
+     */
+    public void setId(Integer value) {
+        set(0, value);
     }
 
     /**
@@ -122,10 +101,31 @@ public class AccessRequestsRecord extends UpdatableRecordImpl<AccessRequestsReco
     }
 
     /**
+     * Setter for <code>germinate_gatekeeper.access_requests.user_id</code>.
+     */
+    public void setUserId(Integer value) {
+        set(1, value);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.has_been_rejected</code>.
+     */
+    public Byte getHasBeenRejected() {
+        return (Byte) get(3);
+    }
+
+    /**
      * Getter for <code>germinate_gatekeeper.access_requests.activation_key</code>.
      */
     public String getActivationKey() {
         return (String) get(5);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.access_requests.needs_approval</code>.
+     */
+    public Byte getNeedsApproval() {
+        return (Byte) get(4);
     }
 
     /**

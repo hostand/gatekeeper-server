@@ -28,7 +28,7 @@ import jhi.gatekeeper.server.database.tables.records.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewUnapprovedUserDetails extends TableImpl<ViewUnapprovedUserDetailsRecord> {
 
-    private static final long serialVersionUID = -1266396651;
+    private static final long serialVersionUID = 1100010813;
 
     /**
      * The reference instance of <code>germinate_gatekeeper.view_unapproved_user_details</code>
@@ -93,6 +93,10 @@ public class ViewUnapprovedUserDetails extends TableImpl<ViewUnapprovedUserDetai
      * The column <code>germinate_gatekeeper.view_unapproved_user_details.database_server_name</code>.
      */
     public final TableField<ViewUnapprovedUserDetailsRecord, String> DATABASE_SERVER_NAME = createField("database_server_name", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+    /**
+     * The column <code>germinate_gatekeeper.view_unapproved_user_details.needs_approval</code>.
+     */
+    public final TableField<ViewUnapprovedUserDetailsRecord, Byte> NEEDS_APPROVAL = createField("needs_approval", org.jooq.impl.SQLDataType.TINYINT.nullable(false).defaultValue(org.jooq.impl.DSL.inline("1", org.jooq.impl.SQLDataType.TINYINT)), this, "");
 
     /**
      * The class holding records for this type

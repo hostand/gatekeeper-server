@@ -8,6 +8,7 @@
     <Parameter name="database" override="true" value="@database.url@" />
     <Parameter name="username" override="true" value="@database.username@" />
     <Parameter name="password" override="true" value="@database.password@" />
+    <Parameter name="web.base" override="true" value="@web.base@" />
     <Parameter name="version"  override="true" value="@api.version@" />
 
     <Parameter name="email.server"  override="true" value="@email.server@" />

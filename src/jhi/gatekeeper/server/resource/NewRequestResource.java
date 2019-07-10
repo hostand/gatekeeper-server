@@ -3,11 +3,14 @@ package jhi.gatekeeper.server.resource;
 import org.jooq.*;
 import org.jooq.impl.*;
 import org.restlet.data.Status;
+import org.restlet.ext.servlet.*;
 import org.restlet.resource.Delete;
 import org.restlet.resource.*;
 
 import java.sql.*;
 import java.util.*;
+
+import javax.servlet.http.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
@@ -17,8 +20,8 @@ import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.*;
 import jhi.gatekeeper.server.util.*;
 
-import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UnapprovedUsers.*;
+import static jhi.gatekeeper.server.database.tables.Users.*;
 import static jhi.gatekeeper.server.database.tables.ViewUnapprovedUserDetails.*;
 
 /**
@@ -46,9 +49,9 @@ public class NewRequestResource extends ServerResource
 	public boolean deleteJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
 		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Id not provided.");
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -68,39 +71,41 @@ public class NewRequestResource extends ServerResource
 	public boolean postJson(NewUnapprovedUser request)
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
 		if (request == null || request.getDatabaseSystemId() == null
 			|| StringUtils.isEmpty(request.getUserUsername(), request.getUserPassword(), request.getUserEmailAddress(), request.getUserFullName()))
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Required fields not provided.");
 
 		Locale locale = request.getJavaLocale();
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
-											  .where(DATABASE_SYSTEMS.ID.eq(request.getDatabaseSystemId()))
-											  .fetchOneInto(DatabaseSystems.class);
+			boolean userExists = context.fetchExists(USERS, USERS.USERNAME.eq(request.getUserUsername()).or(USERS.EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
+			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.USER_USERNAME.eq(request.getUserUsername()).or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
+
+			if (userExists || requestExists)
+				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, "Username or email address already in use.");
 
 			request.setUserPassword(BCrypt.hashpw(request.getUserPassword(), BCrypt.gensalt(TokenResource.SALT)));
-			if (request.getNeedsApproval() == 1)
-			{
-				// If it needs approval, add to database, notify everyone
-				UnapprovedUsers newUser = request.getUnapprovedUser();
-				Email.sendAwaitingApproval(locale, newUser);
-				Email.sendAdministratorNotification(locale, database, true);
-				return context.newRecord(UNAPPROVED_USERS, newUser).store() > 0;
-			}
-			else
-			{
-				// If it doesn't need approval, make the decision straightaway.
-				UnapprovedUsersRecord record = context.newRecord(UNAPPROVED_USERS, request.getUnapprovedUser());
-				record.store();
-				RequestDecision decision = new RequestDecision(record.getId(), Decision.APPROVE, null);
-				decision.setJavaLocale(locale);
-				NewRequestDecisionResource.decide(record.getId(), decision);
-				return true;
-			}
+			UnapprovedUsers newUser = request.getUnapprovedUser();
+			UnapprovedUsersRecord record = context.newRecord(UNAPPROVED_USERS, newUser);
+
+			String url = Gatekeeper.WEB_BASE;
+			String uuid = UUID.randomUUID().toString();
+
+			record.setActivationKey(uuid);
+
+			if (!url.endsWith("/"))
+				url += "/";
+
+			url += "gk/activation?activationKey=" + uuid;
+
+			record.store();
+
+			Email.sendActivationPrompt(locale, record, url);
+
+			return true;
 		}
 		catch (SQLException e)
 		{
@@ -110,15 +115,26 @@ public class NewRequestResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, "Failed to send emails.");
 		}
+	}
+
+	private String getUrl()
+	{
+		HttpServletRequest req = ServletUtils.getRequest(getRequest());
+		String scheme = req.getScheme(); // http
+		String serverName = req.getServerName(); // ics.hutton.ac.uk
+		int serverPort = req.getServerPort(); // 80
+		String contextPath = req.getContextPath(); // /germinate-baz
+
+		return scheme + "://" + serverName + ":" + serverPort + contextPath; // http://ics.hutton.ac.uk:80/germinate-baz
 	}
 
 	@Get("json")
 	public List<ViewUnapprovedUserDetails> getJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -128,7 +144,8 @@ public class NewRequestResource extends ServerResource
 			if (id != null)
 				step.where(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(id));
 
-			return step.orderBy(VIEW_UNAPPROVED_USER_DETAILS.CREATED_ON)
+			return step.where(VIEW_UNAPPROVED_USER_DETAILS.ACTIVATION_KEY.isNull())
+					   .orderBy(VIEW_UNAPPROVED_USER_DETAILS.CREATED_ON)
 					   .fetch()
 					   .into(ViewUnapprovedUserDetails.class);
 		}

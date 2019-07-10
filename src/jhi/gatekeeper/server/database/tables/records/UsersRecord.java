@@ -95,17 +95,17 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
+     * Setter for <code>germinate_gatekeeper.users.email_address</code>.
+     */
+    public void setEmailAddress(String value) {
+        set(4, value);
+    }
+
+    /**
      * Setter for <code>germinate_gatekeeper.users.username</code>.
      */
     public void setUsername(String value) {
         set(1, value);
-    }
-
-    /**
-     * Getter for <code>germinate_gatekeeper.users.email_address</code>.
-     */
-    public String getEmailAddress() {
-        return (String) get(4);
     }
 
     /**
@@ -116,17 +116,17 @@ public class UsersRecord extends UpdatableRecordImpl<UsersRecord> implements Rec
     }
 
     /**
-     * Setter for <code>germinate_gatekeeper.users.email_address</code>.
-     */
-    public void setEmailAddress(String value) {
-        set(4, value);
-    }
-
-    /**
      * Getter for <code>germinate_gatekeeper.users.created_on</code>.
      */
     public Timestamp getCreatedOn() {
         return (Timestamp) get(5);
+    }
+
+    /**
+     * Getter for <code>germinate_gatekeeper.users.email_address</code>.
+     */
+    public String getEmailAddress() {
+        return (String) get(4);
     }
 
     /**

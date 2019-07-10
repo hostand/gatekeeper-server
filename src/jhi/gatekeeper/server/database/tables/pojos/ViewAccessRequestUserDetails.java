@@ -23,7 +23,7 @@ import javax.annotation.*;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ViewAccessRequestUserDetails implements Serializable {
 
-    private static final long serialVersionUID = -1289460093;
+    private static final long serialVersionUID = -28908581;
 
     private Integer   id;
     private String    username;
@@ -37,6 +37,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
     private String    databaseSystemName;
     private String    databaseServerName;
     private Byte      hasBeenRejected;
+    private Byte      needsApproval;
     private String    activationKey;
 
     public ViewAccessRequestUserDetails() {}
@@ -54,6 +55,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.databaseSystemName = value.databaseSystemName;
         this.databaseServerName = value.databaseServerName;
         this.hasBeenRejected = value.hasBeenRejected;
+        this.needsApproval = value.needsApproval;
         this.activationKey = value.activationKey;
     }
 
@@ -70,6 +72,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         String    databaseSystemName,
         String    databaseServerName,
         Byte      hasBeenRejected,
+        Byte      needsApproval,
         String    activationKey
     ) {
         this.id = id;
@@ -84,6 +87,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.databaseSystemName = databaseSystemName;
         this.databaseServerName = databaseServerName;
         this.hasBeenRejected = hasBeenRejected;
+        this.needsApproval = needsApproval;
         this.activationKey = activationKey;
     }
 
@@ -183,6 +187,14 @@ public class ViewAccessRequestUserDetails implements Serializable {
         this.hasBeenRejected = hasBeenRejected;
     }
 
+    public Byte getNeedsApproval() {
+        return this.needsApproval;
+    }
+
+    public void setNeedsApproval(Byte needsApproval) {
+        this.needsApproval = needsApproval;
+    }
+
     public String getActivationKey() {
         return this.activationKey;
     }
@@ -207,6 +219,7 @@ public class ViewAccessRequestUserDetails implements Serializable {
         sb.append(", ").append(databaseSystemName);
         sb.append(", ").append(databaseServerName);
         sb.append(", ").append(hasBeenRejected);
+        sb.append(", ").append(needsApproval);
         sb.append(", ").append(activationKey);
 
         sb.append(")");
