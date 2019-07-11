@@ -42,24 +42,27 @@ public class TokenResource extends ServerResource
 	public static Integer SALT = 10;
 
 	@Delete("json")
-	public boolean deleteJson(Users request)
+	public boolean deleteJson(Users user)
 	{
-		if (request.getPassword() != null)
-		{
-			try
-			{
-				// Try and see if it's a valid UUID
-				UUID.fromString(request.getPassword());
-				return CustomVerifier.removeToken(request.getPassword());
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return false;
-			}
-		}
+		if (user == null)
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_TOKEN);
 
-		return false;
+		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
+
+		if (!Objects.equals(sessionUser.getToken(), user.getPassword()))
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER);
+
+		try
+		{
+			// Try and see if it's a valid UUID
+			UUID.fromString(user.getPassword());
+			return CustomVerifier.removeToken(user.getPassword());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Post("json")
@@ -73,8 +76,8 @@ public class TokenResource extends ServerResource
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
 			user = context.selectFrom(USERS)
-								.where(USERS.USERNAME.eq(request.getUsername()))
-								.fetchOneInto(Users.class);
+						  .where(USERS.USERNAME.eq(request.getUsername()))
+						  .fetchOneInto(Users.class);
 
 			if (user != null)
 				canAccess = BCrypt.checkpw(request.getPassword(), user.getPassword());

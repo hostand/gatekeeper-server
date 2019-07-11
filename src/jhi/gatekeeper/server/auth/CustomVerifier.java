@@ -155,6 +155,7 @@ public class CustomVerifier implements Verifier
 		setCookie(response, token);
 		UserDetails details = new UserDetails();
 		details.timestamp = System.currentTimeMillis();
+		details.token = token;
 		details.id = userId;
 		tokenToTimestamp.put(token, details);
 	}
@@ -216,11 +217,17 @@ public class CustomVerifier implements Verifier
 	public static class UserDetails
 	{
 		private Integer id;
+		private String  token;
 		private Long    timestamp;
 
 		public Integer getId()
 		{
 			return id;
+		}
+
+		public String getToken()
+		{
+			return token;
 		}
 
 		public Long getTimestamp()

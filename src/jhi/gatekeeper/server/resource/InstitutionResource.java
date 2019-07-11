@@ -36,26 +36,6 @@ public class InstitutionResource extends ServerResource
 		}
 	}
 
-	@Post("json")
-	public boolean postJson(Institutions institution)
-	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
-		if (institution == null || institution.getId() != null)
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
-		{
-			return context.newRecord(INSTITUTIONS, institution).store() > 0;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
-	}
-
 	@Get("json")
 	public List<Institutions> getJson()
 	{

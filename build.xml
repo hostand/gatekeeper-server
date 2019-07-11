@@ -45,7 +45,9 @@
 
 	<target name="jar" depends="compile8">
 		<jar jarfile="${jar}">
-			<fileset dir="${cls}"/>
+			<fileset dir="${cls}">
+				<exclude name="**/client/**"/>
+			</fileset>
 			<manifest>
 				<attribute name="Main-Class" value="jhi.gatekeeper.server.Gatekeeper"/>
 				<attribute name="Class-Path" value="${jar.classpath}"/>
@@ -59,6 +61,7 @@
 				<include name="**/gatekeeper/resource/**"/>
 				<include name="**/pojos/**"/>
 				<include name="**/StatusMessage**"/>
+				<include name="**/client/**"/>
 			</fileset>
 		</jar>
 	</target>

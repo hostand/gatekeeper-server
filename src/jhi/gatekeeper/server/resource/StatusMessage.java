@@ -5,7 +5,7 @@ package jhi.gatekeeper.server.resource;
  */
 public interface StatusMessage
 {
-	String BAD_REQUEST_MISSING_FIELDS			  = "Required fields not provided.";
+	String BAD_REQUEST_MISSING_FIELDS             = "Required fields not provided.";
 	String CONFLICT_USER_ALREADY_HAS_ACCESS       = "User already has access.";
 	String CONFLICT_USER_ALREADY_REQUESTED_ACCESS = "User has already requested access.";
 	String CONFLICT_USERNAME_EMAIL_ALREADY_IN_USE = "Username or email address already in use.";
@@ -18,6 +18,7 @@ public interface StatusMessage
 	String NOT_FOUND_ID_OR_PAYLOAD                = "Id or payload not provided.";
 	String NOT_FOUND_INSTITUTION                  = "Institution not found.";
 	String NOT_FOUND_PAYLOAD                      = "Payload not provided.";
+	String NOT_FOUND_TOKEN                        = "Token not provided.";
 	String NOT_FOUND_USER                         = "User not found.";
 	String UNAVAILABLE_EMAIL                      = "Failed to send emails.";
 }
