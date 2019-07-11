@@ -52,32 +52,27 @@ public class PasswordResetResource extends ServerResource
 														   .and(USERS.EMAIL_ADDRESS.eq(request.getEmail())))
 									  .fetchOneInto(UsersRecord.class);
 
-			if (user != null)
-			{
-				String newPassword = UUID.randomUUID().toString();
+			if (user == null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
 
-				Email.sendNewPassword(request.getJavaLocale(), user, newPassword);
+			String newPassword = UUID.randomUUID().toString();
 
-				PasswordResetLogRecord record = context.newRecord(PASSWORD_RESET_LOG);
-				record.setUserId(user.getId());
-				record.setIpAddress(getRequest().getClientInfo().getUpstreamAddress());
-				record.setTimestamp(new Timestamp(System.currentTimeMillis()));
-				record.store();
+			Email.sendNewPassword(request.getJavaLocale(), user, newPassword);
 
-				// The salt may have changed since the last time, so update the password in the database with the new salt.
-				String saltedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(TokenResource.SALT));
+			PasswordResetLogRecord record = context.newRecord(PASSWORD_RESET_LOG);
+			record.setUserId(user.getId());
+			record.setIpAddress(getRequest().getClientInfo().getUpstreamAddress());
+			record.setTimestamp(new Timestamp(System.currentTimeMillis()));
+			record.store();
 
-				// Update the password in the database
-				user.setPassword(saltedPassword);
-				user.store(USERS.PASSWORD);
+			// The salt may have changed since the last time, so update the password in the database with the new salt.
+			String saltedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(TokenResource.SALT));
 
-				return true;
-			}
-			else
-			{
-				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-			}
+			// Update the password in the database
+			user.setPassword(saltedPassword);
+			user.store(USERS.PASSWORD);
 
+			return true;
 		}
 		catch (SQLException e)
 		{
@@ -87,7 +82,7 @@ public class PasswordResetResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 	}
 }

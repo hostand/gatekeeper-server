@@ -42,9 +42,9 @@ public class UserResource extends PaginatedServerResource
 	public boolean deleteJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -84,7 +84,7 @@ public class UserResource extends PaginatedServerResource
 			else
 			{
 				if (!CustomVerifier.isAdmin(getRequest()))
-					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 
 				if (query != null && !"".equals(query))
 				{

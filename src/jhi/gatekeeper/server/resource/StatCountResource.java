@@ -22,7 +22,7 @@ public class StatCountResource extends PaginatedServerResource
 	public ViewCounts getJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{

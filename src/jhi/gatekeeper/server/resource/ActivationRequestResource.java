@@ -27,7 +27,7 @@ public class ActivationRequestResource extends ServerResource
 	public ActivationDecision getJson(ActivationRequest request)
 	{
 		if (StringUtils.isEmpty(request.getActivationKey()))
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_KEY);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -35,6 +35,9 @@ public class ActivationRequestResource extends ServerResource
 			UnapprovedUsersRecord userRequest = context.selectFrom(UNAPPROVED_USERS)
 														   .where(UNAPPROVED_USERS.ACTIVATION_KEY.eq(request.getActivationKey()))
 														   .fetchOneInto(UnapprovedUsersRecord.class);
+
+			if (userRequest == null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_REQUEST);
 
 			DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
 											  .where(DATABASE_SYSTEMS.ID.eq(userRequest.getDatabaseSystemId()))
@@ -74,7 +77,7 @@ public class ActivationRequestResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 		catch (SQLException e)
 		{

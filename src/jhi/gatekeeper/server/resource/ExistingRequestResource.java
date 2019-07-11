@@ -8,7 +8,6 @@ import org.restlet.resource.*;
 
 import java.sql.*;
 import java.util.*;
-import java.util.logging.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
@@ -20,6 +19,7 @@ import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.AccessRequests.*;
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
+import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
 import static jhi.gatekeeper.server.database.tables.ViewAccessRequestUserDetails.*;
 
@@ -48,9 +48,9 @@ public class ExistingRequestResource extends ServerResource
 	public boolean deleteJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -69,9 +69,8 @@ public class ExistingRequestResource extends ServerResource
 	@Post("json")
 	public boolean postJson(NewAccessRequest request)
 	{
-		Logger.getLogger("").log(Level.INFO, "REQUEST: " + request);
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (request == null || request.getUserId() == null || request.getDatabaseSystemId() == null)
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
@@ -91,6 +90,17 @@ public class ExistingRequestResource extends ServerResource
 			// If either are null, fail
 			if (user == null || database == null)
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+
+			boolean alreadyHasAccess = context.fetchExists(USER_HAS_ACCESS_TO_DATABASES, USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(user.getId())
+																															 .and(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(database.getId())));
+			boolean alreadyRequested = context.fetchExists(ACCESS_REQUESTS, ACCESS_REQUESTS.USER_ID.eq(user.getId())
+																								   .and(ACCESS_REQUESTS.DATABASE_SYSTEM_ID.eq(database.getId()))
+																								   .and(ACCESS_REQUESTS.HAS_BEEN_REJECTED.eq((byte) 0)));
+
+			if (alreadyHasAccess)
+				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USER_ALREADY_HAS_ACCESS);
+			if (alreadyRequested)
+				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USER_ALREADY_REQUESTED_ACCESS);
 
 			if (request.getNeedsApproval() == 1)
 			{
@@ -120,7 +130,7 @@ public class ExistingRequestResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 	}
 
@@ -128,7 +138,7 @@ public class ExistingRequestResource extends ServerResource
 	public List<ViewAccessRequestUserDetails> getJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))

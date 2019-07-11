@@ -38,9 +38,9 @@ public class UserGatekeeperResource extends PaginatedServerResource
 	public boolean postJson(Byte update)
 	{
 		if (update == null || id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD);
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -49,19 +49,15 @@ public class UserGatekeeperResource extends PaginatedServerResource
 								.where(USERS.ID.eq(id))
 								.fetchOneInto(Users.class);
 
-			if (user != null)
-			{
-				context.update(USERS)
-					   .set(USERS.HAS_ACCESS_TO_GATEKEEPER, update)
-					   .where(USERS.ID.eq(user.getId()))
-					   .execute();
+			if (user == null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
 
-				return true;
-			}
-			else
-			{
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-			}
+			context.update(USERS)
+				   .set(USERS.HAS_ACCESS_TO_GATEKEEPER, update)
+				   .where(USERS.ID.eq(user.getId()))
+				   .execute();
+
+			return true;
 		}
 		catch (SQLException e)
 		{

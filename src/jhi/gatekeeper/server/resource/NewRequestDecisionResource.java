@@ -38,70 +38,66 @@ public class NewRequestDecisionResource extends ServerResource
 														  .fetchOneInto(UNAPPROVED_USERS);
 
 			if (unapprovedUser != null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
+
+			switch (request.getDecision())
 			{
-				switch (request.getDecision())
-				{
-					case REJECT:
-						// Set rejected flag
-						unapprovedUser.setHasBeenRejected((byte) 1);
-						unapprovedUser.store();
+				case REJECT:
+					// Set rejected flag
+					unapprovedUser.setHasBeenRejected((byte) 1);
+					unapprovedUser.store();
 
-						Email.sendUnapprovedUserRejected(request.getJavaLocale(), unapprovedUser, request.getFeedback());
-						break;
-					case APPROVE:
-						Institutions institution;
-						if (unapprovedUser.getInstitutionId() != null)
-						{
-							institution = context.selectFrom(INSTITUTIONS)
-												 .where(INSTITUTIONS.ID.eq(unapprovedUser.getInstitutionId()))
-												 .fetchOneInto(Institutions.class);
+					Email.sendUnapprovedUserRejected(request.getJavaLocale(), unapprovedUser, request.getFeedback());
+					break;
+				case APPROVE:
+					Institutions institution;
+					if (unapprovedUser.getInstitutionId() != null)
+					{
+						institution = context.selectFrom(INSTITUTIONS)
+											 .where(INSTITUTIONS.ID.eq(unapprovedUser.getInstitutionId()))
+											 .fetchOneInto(Institutions.class);
 
-							if (institution == null)
-								throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-						}
-						else
-						{
-							institution = new Institutions();
-							institution.setName(unapprovedUser.getInstitutionName());
-							institution.setAcronym(unapprovedUser.getInstitutionAcronym());
-							institution.setAddress(unapprovedUser.getInstitutionAddress());
-							context.newRecord(INSTITUTIONS, institution).store();
-						}
+						if (institution == null)
+							throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_INSTITUTION);
+					}
+					else
+					{
+						institution = new Institutions();
+						institution.setName(unapprovedUser.getInstitutionName());
+						institution.setAcronym(unapprovedUser.getInstitutionAcronym());
+						institution.setAddress(unapprovedUser.getInstitutionAddress());
+						context.newRecord(INSTITUTIONS, institution).store();
+					}
 
-						// Create the user
-						UsersRecord user = context.newRecord(USERS);
-						user.setUsername(unapprovedUser.getUserUsername());
-						user.setPassword(unapprovedUser.getUserPassword());
-						user.setFullName(unapprovedUser.getUserFullName());
-						user.setEmailAddress(unapprovedUser.getUserEmailAddress());
-						user.setInstitutionId(institution.getId());
-						user.setHasAccessToGatekeeper((byte) 1);
-						user.setCreatedOn(new Timestamp(System.currentTimeMillis()));
-						user.store();
+					// Create the user
+					UsersRecord user = context.newRecord(USERS);
+					user.setUsername(unapprovedUser.getUserUsername());
+					user.setPassword(unapprovedUser.getUserPassword());
+					user.setFullName(unapprovedUser.getUserFullName());
+					user.setEmailAddress(unapprovedUser.getUserEmailAddress());
+					user.setInstitutionId(institution.getId());
+					user.setHasAccessToGatekeeper((byte) 1);
+					user.setCreatedOn(new Timestamp(System.currentTimeMillis()));
+					user.store();
 
-						DatabaseSystems system = context.selectFrom(DATABASE_SYSTEMS)
-														.where(DATABASE_SYSTEMS.ID.eq(unapprovedUser.getDatabaseSystemId()))
-														.fetchOneInto(DatabaseSystems.class);
+					DatabaseSystems system = context.selectFrom(DATABASE_SYSTEMS)
+													.where(DATABASE_SYSTEMS.ID.eq(unapprovedUser.getDatabaseSystemId()))
+													.fetchOneInto(DatabaseSystems.class);
 
-						// Grant access
-						UserHasAccessToDatabasesRecord record = context.newRecord(USER_HAS_ACCESS_TO_DATABASES);
-						record.setDatabaseId(unapprovedUser.getDatabaseSystemId());
-						record.setUserId(user.getId());
-						record.setUserTypeId(2);
-						record.store();
+					// Grant access
+					UserHasAccessToDatabasesRecord record = context.newRecord(USER_HAS_ACCESS_TO_DATABASES);
+					record.setDatabaseId(unapprovedUser.getDatabaseSystemId());
+					record.setUserId(user.getId());
+					record.setUserTypeId(2);
+					record.store();
 
-						// Delete the request
-						unapprovedUser.delete();
+					// Delete the request
+					unapprovedUser.delete();
 
-						Email.sendUnapprovedUserApproved(request.getJavaLocale(), unapprovedUser, system);
-						break;
-				}
-				return true;
+					Email.sendUnapprovedUserApproved(request.getJavaLocale(), unapprovedUser, system);
+					break;
 			}
-			else
-			{
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-			}
+			return true;
 		}
 		catch (SQLException e)
 		{
@@ -111,7 +107,7 @@ public class NewRequestDecisionResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 	}
 
@@ -133,9 +129,9 @@ public class NewRequestDecisionResource extends ServerResource
 	public boolean postJson(RequestDecision request)
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 		if (request == null || !Objects.equals(request.getRequestId(), id))
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 

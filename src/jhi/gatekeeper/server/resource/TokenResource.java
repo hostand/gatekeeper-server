@@ -48,6 +48,7 @@ public class TokenResource extends ServerResource
 		{
 			try
 			{
+				// Try and see if it's a valid UUID
 				UUID.fromString(request.getPassword());
 				return CustomVerifier.removeToken(request.getPassword());
 			}
@@ -108,7 +109,7 @@ public class TokenResource extends ServerResource
 		}
 		else
 		{
-			throw new ResourceException(403);
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INVALID_CREDENTIALS);
 		}
 
 		return new Token(token, user.getId(), user.getUsername(), user.getFullName(), user.getEmailAddress(), CustomVerifier.AGE, System.currentTimeMillis());

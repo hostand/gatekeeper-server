@@ -49,9 +49,9 @@ public class NewRequestResource extends ServerResource
 	public boolean deleteJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Id not provided.");
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -71,10 +71,10 @@ public class NewRequestResource extends ServerResource
 	public boolean postJson(NewUnapprovedUser request)
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (request == null || request.getDatabaseSystemId() == null
 			|| StringUtils.isEmpty(request.getUserUsername(), request.getUserPassword(), request.getUserEmailAddress(), request.getUserFullName()))
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Required fields not provided.");
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.BAD_REQUEST_MISSING_FIELDS);
 
 		Locale locale = request.getJavaLocale();
 
@@ -85,7 +85,7 @@ public class NewRequestResource extends ServerResource
 			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.USER_USERNAME.eq(request.getUserUsername()).or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
 
 			if (userExists || requestExists)
-				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, "Username or email address already in use.");
+				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USERNAME_EMAIL_ALREADY_IN_USE);
 
 			request.setUserPassword(BCrypt.hashpw(request.getUserPassword(), BCrypt.gensalt(TokenResource.SALT)));
 			UnapprovedUsers newUser = request.getUnapprovedUser();
@@ -115,7 +115,7 @@ public class NewRequestResource extends ServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, "Failed to send emails.");
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 	}
 
@@ -134,7 +134,7 @@ public class NewRequestResource extends ServerResource
 	public List<ViewUnapprovedUserDetails> getJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Operation not allowed for current user.");
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))

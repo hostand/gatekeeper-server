@@ -56,7 +56,9 @@
 	<target name="jar-client" depends="compile8">
 		<jar jarfile="gatekeeper-client.jar">
 			<fileset dir="${cls}">
+				<include name="**/gatekeeper/resource/**"/>
 				<include name="**/pojos/**"/>
+				<include name="**/StatusMessage**"/>
 			</fileset>
 		</jar>
 	</target>

@@ -42,7 +42,7 @@ public class UserPasswordResource extends PaginatedServerResource
 	public boolean postJson(PasswordUpdate update)
 	{
 		if (update == null || id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD);
 
 		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
 
@@ -56,35 +56,31 @@ public class UserPasswordResource extends PaginatedServerResource
 								.where(USERS.ID.eq(sessionUser.getId()))
 								.fetchOneInto(Users.class);
 
-			if (user != null)
+			if (user == null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
+
+			// Check if they are the same
+			boolean same = BCrypt.checkpw(update.getOldPassword(), user.getPassword());
+
+			if (same)
 			{
-				// Check if they are the same
-				boolean same = BCrypt.checkpw(update.getOldPassword(), user.getPassword());
+				// Update the password
+				String saltedPassword = BCrypt.hashpw(update.getNewPassword(), BCrypt.gensalt(TokenResource.SALT));
+				context.update(USERS)
+					   .set(USERS.PASSWORD, saltedPassword)
+					   .where(USERS.ID.eq(user.getId()))
+					   .execute();
 
-				if (same)
-				{
-					// Update the password
-					String saltedPassword = BCrypt.hashpw(update.getNewPassword(), BCrypt.gensalt(TokenResource.SALT));
-					context.update(USERS)
-						   .set(USERS.PASSWORD, saltedPassword)
-						   .where(USERS.ID.eq(user.getId()))
-						   .execute();
+				// Terminate this "session".
+				CustomVerifier.removeToken(getRequest());
 
-					// Terminate this "session".
-					CustomVerifier.removeToken(getRequest());
+				Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
 
-					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
-
-					return true;
-				}
-				else
-				{
-					throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED);
-				}
+				return true;
 			}
 			else
 			{
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+				throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER);
 			}
 		}
 		catch (SQLException e)
@@ -95,7 +91,7 @@ public class UserPasswordResource extends PaginatedServerResource
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE);
+			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL);
 		}
 	}
 }

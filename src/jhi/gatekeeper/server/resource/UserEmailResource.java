@@ -40,7 +40,7 @@ public class UserEmailResource extends PaginatedServerResource
 	public boolean postJson(EmailUpdate update)
 	{
 		if (update == null || id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD);
 
 		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
 
@@ -54,26 +54,23 @@ public class UserEmailResource extends PaginatedServerResource
 								.where(USERS.ID.eq(sessionUser.getId()))
 								.fetchOneInto(Users.class);
 
-			if (user != null)
-			{
-				if (Objects.equals(user.getEmailAddress(), update.getOldEmail()))
-				{
-					context.update(USERS)
-						   .set(USERS.EMAIL_ADDRESS, update.getNewEmail())
-						   .where(USERS.ID.eq(user.getId()))
-						   .execute();
+			if (user == null)
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
 
-					return true;
-				}
-				else
-				{
-					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-				}
+			if (Objects.equals(user.getEmailAddress(), update.getOldEmail()))
+			{
+				context.update(USERS)
+					   .set(USERS.EMAIL_ADDRESS, update.getNewEmail())
+					   .where(USERS.ID.eq(user.getId()))
+					   .execute();
+
+				return true;
 			}
 			else
 			{
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 			}
+
 		}
 		catch (SQLException e)
 		{
