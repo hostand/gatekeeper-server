@@ -29,7 +29,8 @@ public class NewRequestDecisionResource extends ServerResource
 {
 	private Integer id;
 
-	public static boolean decide(Integer id, RequestDecision request) {
+	public static boolean decide(Integer id, RequestDecision request)
+	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
@@ -37,7 +38,7 @@ public class NewRequestDecisionResource extends ServerResource
 														  .where(UNAPPROVED_USERS.ID.eq(id))
 														  .fetchOneInto(UNAPPROVED_USERS);
 
-			if (unapprovedUser != null)
+			if (unapprovedUser == null)
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER);
 
 			switch (request.getDecision())
@@ -50,23 +51,35 @@ public class NewRequestDecisionResource extends ServerResource
 					Email.sendUnapprovedUserRejected(request.getJavaLocale(), unapprovedUser, request.getFeedback());
 					break;
 				case APPROVE:
-					Institutions institution;
+					InstitutionsRecord institution;
 					if (unapprovedUser.getInstitutionId() != null)
 					{
+						// Get the institution by its id
 						institution = context.selectFrom(INSTITUTIONS)
 											 .where(INSTITUTIONS.ID.eq(unapprovedUser.getInstitutionId()))
-											 .fetchOneInto(Institutions.class);
+											 .fetchOneInto(InstitutionsRecord.class);
 
 						if (institution == null)
 							throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_INSTITUTION);
 					}
 					else
 					{
-						institution = new Institutions();
+						institution = new InstitutionsRecord();
 						institution.setName(unapprovedUser.getInstitutionName());
 						institution.setAcronym(unapprovedUser.getInstitutionAcronym());
 						institution.setAddress(unapprovedUser.getInstitutionAddress());
-						context.newRecord(INSTITUTIONS, institution).store();
+
+						// Check if there exists one with the same parameters
+						Optional<InstitutionsRecord> optional = context.selectFrom(INSTITUTIONS).where(INSTITUTIONS.NAME.eq(institution.getName())
+																														.and(INSTITUTIONS.ACRONYM.eq(institution.getAcronym()))
+																														.and(INSTITUTIONS.ADDRESS.eq(institution.getAddress())))
+																	   .fetchOptionalInto(InstitutionsRecord.class);
+
+						// If it exists, get it, otherwise insert it
+						if (optional.isPresent())
+							institution = optional.get();
+						else
+							context.newRecord(INSTITUTIONS, institution).store();
 					}
 
 					// Create the user
