@@ -35,11 +35,27 @@ public interface GatekeeperService
 
 
 	/**
-	 * Returns the list of all {@link Institutions}.
+	 * Returns the paginated list of all {@link Institutions}.
 	 *
-	 * @return The list of all {@link Institutions}.
+	 * @param page  The current page
+	 * @param limit The page size
+	 * @return The paginated list of all {@link Institutions}.
 	 * @apiNote REQUIRES AUTHENTICATION
 	 */
 	@GET("institution")
-	Call<List<Institutions>> getInstitutions();
+	Call<PaginatedResult<List<Institutions>>> getInstitutions(@Query("page") int page, @Query("limit") int limit);
+
+
+	/**
+	 * Returns the paginated list of {@link ViewUserPermissions} for the user with the given user id.
+	 *
+	 * @param userId         The user id
+	 * @param databaseServer The optional database server to limit the request to.
+	 * @param databaseName   The optional database name to limit the request to.
+	 * @param page           The current page
+	 * @param limit          The page size
+	 * @return The paginated list of {@link ViewUserPermissions} for the user with the given user id.
+	 */
+	@GET("user/{userId}/permission")
+	Call<PaginatedResult<List<ViewUserPermissions>>> getUserPermissions(@Path("userId") Integer userId, @Query("databaseServer") String databaseServer, @Query("databaseName") String databaseName, @Query("page") int page, @Query("limit") int limit);
 }

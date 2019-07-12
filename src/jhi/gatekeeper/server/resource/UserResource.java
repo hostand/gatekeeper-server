@@ -22,7 +22,10 @@ import static jhi.gatekeeper.server.database.tables.ViewUserDetails.*;
  */
 public class UserResource extends PaginatedServerResource
 {
-	private Integer id = null;
+	public static final String PARAM_USERNAME = "username";
+
+	private Integer id       = null;
+	private String  username = null;
 
 	@Override
 	public void doInit()
@@ -34,6 +37,14 @@ public class UserResource extends PaginatedServerResource
 			this.id = Integer.parseInt(getRequestAttributes().get("userId").toString());
 		}
 		catch (NullPointerException | NumberFormatException e)
+		{
+		}
+
+		try
+		{
+			this.username = getQueryValue(PARAM_USERNAME);
+		}
+		catch (NullPointerException e)
 		{
 		}
 	}
@@ -77,9 +88,16 @@ public class UserResource extends PaginatedServerResource
 			if (id != null)
 			{
 				if (!Objects.equals(id, sessionUser.getId()))
-					throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED);
+					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER);
 				else
 					step.where(VIEW_USER_DETAILS.ID.eq(id));
+			}
+			else if (username != null)
+			{
+				if (!CustomVerifier.isAdmin(getRequest()))
+					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
+				else
+					step.where(VIEW_USER_DETAILS.USERNAME.eq(username));
 			}
 			else
 			{

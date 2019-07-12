@@ -41,4 +41,13 @@ public class PaginatedResult<T> implements Serializable
 		this.count = count;
 		return this;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "PaginatedResult{" +
+			"data=" + data +
+			", count=" + count +
+			'}';
+	}
 }

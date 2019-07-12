@@ -8,17 +8,17 @@ import org.restlet.resource.*;
 import java.sql.*;
 import java.util.*;
 
+import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
-import jhi.gatekeeper.server.database.tables.records.*;
 
 import static jhi.gatekeeper.server.database.tables.Institutions.*;
 
 /**
  * @author Sebastian Raubach
  */
-public class InstitutionResource extends ServerResource
+public class InstitutionResource extends PaginatedServerResource
 {
 	private Integer id = null;
 
@@ -37,7 +37,7 @@ public class InstitutionResource extends ServerResource
 	}
 
 	@Get("json")
-	public List<Institutions> getJson()
+	public PaginatedResult<List<Institutions>> getJson()
 	{
 		if (!CustomVerifier.isAdmin(getRequest()))
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
@@ -45,12 +45,20 @@ public class InstitutionResource extends ServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			SelectWhereStep<InstitutionsRecord> step = context.selectFrom(INSTITUTIONS);
+			SelectWhereStep<Record> step = context.select()
+												  .hint("SQL_CALC_FOUND_ROWS")
+												  .from(INSTITUTIONS);
 
 			if (id != null)
 				step.where(INSTITUTIONS.ID.eq(id));
 
-			return step.fetchInto(Institutions.class);
+			List<Institutions> result = step.limit(pageSize)
+											.offset(pageSize * currentPage)
+											.fetchInto(Institutions.class);
+
+			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
+
+			return new PaginatedResult<>(result, count);
 		}
 		catch (SQLException e)
 		{

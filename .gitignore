@@ -8,6 +8,7 @@
 *.ear
 
 /out/
+/test/
 /classes/
 /bin/
 /web/WEB-INF/classes/

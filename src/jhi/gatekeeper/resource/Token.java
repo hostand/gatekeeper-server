@@ -16,30 +16,34 @@
 
 package jhi.gatekeeper.resource;
 
+import jhi.gatekeeper.server.database.tables.pojos.*;
+
 /**
  * @author Sebastian Raubach
  */
 public class Token
 {
-	private String  token;
-	private Integer id;
-	private String  username;
-	private String  fullName;
-	private String  email;
-	private Long    lifetime;
-	private Long    createdOn;
+	private String    token;
+	private Integer   id;
+	private String    username;
+	private String    fullName;
+	private String    email;
+	private UserTypes type = null;
+	private Long      lifetime;
+	private Long      createdOn;
 
 	public Token()
 	{
 	}
 
-	public Token(String token, Integer id, String username, String fullName, String email, Long lifetime, Long createdOn)
+	public Token(String token, Integer id, String username, String fullName, String email, UserTypes type, Long lifetime, Long createdOn)
 	{
 		this.token = token;
 		this.id = id;
 		this.fullName = fullName;
 		this.username = username;
 		this.email = email;
+		this.type = type;
 		this.lifetime = lifetime;
 		this.createdOn = createdOn;
 	}
@@ -96,6 +100,17 @@ public class Token
 	public Token setEmail(String email)
 	{
 		this.email = email;
+		return this;
+	}
+
+	public UserTypes getType()
+	{
+		return type;
+	}
+
+	public Token setType(UserTypes type)
+	{
+		this.type = type;
 		return this;
 	}
 

@@ -30,6 +30,9 @@ import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 
+import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
+import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
+import static jhi.gatekeeper.server.database.tables.UserTypes.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
@@ -49,7 +52,7 @@ public class TokenResource extends ServerResource
 
 		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
 
-		if (!Objects.equals(sessionUser.getToken(), user.getPassword()))
+		if (sessionUser == null || !Objects.equals(sessionUser.getToken(), user.getPassword()))
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER);
 
 		try
@@ -71,6 +74,7 @@ public class TokenResource extends ServerResource
 		boolean canAccess;
 		String token;
 		Users user;
+		UserTypes type;
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
@@ -80,9 +84,24 @@ public class TokenResource extends ServerResource
 						  .fetchOneInto(Users.class);
 
 			if (user != null)
+			{
 				canAccess = BCrypt.checkpw(request.getPassword(), user.getPassword());
+
+				type = context.select(USER_TYPES.ID, USER_TYPES.DESCRIPTION)
+							  .from(USER_TYPES)
+							  .leftJoin(USER_HAS_ACCESS_TO_DATABASES).on(USER_TYPES.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID))
+							  .leftJoin(DATABASE_SYSTEMS).on(DATABASE_SYSTEMS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID))
+							  .leftJoin(USERS).on(USERS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_ID))
+							  .where(USERS.ID.eq(user.getId()))
+							  .and(DATABASE_SYSTEMS.SYSTEM_NAME.eq("gatekeeper"))
+							  .and(DATABASE_SYSTEMS.SERVER_NAME.eq("--"))
+							  .fetchOptionalInto(UserTypes.class)
+							  .orElse(null);
+			}
 			else
+			{
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+			}
 		}
 		catch (SQLException e)
 		{
@@ -115,6 +134,6 @@ public class TokenResource extends ServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INVALID_CREDENTIALS);
 		}
 
-		return new Token(token, user.getId(), user.getUsername(), user.getFullName(), user.getEmailAddress(), CustomVerifier.AGE, System.currentTimeMillis());
+		return new Token(token, user.getId(), user.getUsername(), user.getFullName(), user.getEmailAddress(), type, CustomVerifier.AGE, System.currentTimeMillis());
 	}
 }
