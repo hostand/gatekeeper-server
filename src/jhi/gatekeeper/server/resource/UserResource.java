@@ -73,6 +73,26 @@ public class UserResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
+	@Post("json")
+	public boolean postJson(Users newUser)
+	{
+		if (newUser == null || newUser.getId() != null || id != null)
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+
+		try (Connection conn = Database.getConnection();
+			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+		{
+			newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(TokenResource.SALT)));
+			return context.newRecord(USERS, newUser).store() > 0;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+		}
+	}
+
 	@Get("json")
 	public PaginatedResult<List<ViewUserDetails>> getJson()
 	{

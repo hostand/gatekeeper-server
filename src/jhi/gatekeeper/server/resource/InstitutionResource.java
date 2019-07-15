@@ -37,6 +37,24 @@ public class InstitutionResource extends PaginatedServerResource
 	}
 
 	@OnlyAdmin
+	@Post("json")
+	public boolean postJson(Institutions newInstitution) {
+		if (newInstitution == null || newInstitution.getId() != null || id != null)
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+
+		try (Connection conn = Database.getConnection();
+			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+		{
+			return context.newRecord(INSTITUTIONS, newInstitution).store() > 0;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+		}
+	}
+
+	@OnlyAdmin
 	@Get("json")
 	public PaginatedResult<List<Institutions>> getJson()
 	{
