@@ -10,7 +10,6 @@ import java.util.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.*;
@@ -138,11 +137,10 @@ public class NewRequestDecisionResource extends ServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Post("json")
 	public boolean postJson(RequestDecision request)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 		if (request == null || !Objects.equals(request.getRequestId(), id))

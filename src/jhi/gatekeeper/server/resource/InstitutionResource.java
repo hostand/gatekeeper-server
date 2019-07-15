@@ -10,8 +10,8 @@ import java.util.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.Institutions.*;
 
@@ -36,12 +36,10 @@ public class InstitutionResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Get("json")
 	public PaginatedResult<List<Institutions>> getJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
-
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{

@@ -8,8 +8,8 @@ import org.restlet.resource.*;
 import java.sql.*;
 
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.ViewCounts.*;
 
@@ -18,17 +18,16 @@ import static jhi.gatekeeper.server.database.tables.ViewCounts.*;
  */
 public class StatCountResource extends PaginatedServerResource
 {
+	@OnlyAdmin
 	@Get("json")
 	public ViewCounts getJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
 			return context.selectFrom(VIEW_COUNTS)
-				   .fetchOne()
-				   .into(ViewCounts.class);
+						  .fetchOne()
+						  .into(ViewCounts.class);
 		}
 		catch (SQLException e)
 		{

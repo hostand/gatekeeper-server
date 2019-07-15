@@ -11,9 +11,9 @@ import java.util.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 
@@ -46,11 +46,10 @@ public class DatabaseResource extends PaginatedServerResource
 		this.queryServer = getQueryValue(PARAM_SERVER);
 	}
 
+	@OnlyAdmin
 	@Post("json")
 	public Integer postJson(DatabaseSystems database)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id != null || database.getId() != null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD);
 
@@ -69,11 +68,10 @@ public class DatabaseResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Delete("json")
 	public boolean deleteJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
@@ -93,12 +91,10 @@ public class DatabaseResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Get("json")
 	public PaginatedResult<List<DatabaseSystems>> getJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
-
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{

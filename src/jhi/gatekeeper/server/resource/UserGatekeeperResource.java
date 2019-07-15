@@ -8,8 +8,8 @@ import org.restlet.resource.*;
 import java.sql.*;
 
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
@@ -34,13 +34,12 @@ public class UserGatekeeperResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Patch("json")
 	public boolean postJson(Byte update)
 	{
 		if (update == null || id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD);
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))

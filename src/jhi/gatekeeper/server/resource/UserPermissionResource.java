@@ -11,7 +11,6 @@ import java.util.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.util.*;
 
@@ -46,11 +45,10 @@ public class UserPermissionResource extends PaginatedServerResource
 		this.databaseName = getQueryValue(PARAM_DATABASE_NAME);
 	}
 
+	@OnlyAdmin
 	@Post("json")
 	public boolean postJson(ViewUserPermissions permission)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (permission == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD);
 
@@ -76,8 +74,6 @@ public class UserPermissionResource extends PaginatedServerResource
 	@Get("json")
 	public PaginatedResult<List<ViewUserPermissions>> getJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
@@ -132,11 +128,10 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Delete("json")
 	public boolean deleteJson(ViewUserPermissions permission)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (permission == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD);
 
@@ -158,11 +153,10 @@ public class UserPermissionResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Patch("json")
 	public boolean patchJson(ViewUserPermissions permission)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (permission == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD);
 

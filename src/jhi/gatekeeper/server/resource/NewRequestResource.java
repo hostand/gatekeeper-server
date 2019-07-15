@@ -45,11 +45,10 @@ public class NewRequestResource extends ServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Delete("json")
 	public boolean deleteJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
@@ -67,11 +66,10 @@ public class NewRequestResource extends ServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Post("json")
 	public boolean postJson(NewUnapprovedUser request)
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (request == null || request.getDatabaseSystemId() == null
 			|| StringUtils.isEmpty(request.getUserUsername(), request.getUserPassword(), request.getUserEmailAddress(), request.getUserFullName()))
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.BAD_REQUEST_MISSING_FIELDS);
@@ -130,12 +128,10 @@ public class NewRequestResource extends ServerResource
 		return scheme + "://" + serverName + ":" + serverPort + contextPath; // http://ics.hutton.ac.uk:80/germinate-baz
 	}
 
+	@OnlyAdmin
 	@Get("json")
 	public List<ViewUnapprovedUserDetails> getJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
-
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{

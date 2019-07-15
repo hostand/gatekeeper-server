@@ -13,6 +13,7 @@ import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 import static jhi.gatekeeper.server.database.tables.ViewUserDetails.*;
@@ -49,11 +50,10 @@ public class UserResource extends PaginatedServerResource
 		}
 	}
 
+	@OnlyAdmin
 	@Delete("json")
 	public boolean deleteJson()
 	{
-		if (!CustomVerifier.isAdmin(getRequest()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS);
 		if (id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID);
 
@@ -87,6 +87,7 @@ public class UserResource extends PaginatedServerResource
 
 			if (id != null)
 			{
+				// A user must be allowed to request their own details, but nothing else
 				if (!Objects.equals(id, sessionUser.getId()))
 					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER);
 				else

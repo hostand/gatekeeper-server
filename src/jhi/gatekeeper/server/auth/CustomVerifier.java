@@ -20,6 +20,8 @@ import org.jooq.*;
 import org.jooq.impl.*;
 import org.restlet.*;
 import org.restlet.data.*;
+import org.restlet.resource.*;
+import org.restlet.routing.*;
 import org.restlet.security.*;
 import org.restlet.util.*;
 
@@ -29,6 +31,7 @@ import java.util.concurrent.*;
 import java.util.stream.*;
 
 import jhi.gatekeeper.server.*;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -137,6 +140,7 @@ public class CustomVerifier implements Verifier
 																.leftJoin(DATABASE_SYSTEMS).on(DATABASE_SYSTEMS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID))
 																.leftJoin(USER_TYPES).on(USER_TYPES.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID)))
 											   .where(DATABASE_SYSTEMS.SYSTEM_NAME.eq("gatekeeper"))
+											   .and(DATABASE_SYSTEMS.SERVER_NAME.eq("--"))
 											   .and(USER_TYPES.DESCRIPTION.eq("Administrator"))
 											   .and(USERS.ID.eq(details.id))
 											   .fetchOptional();
@@ -172,6 +176,25 @@ public class CustomVerifier implements Verifier
 	@Override
 	public int verify(Request request, Response response)
 	{
+		Route route = Gatekeeper.INSTANCE.routerAuth.getRoutes().getBest(request, response, 0);
+
+		Finder finder = (Finder) route.getNext();
+
+		Class<?> clazz = finder.getTargetClass();
+		String method = request.getMethod().getName();
+		long count = Arrays.stream(clazz.getDeclaredMethods())
+						   // Only get the ones that require admin permissions
+						   .filter(m -> m.isAnnotationPresent(OnlyAdmin.class))
+						   // Then filter for all Java methods that have a matching HTTP method annotation
+						   .filter(m -> Arrays.stream(m.getDeclaredAnnotations()) // Stream over all annotations
+											  .map(a -> a.annotationType().getSimpleName()) // Map them to their simple name
+											  .anyMatch(method::equalsIgnoreCase)) // Compare them to the request method
+						   .count();
+
+		// If there is a method of the requested type and it has the {@link OnlyAdmin} annotation, but the user isn't an admin, return INVALID.
+		if (count > 0 && !isAdmin(request))
+			return RESULT_INVALID;
+
 		ChallengeResponse cr = request.getChallengeResponse();
 		if (cr != null)
 		{

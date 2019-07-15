@@ -24,6 +24,10 @@ public class Gatekeeper extends Application
 	private        ChallengeAuthenticator authenticator;
 	private        MethodAuthorizer       authorizer;
 
+	public static Gatekeeper INSTANCE;
+	public Router routerAuth;
+	private Router routerUnauth;
+
 	public Gatekeeper()
 	{
 		// Set information about API
@@ -31,6 +35,8 @@ public class Gatekeeper extends Application
 		setDescription("This is the server implementation for the Gatekeeper");
 		setOwner("The James Hutton Institute");
 		setAuthor("Sebastian Raubach, Information & Computational Sciences");
+
+		INSTANCE = this;
 	}
 
 	private void setUpAuthentication(Context context)
@@ -57,8 +63,8 @@ public class Gatekeeper extends Application
 //		Filter encoder = new Encoder(context, false, true, new EncoderService(true));
 
 		// Create new router
-		Router routerAuth = new Router(context);
-		Router routerUnauth = new Router(context);
+		routerAuth = new Router(context);
+		routerUnauth = new Router(context);
 
 		// Set the Cors filter
 		CorsFilter corsFilter = new CorsFilter(context, routerUnauth)
