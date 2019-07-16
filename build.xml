@@ -90,6 +90,8 @@
 			<lib dir="${lib}" excludes="**/lib-dev/**"/>
 			<lib file="${jar}"/>
 
+			<zipfileset dir="${src}" includes="**/*.sql" prefix="WEB-INF/classes"/>
+
 			<zipfileset dir="${res}" includes="Gatekeeper**.properties" prefix="WEB-INF/classes"/>
 			<zipfileset dir="." includes="logging.properties" prefix="WEB-INF/classes"/>
 
