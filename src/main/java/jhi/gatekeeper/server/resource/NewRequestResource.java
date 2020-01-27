@@ -143,7 +143,7 @@ public class NewRequestResource extends ServerResource
 			if (id != null)
 				step.where(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(id));
 
-			return step.where(VIEW_UNAPPROVED_USER_DETAILS.ACTIVATION_KEY.isNull())
+			return step.where(VIEW_UNAPPROVED_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0))
 					   .orderBy(VIEW_UNAPPROVED_USER_DETAILS.CREATED_ON)
 					   .fetch()
 					   .into(ViewUnapprovedUserDetails.class);
