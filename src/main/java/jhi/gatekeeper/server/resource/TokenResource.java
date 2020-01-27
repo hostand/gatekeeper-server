@@ -115,7 +115,7 @@ public class TokenResource extends ServerResource
 		if (canAccess)
 		{
 			token = UUID.randomUUID().toString();
-			CustomVerifier.addToken(getResponse(), token, user.getId());
+			CustomVerifier.addToken(getRequest(), getResponse(), token, user.getId());
 
 			// The salt may have changed since the last time, so update the password in the database with the new salt.
 			String saltedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(SALT));

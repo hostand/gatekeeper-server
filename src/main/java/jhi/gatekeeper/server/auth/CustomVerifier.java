@@ -20,6 +20,7 @@ import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.restlet.*;
 import org.restlet.data.*;
+import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.resource.Finder;
 import org.restlet.routing.Route;
 import org.restlet.security.Verifier;
@@ -104,7 +105,7 @@ public class CustomVerifier implements Verifier
 			// If we do, validate it against the cookie
 			List<Cookie> cookies = request.getCookies()
 										  .stream()
-										  .filter(c -> c.getName().equals("token"))
+										  .filter(c -> Objects.equals(c.getName(), "token") && Objects.equals(c.getPath(), ServletUtils.getRequest(request).getContextPath()))
 										  .collect(Collectors.toList());
 
 			if (cookies.size() > 0)
@@ -154,9 +155,9 @@ public class CustomVerifier implements Verifier
 		}
 	}
 
-	public static void addToken(Response response, String token, Integer userId)
+	public static void addToken(Request request, Response response, String token, Integer userId)
 	{
-		setCookie(response, token);
+		setCookie(request, response, token);
 		UserDetails details = new UserDetails();
 		details.timestamp = System.currentTimeMillis();
 		details.token = token;
@@ -164,12 +165,12 @@ public class CustomVerifier implements Verifier
 		tokenToTimestamp.put(token, details);
 	}
 
-	private static void setCookie(Response response, String token)
+	private static void setCookie(Request request, Response response, String token)
 	{
 		CookieSetting cookie = new CookieSetting(0, "token", token);
 		cookie.setAccessRestricted(true);
 		cookie.setMaxAge((int) (AGE / 1000));
-		cookie.setPath("/");
+		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
 		response.getCookieSettings().add(cookie);
 	}
 
@@ -216,7 +217,7 @@ public class CustomVerifier implements Verifier
 						// Extend the cookie
 						details.timestamp = System.currentTimeMillis();
 						tokenToTimestamp.put(token, details);
-						setCookie(response, token);
+						setCookie(request, response, token);
 					}
 					else
 					{
