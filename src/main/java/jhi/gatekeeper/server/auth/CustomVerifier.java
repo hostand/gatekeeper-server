@@ -29,6 +29,7 @@ import org.restlet.util.Series;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.*;
 import java.util.stream.Collectors;
 
 import jhi.gatekeeper.server.*;
@@ -105,7 +106,7 @@ public class CustomVerifier implements Verifier
 			// If we do, validate it against the cookie
 			List<Cookie> cookies = request.getCookies()
 										  .stream()
-										  .filter(c -> Objects.equals(c.getName(), "token") && Objects.equals(c.getPath(), ServletUtils.getRequest(request).getContextPath()))
+										  .filter(c -> Objects.equals(c.getName(), "token"))
 										  .collect(Collectors.toList());
 
 			if (cookies.size() > 0)
@@ -170,6 +171,7 @@ public class CustomVerifier implements Verifier
 		CookieSetting cookie = new CookieSetting(0, "token", token);
 		cookie.setAccessRestricted(true);
 		cookie.setMaxAge((int) (AGE / 1000));
+		Logger.getLogger("").log(Level.INFO, "SET: " + ServletUtils.getRequest(request).getContextPath() + " -> " + token);
 		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
 		response.getCookieSettings().add(cookie);
 	}
