@@ -18,7 +18,6 @@ import jhi.gatekeeper.server.resource.*;
  */
 public class Gatekeeper extends Application
 {
-	public static  String                 WEB_BASE = null;
 	public static  Gatekeeper             INSTANCE;
 	private static CustomVerifier         verifier = new CustomVerifier();
 	public         Router                 routerAuth;
@@ -90,6 +89,7 @@ public class Gatekeeper extends Application
 		corsFilter.setAllowingAllRequestedHeaders(true);
 		corsFilter.setDefaultAllowedMethods(new HashSet<>(Arrays.asList(Method.POST, Method.GET, Method.PUT, Method.PATCH, Method.DELETE, Method.OPTIONS)));
 		corsFilter.setAllowedCredentials(true);
+		corsFilter.setExposedHeaders(Collections.singleton("Content-Disposition"));
 
 		// Attach the url handlers
 		attachToRouter(routerAuth, "/stat/count", StatCountResource.class);

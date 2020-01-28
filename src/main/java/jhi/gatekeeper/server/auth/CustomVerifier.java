@@ -229,6 +229,8 @@ public class CustomVerifier implements Verifier
 		cookie.setMaxAge(delete ? 0 : (int) (AGE / 1000));
 		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
 
+		Logger.getLogger("").log(Level.INFO, "REQUEST: " + request.toString());
+		Logger.getLogger("").log(Level.INFO, "REQUEST MAPPED: " + ServletUtils.getRequest(request).toString());
 		Logger.getLogger("").log(Level.INFO, "SETTING COOKIE: " + cookie.toString());
 
 		response.getCookieSettings().add(cookie);
