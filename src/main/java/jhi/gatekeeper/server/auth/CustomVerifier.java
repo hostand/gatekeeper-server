@@ -21,6 +21,7 @@ import org.jooq.impl.DSL;
 import org.restlet.*;
 import org.restlet.data.Status;
 import org.restlet.data.*;
+import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.resource.*;
 import org.restlet.routing.Route;
 import org.restlet.security.Verifier;
@@ -226,9 +227,26 @@ public class CustomVerifier implements Verifier
 		CookieSetting cookie = new CookieSetting(0, "token-gatekeeper", token);
 		cookie.setAccessRestricted(true);
 		cookie.setMaxAge(delete ? -1 : (int) (AGE / 1000));
-		cookie.setPath("/");
+		cookie.setPath(getContextPath(request));
 
 		response.getCookieSettings().add(cookie);
+	}
+
+	private static String getContextPath(Request request)
+	{
+		String result = ServletUtils.getRequest(request).getContextPath();
+
+		if (!StringUtils.isEmpty(result))
+		{
+			int index = result.lastIndexOf("/api");
+
+			if (index != -1)
+			{
+				result = result.substring(index + 4);
+			}
+		}
+
+		return result;
 	}
 
 	@Override
