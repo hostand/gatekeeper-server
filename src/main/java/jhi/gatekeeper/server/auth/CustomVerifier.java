@@ -21,7 +21,6 @@ import org.jooq.impl.DSL;
 import org.restlet.*;
 import org.restlet.data.Status;
 import org.restlet.data.*;
-import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.resource.*;
 import org.restlet.routing.Route;
 import org.restlet.security.Verifier;
@@ -123,7 +122,7 @@ public class CustomVerifier implements Verifier
 			// If we do, validate it against the cookie
 			List<Cookie> cookies = request.getCookies()
 										  .stream()
-										  .filter(c -> Objects.equals(c.getName(), "token"))
+										  .filter(c -> Objects.equals(c.getName(), "token-gatekeeper"))
 										  .collect(Collectors.toList());
 
 			if (cookies.size() > 0)
@@ -224,13 +223,10 @@ public class CustomVerifier implements Verifier
 	{
 		boolean delete = StringUtils.isEmpty(token);
 
-		CookieSetting cookie = new CookieSetting(0, "token", token);
+		CookieSetting cookie = new CookieSetting(0, "token-gatekeeper", token);
 		cookie.setAccessRestricted(true);
-		cookie.setMaxAge(delete ? 0 : (int) (AGE / 1000));
-		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
-
-		Logger.getLogger("").log(Level.INFO, "PATH: " + ServletUtils.getRequest(request).getContextPath());
-		Logger.getLogger("").log(Level.INFO, "SETTING COOKIE: " + cookie.toString());
+		cookie.setMaxAge(delete ? -1 : (int) (AGE / 1000));
+		cookie.setPath("/");
 
 		response.getCookieSettings().add(cookie);
 	}
