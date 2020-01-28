@@ -19,9 +19,10 @@ package jhi.gatekeeper.server.auth;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.restlet.*;
+import org.restlet.data.Status;
 import org.restlet.data.*;
 import org.restlet.ext.servlet.ServletUtils;
-import org.restlet.resource.Finder;
+import org.restlet.resource.*;
 import org.restlet.routing.Route;
 import org.restlet.security.Verifier;
 import org.restlet.util.Series;
@@ -29,6 +30,7 @@ import org.restlet.util.Series;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.*;
 import java.util.stream.Collectors;
 
 import jhi.gatekeeper.server.*;
@@ -44,7 +46,7 @@ import static jhi.gatekeeper.server.database.tables.Users.*;
  */
 public class CustomVerifier implements Verifier
 {
-	public static final long AGE = 1800000;
+	public static final long AGE = 43200000; // 12 hours
 
 	private static Map<String, UserDetails> tokenToTimestamp = new ConcurrentHashMap<>();
 
@@ -61,12 +63,7 @@ public class CustomVerifier implements Verifier
 		}, 0, AGE);
 	}
 
-	public static boolean removeToken(Request request)
-	{
-		return tokenToTimestamp.remove(getToken(request)) != null;
-	}
-
-	public static boolean removeToken(Request request, Response response, String token)
+	public static boolean removeToken(String token, Request request, Response response)
 	{
 		if (token != null)
 		{
@@ -112,12 +109,16 @@ public class CustomVerifier implements Verifier
 			return null;
 	}
 
-	private static String getToken(Request request)
+	private static TokenResult getToken(Request request, Response response)
 	{
 		ChallengeResponse cr = request.getChallengeResponse();
 		if (cr != null)
 		{
-			String token = cr.getRawValue();
+			TokenResult result = new TokenResult();
+			result.token = cr.getRawValue();
+
+			if (StringUtils.isEmpty(result.token) || result.token.equalsIgnoreCase("null"))
+				result.token = null;
 
 			// If we do, validate it against the cookie
 			List<Cookie> cookies = request.getCookies()
@@ -126,22 +127,59 @@ public class CustomVerifier implements Verifier
 										  .collect(Collectors.toList());
 
 			if (cookies.size() > 0)
-				return Objects.equals(token, cookies.get(0).getValue()) ? token : null;
+			{
+				result.match = Objects.equals(result.token, cookies.get(0).getValue());
+
+				if (!result.match)
+					setCookie(request, response, null);
+			}
 			else
-				return null;
+			{
+				if (result.token == null)
+					return null;
+				else
+					result.match = true;
+			}
+
+			return result;
 		}
 
 		return null;
 	}
 
-	public static boolean isAdmin(Request request)
+	public static boolean isAdmin(Request request, Response response)
 	{
-		return isAdmin(getToken(request));
+		return isAdmin(getToken(request, response).token);
 	}
 
-	public static UserDetails getFromSession(Request request)
+	public static UserDetails getFromSession(Request request, Response response)
 	{
-		return tokenToTimestamp.get(getToken(request));
+		TokenResult token = getToken(request, response);
+
+		// If there is no token or token and cookie don't match, remove the cookie
+		if (token == null || !token.match)
+			setCookie(request, response, null);
+
+		if (token == null)
+		{
+			// We get here if no token is found at all
+			return new UserDetails(-1000, null, AGE);
+		}
+		else if (!StringUtils.isEmpty(token.token) && !token.match)
+		{
+			// We get here if a token is provided, but no matching cookie is found.
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+		}
+		else
+		{
+			// We get here if the token is present and it matches the cookie
+			UserDetails details = token.token != null ? tokenToTimestamp.get(token.token) : null;
+
+			if (details == null)
+				throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
+
+			return details;
+		}
 	}
 
 	public static boolean isAdmin(String token)
@@ -190,6 +228,9 @@ public class CustomVerifier implements Verifier
 		cookie.setAccessRestricted(true);
 		cookie.setMaxAge(delete ? 0 : (int) (AGE / 1000));
 		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
+
+		Logger.getLogger("").log(Level.INFO, "SETTING COOKIE: " + cookie.toString());
+
 		response.getCookieSettings().add(cookie);
 	}
 
@@ -212,20 +253,22 @@ public class CustomVerifier implements Verifier
 						   .count();
 
 		// If there is a method of the requested type and it has the {@link OnlyAdmin} annotation, but the user isn't an admin, return INVALID.
-		if (count > 0 && !isAdmin(request))
+		if (count > 0 && !isAdmin(request, response))
 			return RESULT_INVALID;
 
 		ChallengeResponse cr = request.getChallengeResponse();
 		if (cr != null)
 		{
-			String token = getToken(request);
+			TokenResult token = getToken(request, response);
 
-			if (token != null)
+			Logger.getLogger("").log(Level.INFO, "CHECKING: " + token);
+
+			if (token != null && token.token != null)
 			{
 				boolean canAccess = false;
 
 				// Check if it's a valid token
-				UserDetails details = tokenToTimestamp.get(token);
+				UserDetails details = tokenToTimestamp.get(token.token);
 
 				if (details != null)
 				{
@@ -235,8 +278,7 @@ public class CustomVerifier implements Verifier
 						canAccess = true;
 						// Extend the cookie
 						details.timestamp = System.currentTimeMillis();
-						tokenToTimestamp.put(token, details);
-						setCookie(request, response, token);
+						tokenToTimestamp.put(token.token, details);
 					}
 					else
 					{
@@ -244,10 +286,21 @@ public class CustomVerifier implements Verifier
 					}
 				}
 
-				return canAccess ? RESULT_VALID : RESULT_INVALID;
+				if (canAccess)
+				{
+					// Extend the cookie here
+					setCookie(request, response, token.token);
+					return RESULT_VALID;
+				}
+				else
+				{
+					removeToken(token.token, request, response);
+					return RESULT_INVALID;
+				}
 			}
 			else
 			{
+				removeToken(null, request, response);
 				return RESULT_INVALID;
 			}
 		}
@@ -257,11 +310,37 @@ public class CustomVerifier implements Verifier
 		}
 	}
 
+	private static class TokenResult
+	{
+		private String  token;
+		private boolean match;
+
+		@Override
+		public String toString()
+		{
+			return "TokenResult{" +
+				"token='" + token + '\'' +
+				", match=" + match +
+				'}';
+		}
+	}
+
 	public static class UserDetails
 	{
 		private Integer id;
 		private String  token;
 		private Long    timestamp;
+
+		public UserDetails()
+		{
+		}
+
+		public UserDetails(Integer id, String token, Long timestamp)
+		{
+			this.id = id;
+			this.token = token;
+			this.timestamp = timestamp;
+		}
 
 		public Integer getId()
 		{

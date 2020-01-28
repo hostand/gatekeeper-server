@@ -101,7 +101,7 @@ public class UserResource extends PaginatedServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
 		{
-			CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
+			CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
 
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
@@ -117,14 +117,14 @@ public class UserResource extends PaginatedServerResource
 			}
 			else if (username != null)
 			{
-				if (!CustomVerifier.isAdmin(getRequest()))
+				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
 					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
 				else
 					step.where(VIEW_USER_DETAILS.USERNAME.eq(username));
 			}
 			else if (database != null && server != null)
 			{
-				if (!CustomVerifier.isAdmin(getRequest()))
+				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
 					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
 				else
 					step.where(DSL.exists(DSL.selectOne()
@@ -136,7 +136,7 @@ public class UserResource extends PaginatedServerResource
 			}
 			else
 			{
-				if (!CustomVerifier.isAdmin(getRequest()))
+				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
 					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
 
 				if (query != null && !"".equals(query))

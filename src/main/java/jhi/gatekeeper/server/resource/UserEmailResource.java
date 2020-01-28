@@ -42,7 +42,7 @@ public class UserEmailResource extends PaginatedServerResource
 		if (update == null || id == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
 
-		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
+		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
 
 		if (sessionUser == null || !Objects.equals(sessionUser.getId(), id))
 			throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED);

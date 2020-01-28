@@ -51,7 +51,7 @@ public class TokenResource extends ServerResource
 		if (user == null)
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_TOKEN.name());
 
-		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest());
+		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
 
 		if (sessionUser == null || !Objects.equals(sessionUser.getToken(), user.getPassword()))
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
@@ -60,7 +60,7 @@ public class TokenResource extends ServerResource
 		{
 			// Try and see if it's a valid UUID
 			UUID.fromString(user.getPassword());
-			return CustomVerifier.removeToken(getRequest(), getResponse(), user.getPassword());
+			return CustomVerifier.removeToken(user.getPassword(), getRequest(), getResponse());
 		}
 		catch (Exception e)
 		{
