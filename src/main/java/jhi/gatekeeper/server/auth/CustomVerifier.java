@@ -252,7 +252,7 @@ public class CustomVerifier implements Verifier
 
 			if (index != -1)
 			{
-				result = result.substring(index + 4);
+				result = result.substring(0, index + 4);
 			}
 		}
 
