@@ -226,8 +226,18 @@ public class CustomVerifier implements Verifier
 
 		CookieSetting cookie = new CookieSetting(0, "token-gatekeeper", token);
 		cookie.setAccessRestricted(true);
-		cookie.setMaxAge(delete ? -1 : (int) (AGE / 1000));
-		cookie.setPath(getContextPath(request));
+
+		if (delete)
+		{
+			cookie.setMaxAge(0);
+			cookie.setPath("/");
+			cookie.setValue("");
+		}
+		else
+		{
+			cookie.setMaxAge((int) (AGE / 1000));
+			cookie.setPath(getContextPath(request));
+		}
 
 		response.getCookieSettings().add(cookie);
 	}
