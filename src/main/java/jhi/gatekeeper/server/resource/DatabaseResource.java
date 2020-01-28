@@ -54,7 +54,7 @@ public class DatabaseResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			DatabaseSystemsRecord record = context.newRecord(DATABASE_SYSTEMS, database);
 			record.store();
@@ -76,7 +76,7 @@ public class DatabaseResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.deleteFrom(DATABASE_SYSTEMS)
 								.where(DATABASE_SYSTEMS.ID.eq(id))
@@ -96,7 +96,7 @@ public class DatabaseResource extends PaginatedServerResource
 	public PaginatedResult<List<DatabaseSystems>> getJson()
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")

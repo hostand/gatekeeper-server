@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -43,7 +42,7 @@ public class UserGatekeeperResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(id))

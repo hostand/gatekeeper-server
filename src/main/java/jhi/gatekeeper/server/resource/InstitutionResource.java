@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -44,7 +43,7 @@ public class InstitutionResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			return context.newRecord(INSTITUTIONS, newInstitution).store() > 0;
 		}
@@ -60,7 +59,7 @@ public class InstitutionResource extends PaginatedServerResource
 	public PaginatedResult<List<Institutions>> getJson()
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")

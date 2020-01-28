@@ -37,6 +37,7 @@ public class ApplicationListener implements ServletContextListener
 	@Override
 	public void contextDestroyed(ServletContextEvent servletContextEvent)
 	{
+		PropertyWatcher.stopFileWatcher();
 	}
 
 	private void logMessage()

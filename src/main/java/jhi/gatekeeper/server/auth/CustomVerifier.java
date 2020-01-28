@@ -17,7 +17,6 @@
 package jhi.gatekeeper.server.auth;
 
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.restlet.*;
 import org.restlet.data.Status;
 import org.restlet.data.*;
@@ -190,7 +189,7 @@ public class CustomVerifier implements Verifier
 			return false;
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			Optional<Record> optional = context.selectFrom(USERS.leftJoin(USER_HAS_ACCESS_TO_DATABASES).on(USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(USERS.ID))
 																.leftJoin(DATABASE_SYSTEMS).on(DATABASE_SYSTEMS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID))

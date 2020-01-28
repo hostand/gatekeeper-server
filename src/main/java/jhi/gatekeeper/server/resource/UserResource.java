@@ -60,7 +60,7 @@ public class UserResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.deleteFrom(USERS)
 								.where(USERS.ID.eq(id))
@@ -83,7 +83,7 @@ public class UserResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(TokenResource.SALT)));
 			return context.newRecord(USERS, newUser).store() > 0;
@@ -99,7 +99,7 @@ public class UserResource extends PaginatedServerResource
 	public PaginatedResult<List<ViewUserDetails>> getJson()
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
 

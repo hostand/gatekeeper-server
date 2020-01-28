@@ -16,10 +16,8 @@
 
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
-import org.restlet.resource.Delete;
 import org.restlet.resource.*;
 
 import java.sql.*;
@@ -78,7 +76,7 @@ public class TokenResource extends ServerResource
 		UserTypes type;
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			user = context.selectFrom(USERS)
 						  .where(USERS.USERNAME.eq(request.getUsername()))
@@ -121,7 +119,7 @@ public class TokenResource extends ServerResource
 			String saltedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(SALT));
 
 			try (Connection conn = Database.getConnection();
-				 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+				 DSLContext context = Database.getContext(conn))
 			{
 				context.update(USERS)
 					   .set(USERS.PASSWORD, saltedPassword)

@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -30,7 +29,7 @@ public class ExistingRequestDecisionResource extends ServerResource
 	public static boolean decide(Integer id, RequestDecision request)
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			// Get the request with the given id
 			AccessRequestsRecord accessRequest = context.selectFrom(ACCESS_REQUESTS)

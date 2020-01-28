@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.restlet.data.Status;
 import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.resource.Delete;
@@ -54,7 +53,7 @@ public class NewRequestResource extends ServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			return context.deleteFrom(UNAPPROVED_USERS)
 						  .where(UNAPPROVED_USERS.ID.eq(id))
@@ -78,7 +77,7 @@ public class NewRequestResource extends ServerResource
 		Locale locale = request.getJavaLocale();
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			boolean userExists = context.fetchExists(USERS, USERS.USERNAME.eq(request.getUserUsername()).or(USERS.EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
 			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.USER_USERNAME.eq(request.getUserUsername()).or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
@@ -136,7 +135,7 @@ public class NewRequestResource extends ServerResource
 	public List<ViewUnapprovedUserDetails> getJson()
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<ViewUnapprovedUserDetailsRecord> step = context.selectFrom(VIEW_UNAPPROVED_USER_DETAILS);
 

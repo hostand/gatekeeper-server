@@ -16,8 +16,7 @@
 
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -45,7 +44,7 @@ public class PasswordResetResource extends ServerResource
 	public boolean postJson(PasswordResetRequest request)
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			UsersRecord user = context.selectFrom(USERS)
 									  .where(USERS.USERNAME.eq(request.getUsername())

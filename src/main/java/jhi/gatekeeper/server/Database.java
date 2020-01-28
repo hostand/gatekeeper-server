@@ -109,7 +109,7 @@ public class Database
 
 		// Check if an admin user exists, if not, create it
 		try (Connection conn = getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			DatabaseSystems db = context.selectFrom(DATABASE_SYSTEMS)
 										.where(DATABASE_SYSTEMS.SERVER_NAME.eq("--"))

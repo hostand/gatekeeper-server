@@ -53,7 +53,7 @@ public class UserPermissionResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.insertInto(USER_HAS_ACCESS_TO_DATABASES)
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_ID, permission.getUserId())
@@ -78,7 +78,7 @@ public class UserPermissionResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
@@ -136,7 +136,7 @@ public class UserPermissionResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.deleteFrom(USER_HAS_ACCESS_TO_DATABASES)
 								.where(USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(permission.getUserId()))
@@ -161,7 +161,7 @@ public class UserPermissionResource extends PaginatedServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.update(USER_HAS_ACCESS_TO_DATABASES)
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID, permission.getUserTypeId())

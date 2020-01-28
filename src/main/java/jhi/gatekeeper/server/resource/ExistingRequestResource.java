@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
 import org.jooq.*;
-import org.jooq.impl.DSL;
 import org.restlet.data.Status;
 import org.restlet.resource.Delete;
 import org.restlet.resource.*;
@@ -51,7 +50,7 @@ public class ExistingRequestResource extends ServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			return context.deleteFrom(ACCESS_REQUESTS)
 						  .where(ACCESS_REQUESTS.ID.eq(id))
@@ -74,7 +73,7 @@ public class ExistingRequestResource extends ServerResource
 		Locale locale = request.getJavaLocale();
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			// Get the user and the database
 			Users user = context.selectFrom(USERS)
@@ -136,7 +135,7 @@ public class ExistingRequestResource extends ServerResource
 	public List<ViewAccessRequestUserDetails> getJson()
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<ViewAccessRequestUserDetailsRecord> step = context.selectFrom(VIEW_ACCESS_REQUEST_USER_DETAILS);
 

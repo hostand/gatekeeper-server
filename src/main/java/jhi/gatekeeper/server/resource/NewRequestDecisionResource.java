@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -31,7 +30,7 @@ public class NewRequestDecisionResource extends ServerResource
 	public static boolean decide(Integer id, RequestDecision request)
 	{
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			UnapprovedUsersRecord unapprovedUser = context.selectFrom(UNAPPROVED_USERS)
 														  .where(UNAPPROVED_USERS.ID.eq(id))

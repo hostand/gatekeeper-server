@@ -1,7 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
+import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
 
@@ -30,7 +29,7 @@ public class ActivationRequestResource extends ServerResource
 			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_KEY.name());
 
 		try (Connection conn = Database.getConnection();
-			 DSLContext context = DSL.using(conn, SQLDialect.MYSQL))
+			 DSLContext context = Database.getContext(conn))
 		{
 			UnapprovedUsersRecord userRequest = context.selectFrom(UNAPPROVED_USERS)
 													   .where(UNAPPROVED_USERS.ACTIVATION_KEY.eq(request.getActivationKey()))
