@@ -29,11 +29,10 @@ import org.restlet.util.Series;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.*;
 import java.util.stream.Collectors;
 
 import jhi.gatekeeper.server.*;
-import jhi.gatekeeper.server.util.OnlyAdmin;
+import jhi.gatekeeper.server.util.*;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -67,9 +66,26 @@ public class CustomVerifier implements Verifier
 		return tokenToTimestamp.remove(getToken(request)) != null;
 	}
 
-	public static boolean removeToken(String password)
+	public static boolean removeToken(Request request, Response response, String token)
 	{
-		return tokenToTimestamp.remove(password) != null;
+		if (token != null)
+		{
+			UserDetails exists = tokenToTimestamp.remove(token);
+
+			if (exists != null)
+			{
+				setCookie(request, response, null);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	public static Integer getUserId(Request request)
@@ -168,10 +184,11 @@ public class CustomVerifier implements Verifier
 
 	private static void setCookie(Request request, Response response, String token)
 	{
+		boolean delete = StringUtils.isEmpty(token);
+
 		CookieSetting cookie = new CookieSetting(0, "token", token);
 		cookie.setAccessRestricted(true);
-		cookie.setMaxAge((int) (AGE / 1000));
-		Logger.getLogger("").log(Level.INFO, "SET: " + ServletUtils.getRequest(request).getContextPath() + " -> " + token);
+		cookie.setMaxAge(delete ? 0 : (int) (AGE / 1000));
 		cookie.setPath(ServletUtils.getRequest(request).getContextPath());
 		response.getCookieSettings().add(cookie);
 	}

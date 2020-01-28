@@ -72,7 +72,7 @@ public class UserPasswordResource extends PaginatedServerResource
 					   .execute();
 
 				// Terminate this "session".
-				CustomVerifier.removeToken(getRequest());
+				CustomVerifier.removeToken(getRequest(), getResponse(), CustomVerifier.getFromSession(getRequest()).getToken());
 
 				if (!user.getUsername().equals("admin"))
 					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);

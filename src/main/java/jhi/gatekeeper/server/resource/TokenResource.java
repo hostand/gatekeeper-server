@@ -60,7 +60,7 @@ public class TokenResource extends ServerResource
 		{
 			// Try and see if it's a valid UUID
 			UUID.fromString(user.getPassword());
-			return CustomVerifier.removeToken(user.getPassword());
+			return CustomVerifier.removeToken(getRequest(), getResponse(), user.getPassword());
 		}
 		catch (Exception e)
 		{
