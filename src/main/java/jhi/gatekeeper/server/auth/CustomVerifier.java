@@ -26,6 +26,8 @@ import org.restlet.routing.Route;
 import org.restlet.security.Verifier;
 import org.restlet.util.Series;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +72,7 @@ public class CustomVerifier implements Verifier
 
 			if (exists != null)
 			{
-				setCookie(request, response, null);
+				setCookie(request, response, null, null);
 				return true;
 			}
 			else
@@ -128,9 +130,10 @@ public class CustomVerifier implements Verifier
 			if (cookies.size() > 0)
 			{
 				result.match = Objects.equals(result.token, cookies.get(0).getValue());
+				result.path = cookies.get(0).getPath();
 
 				if (!result.match)
-					setCookie(request, response, null);
+					setCookie(request, response, null, null);
 			}
 			else
 			{
@@ -157,7 +160,7 @@ public class CustomVerifier implements Verifier
 
 		// If there is no token or token and cookie don't match, remove the cookie
 		if (token == null || !token.match)
-			setCookie(request, response, null);
+			setCookie(request, response, null, null);
 
 		if (token == null)
 		{
@@ -211,7 +214,7 @@ public class CustomVerifier implements Verifier
 
 	public static void addToken(Request request, Response response, String token, Integer userId)
 	{
-		setCookie(request, response, token);
+		setCookie(request, response, token, null);
 		UserDetails details = new UserDetails();
 		details.timestamp = System.currentTimeMillis();
 		details.token = token;
@@ -219,7 +222,7 @@ public class CustomVerifier implements Verifier
 		tokenToTimestamp.put(token, details);
 	}
 
-	private static void setCookie(Request request, Response response, String token)
+	private static void setCookie(Request request, Response response, String token, String path)
 	{
 		boolean delete = StringUtils.isEmpty(token);
 
@@ -235,7 +238,7 @@ public class CustomVerifier implements Verifier
 		else
 		{
 			cookie.setMaxAge((int) (AGE / 1000));
-			cookie.setPath(getContextPath(request));
+			cookie.setPath(path == null ? getContextPath(request) : path);
 		}
 
 		response.getCookieSettings().add(cookie);
@@ -247,6 +250,14 @@ public class CustomVerifier implements Verifier
 
 		if (!StringUtils.isEmpty(result))
 		{
+			try
+			{
+				result = URLDecoder.decode(result, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e)
+			{
+			}
+
 			int index = result.lastIndexOf("/api");
 
 			if (index != -1)
@@ -313,7 +324,7 @@ public class CustomVerifier implements Verifier
 				if (canAccess)
 				{
 					// Extend the cookie here
-					setCookie(request, response, token.token);
+					setCookie(request, response, token.token, token.path);
 					return RESULT_VALID;
 				}
 				else
@@ -338,6 +349,7 @@ public class CustomVerifier implements Verifier
 	{
 		private String  token;
 		private boolean match;
+		private String  path;
 
 		@Override
 		public String toString()

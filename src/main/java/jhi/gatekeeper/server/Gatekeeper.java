@@ -96,6 +96,7 @@ public class Gatekeeper extends Application
 
 		attachToRouter(routerAuth, "/database", DatabaseResource.class);
 		attachToRouter(routerAuth, "/database/{databaseId}", DatabaseResource.class);
+		attachToRouter(routerAuth, "/database/{databaseId}/permission", DatabasePermissionResource.class);
 
 		attachToRouter(routerUnauth, "/request/activation", ActivationRequestResource.class);
 		attachToRouter(routerAuth, "/request/existing", ExistingRequestResource.class);

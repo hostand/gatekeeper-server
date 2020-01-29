@@ -89,9 +89,9 @@ public class UserPermissionResource extends PaginatedServerResource
 			if (query != null && !"".equals(query))
 			{
 				query = "%" + query + "%";
-				step.where(VIEW_USER_PERMISSIONS.SERVER_NAME.like(query))
-					.or(VIEW_USER_PERMISSIONS.SYSTEM_NAME.like(query))
-					.or(VIEW_USER_PERMISSIONS.USER_TYPE.like(query));
+				step.where(VIEW_USER_PERMISSIONS.SERVER_NAME.like(query)
+															.or(VIEW_USER_PERMISSIONS.SYSTEM_NAME.like(query))
+															.or(VIEW_USER_PERMISSIONS.USER_TYPE.like(query)));
 			}
 			else if (databaseName != null || databaseServer != null)
 			{
