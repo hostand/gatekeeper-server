@@ -34,8 +34,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.*;
 import java.util.stream.Collectors;
 
+import jhi.gatekeeper.resource.ServerProperty;
 import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.util.*;
+import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -238,7 +240,7 @@ public class CustomVerifier implements Verifier
 		else
 		{
 			cookie.setMaxAge((int) (AGE / 1000));
-			cookie.setPath(path == null ? getContextPath(request) : path);
+			cookie.setPath(PropertyWatcher.get(ServerProperty.CONTEXT_PATH));
 		}
 
 		response.getCookieSettings().add(cookie);
@@ -247,6 +249,8 @@ public class CustomVerifier implements Verifier
 	private static String getContextPath(Request request)
 	{
 		String result = ServletUtils.getRequest(request).getContextPath();
+
+		Logger.getLogger("").log(Level.INFO, "BEFORE: " + result);
 
 		if (!StringUtils.isEmpty(result))
 		{
@@ -265,6 +269,8 @@ public class CustomVerifier implements Verifier
 				result = result.substring(0, index + 4);
 			}
 		}
+
+		Logger.getLogger("").log(Level.INFO, "AFTER: " + result);
 
 		return result;
 	}
