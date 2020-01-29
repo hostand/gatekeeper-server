@@ -17,8 +17,7 @@ public enum ServerProperty
 	EMAIL_PASSWORD("email.password", null, false),
 	EMAIL_PORT("email.port", null, false),
 	SALT("salt", "10", false),
-	WEB_BASE("web.base", null, true),
-	CONTEXT_PATH("context.path", null, true);
+	WEB_BASE("web.base", null, true);
 
 	String  key;
 	String  defaultValue;
