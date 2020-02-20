@@ -129,6 +129,7 @@ public class Database
 
 			if (adminCount < 1)
 			{
+				// Create a default Admin user with password "password".
 				UsersRecord admin = context.newRecord(USERS);
 				admin.setUsername("admin");
 				admin.setPassword(BCrypt.hashpw("password", BCrypt.gensalt(TokenResource.SALT)));

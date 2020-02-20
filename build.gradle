@@ -52,7 +52,7 @@ dependencies {
     implementation 'org.json:json:20160212'
 
     implementation 'mysql:mysql-connector-java:8.0.16'
-    implementation 'javax.activation:javax.activation-api:1.2.0'
+    implementation 'javax.activation:activation:1.1.1'
     implementation 'org.jooq:jooq:3.11.10'
     implementation 'org.jooq:jooq-codegen:3.11.10'
 
