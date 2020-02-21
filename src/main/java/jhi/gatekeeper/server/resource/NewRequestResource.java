@@ -98,7 +98,7 @@ public class NewRequestResource extends ServerResource
 			if (!url.endsWith("/"))
 				url += "/";
 
-			url += "gk/activation?activationKey=" + uuid;
+			url += "/#/gk/activation?activationKey=" + uuid;
 
 			record.store();
 

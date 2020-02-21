@@ -5,7 +5,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.*;
 
 import java.sql.*;
-import java.util.Objects;
+import java.util.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
@@ -55,7 +55,7 @@ public class ExistingRequestDecisionResource extends ServerResource
 						accessRequest.store();
 
 						// Send an email letting the user know
-						Email.sendAccessRequestRejected(request.getJavaLocale(), user, request.getFeedback());
+						Email.sendAccessRequestRejected(Locale.ENGLISH, user, request.getFeedback());
 						break;
 					case APPROVE:
 						// Else, it has been approved -> set permission
@@ -69,7 +69,7 @@ public class ExistingRequestDecisionResource extends ServerResource
 						accessRequest.delete();
 
 						// Email the user
-						Email.sendAccessRequestApproved(request.getJavaLocale(), user, database);
+						Email.sendAccessRequestApproved(Locale.ENGLISH, user, database);
 						break;
 				}
 				return true;

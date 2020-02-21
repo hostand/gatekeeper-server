@@ -61,13 +61,19 @@ public class Email
 		throws EmailException
 	{
 		if (needsReview)
+		{
+			String url = PropertyWatcher.get(ServerProperty.WEB_BASE);
+
 			send(address,
 				I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_REGISTRATION_ADMIN_NOTIFICATION),
-				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_REGISTRATION_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
+				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_REGISTRATION_ADMIN_NOTIFICATION, system.getServerName() + ": " + system.getSystemName(), url));
+		}
 		else
+		{
 			send(address,
 				I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION),
 				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
+		}
 	}
 
 	public static void sendNewPassword(Locale locale, UsersRecord user, String password)

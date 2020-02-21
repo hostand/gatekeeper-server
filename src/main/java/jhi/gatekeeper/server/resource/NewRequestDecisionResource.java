@@ -46,7 +46,7 @@ public class NewRequestDecisionResource extends ServerResource
 					unapprovedUser.setHasBeenRejected((byte) 1);
 					unapprovedUser.store();
 
-					Email.sendUnapprovedUserRejected(request.getJavaLocale(), unapprovedUser, request.getFeedback());
+					Email.sendUnapprovedUserRejected(Locale.ENGLISH, unapprovedUser, request.getFeedback());
 					break;
 				case APPROVE:
 					InstitutionsRecord institution;
@@ -105,7 +105,7 @@ public class NewRequestDecisionResource extends ServerResource
 					// Delete the request
 					unapprovedUser.delete();
 
-					Email.sendUnapprovedUserApproved(request.getJavaLocale(), unapprovedUser, system);
+					Email.sendUnapprovedUserApproved(Locale.ENGLISH, unapprovedUser, system);
 					break;
 			}
 			return true;
