@@ -1,12 +1,3 @@
-# gatekeeper-server
+# Gatekeeper Server API
 
-## Code generation using JOOQ
-Windows:
-```
-java -cp ./lib/*;./lib/lib-dev/* org.jooq.codegen.GenerationTool ./res/jooq.xml
-```
-
-Linux:
-```
-java -cp ./lib/*:./lib/lib-dev/* org.jooq.codegen.GenerationTool ./res/jooq.xml
-```
+This is the server side implementation of Gatekeeper. [Please visit the client repository for more details](https://github.com/germinateplatform/gatekeeper-vue).
