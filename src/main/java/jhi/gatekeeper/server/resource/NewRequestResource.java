@@ -2,14 +2,11 @@ package jhi.gatekeeper.server.resource;
 
 import org.jooq.*;
 import org.restlet.data.Status;
-import org.restlet.ext.servlet.ServletUtils;
 import org.restlet.resource.Delete;
 import org.restlet.resource.*;
 
 import java.sql.*;
 import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
@@ -79,8 +76,11 @@ public class NewRequestResource extends ServerResource
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
-			boolean userExists = context.fetchExists(USERS, USERS.USERNAME.eq(request.getUserUsername()).or(USERS.EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
-			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.USER_USERNAME.eq(request.getUserUsername()).or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
+			boolean userExists = context.fetchExists(USERS, USERS.USERNAME.eq(request.getUserUsername())
+																		  .or(USERS.EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
+			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.HAS_BEEN_REJECTED.eq((byte) 0)
+																											.and(UNAPPROVED_USERS.USER_USERNAME.eq(request.getUserUsername())
+																																			   .or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress()))));
 
 			if (userExists || requestExists)
 				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USERNAME_EMAIL_ALREADY_IN_USE.name());
@@ -98,7 +98,7 @@ public class NewRequestResource extends ServerResource
 			if (!url.endsWith("/"))
 				url += "/";
 
-			url += "/#/gk/activation?activationKey=" + uuid;
+			url += "#/gk/activation?activationKey=" + uuid;
 
 			record.store();
 
@@ -116,18 +116,6 @@ public class NewRequestResource extends ServerResource
 			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
 		}
-	}
-
-	private String getUrl()
-	{
-		// TODO: Why are these missing?
-		HttpServletRequest req = ServletUtils.getRequest(getRequest());
-		String scheme = req.getScheme(); // http
-		String serverName = req.getServerName(); // ics.hutton.ac.uk
-		int serverPort = req.getServerPort(); // 80
-		String contextPath = req.getContextPath(); // /germinate-baz
-
-		return scheme + "://" + serverName + ":" + serverPort + contextPath; // http://ics.hutton.ac.uk:80/germinate-baz
 	}
 
 	@OnlyAdmin

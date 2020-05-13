@@ -62,7 +62,7 @@ public class NewRequestDecisionResource extends ServerResource
 					}
 					else
 					{
-						institution = new InstitutionsRecord();
+						institution = context.newRecord(INSTITUTIONS);
 						institution.setName(unapprovedUser.getInstitutionName());
 						institution.setAcronym(unapprovedUser.getInstitutionAcronym());
 						institution.setAddress(unapprovedUser.getInstitutionAddress());
@@ -77,7 +77,7 @@ public class NewRequestDecisionResource extends ServerResource
 						if (optional.isPresent())
 							institution = optional.get();
 						else
-							context.newRecord(INSTITUTIONS, institution).store();
+							institution.store();
 					}
 
 					// Create the user
