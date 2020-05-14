@@ -8,25 +8,25 @@ The folder only has to contain a single file: `config.properties`.
 
 The content of this file is explained below. This includes properties like the database details and user credentials as well as various customization options.
 
-    ```ini
-    # The public-facing URL of Gatekeeper. This is required so that the server can generate files that link back to the user interface
-    web.base=<base url of the client, e.g. https://ics.hutton.ac.uk/germinate-gatekeeper/>
-    
-    # Salts are used to slow down brute-force attacks by making each individual authentication check slower.
-    salt=<the "cost-factor" of the password check, larger values make authentication slower. default: 10>
+```ini
+# The public-facing URL of Gatekeeper. This is required so that the server can generate files that link back to the user interface
+web.base=<base url of the client, e.g. https://ics.hutton.ac.uk/germinate-gatekeeper/>
 
-    # Email properties. address, username and server are required.    
-    email.address=<email address to use when sending emails>
-    email.username=<email address username>
-    email.password=<email address password>
-    email.server=<email server url>
-    email.port=<email server port>
-    
-    # Database properties. Server name, database name and user name are required.
-    # A password may be optional depending on your configuration and the port only needs to be provided if it's not 3306. 
-    database.server   = <database server>
-    database.name     = <database name>
-    database.username = <database username>
-    database.password = <database password if required
-    database.port     = <database port if not 3306>
-    ```  
+# Salts are used to slow down brute-force attacks by making each individual authentication check slower.
+salt=<the "cost-factor" of the password check, larger values make authentication slower. default: 10>
+
+# Email properties. address, username and server are required.    
+email.address=<email address to use when sending emails>
+email.username=<email address username>
+email.password=<email address password>
+email.server=<email server url>
+email.port=<email server port>
+
+# Database properties. Server name, database name and user name are required.
+# A password may be optional depending on your configuration and the port only needs to be provided if it's not 3306. 
+database.server   = <database server>
+database.name     = <database name>
+database.username = <database username>
+database.password = <database password if required
+database.port     = <database port if not 3306>
+```  
