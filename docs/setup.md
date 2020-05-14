@@ -57,7 +57,7 @@ services:
     container_name: mysql
 
   tomcat:
-      image: cropgeeks/gatekeeper
+      image: cropgeeks/gatekeeper:release-x86-4.0.0
       environment:
         - JAVA_OPTS:-Xmx512m
       ports:
@@ -108,7 +108,7 @@ docker run -d \
     -v /path/to/your/gatekeeper/config:/data/gatekeeper \
     -p 9080:8080 \
     --restart unless-stopped \
-    cropgeeks/gatekeeper
+    cropgeeks/gatekeeper:release-x86-4.0.0
 ```
 
 Make sure you have at least a `config.properties` file in the location at `/path/to/your/gatekeeper/config`. See <a href="config.html">Configuration</a> for additional config options. This file will contain the database configuration and also this property:
