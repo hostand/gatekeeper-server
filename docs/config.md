@@ -29,4 +29,8 @@ database.name     = <database name>
 database.username = <database username>
 database.password = <database password if required
 database.port     = <database port if not 3306>
-```  
+```
+
+# Default Admin account
+
+When you run Gatekeeper for the first time, a default admin account is created. The default password for this account is simply "password". Please change this immediately by logging in using the username "admin" and the aforementioned password.
