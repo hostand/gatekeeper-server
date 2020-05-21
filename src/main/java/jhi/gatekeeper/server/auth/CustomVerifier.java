@@ -31,7 +31,6 @@ import java.net.URLDecoder;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.*;
 import java.util.stream.Collectors;
 
 import jhi.gatekeeper.server.*;
@@ -297,8 +296,6 @@ public class CustomVerifier implements Verifier
 		if (cr != null)
 		{
 			TokenResult token = getToken(request, response);
-
-			Logger.getLogger("").log(Level.INFO, "CHECKING: " + token);
 
 			if (token != null && token.token != null)
 			{

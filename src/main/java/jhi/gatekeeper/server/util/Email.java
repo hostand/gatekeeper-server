@@ -18,6 +18,7 @@
 package jhi.gatekeeper.server.util;
 
 import java.util.*;
+import java.util.logging.*;
 
 import javax.mail.*;
 import javax.mail.internet.*;
@@ -216,7 +217,7 @@ public class Email
 		}
 		catch (MessagingException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("").log(Level.SEVERE, "MessagingException", e);
 			throw new EmailException(e);
 		}
 	}

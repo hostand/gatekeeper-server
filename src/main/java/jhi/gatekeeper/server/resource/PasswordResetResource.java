@@ -22,6 +22,7 @@ import org.restlet.resource.*;
 
 import java.sql.*;
 import java.util.UUID;
+import java.util.logging.*;
 
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
@@ -75,12 +76,12 @@ public class PasswordResetResource extends ServerResource
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("").log(Level.SEVERE, "SQLException", e);
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 		catch (EmailException e)
 		{
-			e.printStackTrace();
+			Logger.getLogger("").log(Level.SEVERE, "EmailException", e);
 			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
 		}
 	}
