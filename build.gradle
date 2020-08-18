@@ -92,7 +92,7 @@ war {
     rootSpec.exclude('**/jhi/**/*.class')
     rootSpec.includeEmptyDirs = false
 
-    // Include external .jar files, but exclude the Germinate client and core.
+    // Include external .jar files, but exclude the Gatekeeper client.
     classpath fileTree(dir:'build/libs/', include:'*.jar', excludes: ['gatekeeper-client.jar'])
 
     // Set the classpath
