@@ -125,15 +125,23 @@ Setting up Gatekeeper manually involves a few steps that have to be done for eve
 ### Requirements
 
 Server:
-- Java 8 or above
+- Java 11 or above
 - Tomcat 8.5.12 or above
-- MySQL 5.7.22 or above
+- MySQL 5.7.22 or above (or MariaDB 10.5.0 or above)
 
 Client:
 - Node.js 10.15.1 or above
 - NPM 6.4.1 or above
 
 We are going to assume that you have a running Tomcat and a running MySQL database that we can link into.
+
+Make sure that your MySQL server contains an empty database (or a database from a version 3 release of Gatekeeper). The name of this database is then used in the [server configuration section](#configure-gatekeeper-server).
+
+An exemplar command to create such a database is:
+
+```shell
+mysql -u root -e "create database gatekeeper;"
+```
 
 ### Client
 
@@ -161,7 +169,7 @@ npm i
 Create a file called `.env` and add this to it:
 
 ```ini
-VUE_APP_BASE_URL=/<project.name>/v4.0.0/api/
+VUE_APP_BASE_URL=./api/
 ```
 
 Where `project.name` comes from the Gatekeeper Server configuration below.
@@ -221,7 +229,7 @@ The configuration directory and its content are described in the <a href="config
 
 #### Include Gatekeeper Client
 
-Copy the whole content of the `dist` directory within the Gatekeeper Client source into the `src/main/webapp` directory within the Gatekeeper Server source. 
+Copy the whole content of the `dist` directory within the Gatekeeper Client source `client` directory within the Gatekeeper Server source (you may have to create a `client` folder at the root level of the project). 
 
 #### Build Gatekeeper Server
 
