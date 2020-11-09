@@ -50,7 +50,7 @@ public class PasswordResetResource extends ServerResource
 			UsersRecord user = context.selectFrom(USERS)
 									  .where(USERS.USERNAME.eq(request.getUsername())
 														   .and(USERS.EMAIL_ADDRESS.eq(request.getEmail())))
-									  .fetchOneInto(UsersRecord.class);
+									  .fetchAnyInto(UsersRecord.class);
 
 			if (user == null)
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());

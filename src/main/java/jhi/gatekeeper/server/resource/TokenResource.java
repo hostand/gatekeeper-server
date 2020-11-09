@@ -80,7 +80,7 @@ public class TokenResource extends ServerResource
 		{
 			user = context.selectFrom(USERS)
 						  .where(USERS.USERNAME.eq(request.getUsername()))
-						  .fetchOneInto(Users.class);
+						  .fetchAnyInto(Users.class);
 
 			if (user != null)
 			{

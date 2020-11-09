@@ -53,7 +53,7 @@ public class UserPasswordResource extends PaginatedServerResource
 		{
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(sessionUser.getId()))
-								.fetchOneInto(Users.class);
+								.fetchAnyInto(Users.class);
 
 			if (user == null)
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());

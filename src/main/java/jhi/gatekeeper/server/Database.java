@@ -114,20 +114,20 @@ public class Database
 			DatabaseSystems db = context.selectFrom(DATABASE_SYSTEMS)
 										.where(DATABASE_SYSTEMS.SERVER_NAME.eq("--"))
 										.and(DATABASE_SYSTEMS.SYSTEM_NAME.eq("gatekeeper"))
-										.fetchOneInto(DatabaseSystems.class);
+										.fetchAnyInto(DatabaseSystems.class);
 
 			UserTypes type = context.selectFrom(USER_TYPES)
 									.where(USER_TYPES.DESCRIPTION.eq("Administrator"))
-									.fetchOneInto(UserTypes.class);
+									.fetchAnyInto(UserTypes.class);
 
-			int adminCount = context.selectCount()
+			Integer adminCount = context.selectCount()
 									.from(USERS)
 									.leftJoin(USER_HAS_ACCESS_TO_DATABASES).on(USERS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_ID))
 									.where(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(db.getId()))
 									.and(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID.eq(type.getId()))
-									.fetchOne(0, int.class);
+									.fetchAnyInto(Integer.class);
 
-			if (adminCount < 1)
+			if (adminCount == null || adminCount < 1)
 			{
 				// Create a default Admin user with password "password".
 				UsersRecord admin = context.newRecord(USERS);

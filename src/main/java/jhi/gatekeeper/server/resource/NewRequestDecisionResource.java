@@ -34,7 +34,7 @@ public class NewRequestDecisionResource extends ServerResource
 		{
 			UnapprovedUsersRecord unapprovedUser = context.selectFrom(UNAPPROVED_USERS)
 														  .where(UNAPPROVED_USERS.ID.eq(id))
-														  .fetchOneInto(UNAPPROVED_USERS);
+														  .fetchAnyInto(UNAPPROVED_USERS);
 
 			if (unapprovedUser == null)
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());
@@ -55,7 +55,7 @@ public class NewRequestDecisionResource extends ServerResource
 						// Get the institution by its id
 						institution = context.selectFrom(INSTITUTIONS)
 											 .where(INSTITUTIONS.ID.eq(unapprovedUser.getInstitutionId()))
-											 .fetchOneInto(InstitutionsRecord.class);
+											 .fetchAnyInto(InstitutionsRecord.class);
 
 						if (institution == null)
 							throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_INSTITUTION.name());
@@ -93,7 +93,7 @@ public class NewRequestDecisionResource extends ServerResource
 
 					DatabaseSystems system = context.selectFrom(DATABASE_SYSTEMS)
 													.where(DATABASE_SYSTEMS.ID.eq(unapprovedUser.getDatabaseSystemId()))
-													.fetchOneInto(DatabaseSystems.class);
+													.fetchAnyInto(DatabaseSystems.class);
 
 					// Grant access
 					UserHasAccessToDatabasesRecord record = context.newRecord(USER_HAS_ACCESS_TO_DATABASES);

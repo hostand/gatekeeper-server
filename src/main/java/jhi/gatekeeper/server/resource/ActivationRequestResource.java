@@ -33,14 +33,14 @@ public class ActivationRequestResource extends ServerResource
 		{
 			UnapprovedUsersRecord userRequest = context.selectFrom(UNAPPROVED_USERS)
 													   .where(UNAPPROVED_USERS.ACTIVATION_KEY.eq(request.getActivationKey()))
-													   .fetchOneInto(UnapprovedUsersRecord.class);
+													   .fetchAnyInto(UnapprovedUsersRecord.class);
 
 			if (userRequest == null)
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_REQUEST.name());
 
 			DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
 											  .where(DATABASE_SYSTEMS.ID.eq(userRequest.getDatabaseSystemId()))
-											  .fetchOneInto(DatabaseSystems.class);
+											  .fetchAnyInto(DatabaseSystems.class);
 
 			Byte needsApproval = userRequest.getNeedsApproval();
 			Locale locale = request.getJavaLocale();

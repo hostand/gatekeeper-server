@@ -78,10 +78,10 @@ public class ExistingRequestResource extends ServerResource
 			// Get the user and the database
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(request.getUserId()))
-								.fetchOneInto(Users.class);
+								.fetchAnyInto(Users.class);
 			DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
 											  .where(DATABASE_SYSTEMS.ID.eq(request.getDatabaseSystemId()))
-											  .fetchOneInto(DatabaseSystems.class);
+											  .fetchAnyInto(DatabaseSystems.class);
 
 			// If either are null, fail
 			if (user == null || database == null)

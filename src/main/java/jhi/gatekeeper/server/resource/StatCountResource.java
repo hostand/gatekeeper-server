@@ -25,8 +25,7 @@ public class StatCountResource extends PaginatedServerResource
 			 DSLContext context = Database.getContext(conn))
 		{
 			return context.selectFrom(VIEW_COUNTS)
-						  .fetchOne()
-						  .into(ViewCounts.class);
+						  .fetchAnyInto(ViewCounts.class);
 		}
 		catch (SQLException e)
 		{

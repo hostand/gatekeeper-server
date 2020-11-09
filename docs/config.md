@@ -31,7 +31,7 @@ database.password = <database password if required
 database.port     = <database port if not 3306>
 
 # This points Gatekeeper to the location of the config.properties file.
-data.directory.external = <location of the directory containing the configuration files (the ones explained in this section). Should be '/data/gatekeeper' if using the Docker image.>
+fdata.directory.external = <location of the directory containing the configuration files (the ones explained in this section). Should be '/data/gatekeeper' if using the Docker image.>
 ```
 
 # Default Admin account

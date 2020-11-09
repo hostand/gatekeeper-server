@@ -34,17 +34,17 @@ public class ExistingRequestDecisionResource extends ServerResource
 			// Get the request with the given id
 			AccessRequestsRecord accessRequest = context.selectFrom(ACCESS_REQUESTS)
 														.where(ACCESS_REQUESTS.ID.eq(id))
-														.fetchOneInto(ACCESS_REQUESTS);
+														.fetchAnyInto(ACCESS_REQUESTS);
 
 			if (accessRequest != null)
 			{
 				// Get user and database
 				Users user = context.selectFrom(USERS)
 									.where(USERS.ID.eq(accessRequest.getUserId()))
-									.fetchOneInto(Users.class);
+									.fetchAnyInto(Users.class);
 				DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
 												  .where(DATABASE_SYSTEMS.ID.eq(accessRequest.getDatabaseSystemId()))
-												  .fetchOneInto(DatabaseSystems.class);
+												  .fetchAnyInto(DatabaseSystems.class);
 
 				// If it's been rejected, update database,
 				switch (request.getDecision())
