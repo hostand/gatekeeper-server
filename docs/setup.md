@@ -118,6 +118,8 @@ Make sure you have at least a `config.properties` file in the location at `/path
 data.directory.external=/data/gatekeeper
 ```
 
+**Tip**: When using the setup as described above, make sure to set the `database.server` property in the `config.properties` file to `mysql`, as this is the address of the database within the Docker network. If you rename the MySQL service, please use that new name.
+
 ## Manual setup
 
 Setting up Gatekeeper manually involves a few steps that have to be done for every new release.

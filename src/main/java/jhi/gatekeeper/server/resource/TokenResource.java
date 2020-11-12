@@ -106,6 +106,7 @@ public class TokenResource extends ServerResource
 		}
 		catch (SQLException e)
 		{
+			Logger.getLogger("").info(e.getMessage());
 			e.printStackTrace();
 			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
@@ -128,6 +129,7 @@ public class TokenResource extends ServerResource
 			}
 			catch (SQLException e)
 			{
+				Logger.getLogger("").info(e.getMessage());
 				e.printStackTrace();
 			}
 		}
