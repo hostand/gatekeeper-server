@@ -100,8 +100,10 @@ public class ExistingRequestResource extends ServerResource
 
 			if (request.getNeedsApproval() == 1)
 			{
+				AccessRequestsRecord record = context.newRecord(ACCESS_REQUESTS, request);
+				record.setCreatedOn(new Timestamp(System.currentTimeMillis()));
 				// If it needs approval, store it in the database for now, then send emails
-				int result = context.newRecord(ACCESS_REQUESTS, request).store();
+				int result = record.store();
 				Email.sendAwaitingApproval(locale, user);
 				Email.sendAdministratorNotification(locale, database, true);
 				return result > 0;
@@ -110,6 +112,7 @@ public class ExistingRequestResource extends ServerResource
 			{
 				// If it doesn't need approval, make the decision straightaway.
 				AccessRequestsRecord record = context.newRecord(ACCESS_REQUESTS, request.getAccessRequest());
+				record.setCreatedOn(new Timestamp(System.currentTimeMillis()));
 				record.store();
 				RequestDecision decision = new RequestDecision(record.getId(), Decision.APPROVE, null);
 				decision.setJavaLocale(locale);

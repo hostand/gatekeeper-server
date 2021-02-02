@@ -94,6 +94,7 @@ public class NewRequestResource extends ServerResource
 			String uuid = UUID.randomUUID().toString();
 
 			record.setActivationKey(uuid);
+			record.setCreatedOn(new Timestamp(System.currentTimeMillis()));
 
 			if (!url.endsWith("/"))
 				url += "/";
