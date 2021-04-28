@@ -107,9 +107,9 @@ public class UserPermissionResource extends PaginatedServerResource
 				orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
 
 				if (ascending)
-					step.orderBy(DSL.field(orderBy).asc());
+					step.orderBy(DSL.field("{0}", orderBy).asc());
 				else
-					step.orderBy(DSL.field(orderBy).desc());
+					step.orderBy(DSL.field("{0}", orderBy).desc());
 			}
 
 			List<ViewUserPermissions> result = step.limit(pageSize)
