@@ -127,9 +127,9 @@ public class DatabaseResource extends PaginatedServerResource
 					orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
 
 					if (ascending)
-						step.orderBy(DSL.field("{0}", orderBy).asc());
+						step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
 					else
-						step.orderBy(DSL.field("{0}", orderBy).desc());
+						step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
 				}
 			}
 

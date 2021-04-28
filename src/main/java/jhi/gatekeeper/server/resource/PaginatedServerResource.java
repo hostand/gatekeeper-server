@@ -1,5 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
+import jhi.gatekeeper.server.util.StringUtils;
 import org.restlet.resource.*;
 
 import java.net.URLDecoder;
@@ -81,6 +82,18 @@ public class PaginatedServerResource extends ServerResource
 		{
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+	protected static String getSafeColumn(String column)
+	{
+		if (StringUtils.isEmpty(column))
+		{
+			return null;
+		}
+		else
+		{
+			return column.replaceAll("[^a-zA-Z0-9._-]", "").replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
 		}
 	}
 }

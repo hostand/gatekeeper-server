@@ -1,5 +1,6 @@
 package jhi.gatekeeper.server.resource;
 
+import jhi.gatekeeper.server.util.*;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.restlet.data.Status;
@@ -13,7 +14,6 @@ import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
-import jhi.gatekeeper.server.util.OnlyAdmin;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -156,9 +156,9 @@ public class UserResource extends PaginatedServerResource
 					orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
 
 					if (ascending)
-						step.orderBy(DSL.field("{0}", orderBy).asc());
+						step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
 					else
-						step.orderBy(DSL.field("{0}", orderBy).desc());
+						step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
 				}
 			}
 
