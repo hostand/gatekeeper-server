@@ -16,6 +16,7 @@
 
 package jhi.gatekeeper.server.resource;
 
+import jhi.gatekeeper.server.database.tables.records.UsersRecord;
 import org.jooq.DSLContext;
 import org.restlet.data.Status;
 import org.restlet.resource.*;
@@ -72,7 +73,7 @@ public class TokenResource extends ServerResource
 	{
 		boolean canAccess;
 		String token;
-		Users user;
+		UsersRecord user;
 		UserTypes type;
 
 		try (Connection conn = Database.getConnection();
@@ -80,7 +81,7 @@ public class TokenResource extends ServerResource
 		{
 			user = context.selectFrom(USERS)
 						  .where(USERS.USERNAME.eq(request.getUsername()))
-						  .fetchAnyInto(Users.class);
+						  .fetchAny();
 
 			if (user != null)
 			{
@@ -97,6 +98,13 @@ public class TokenResource extends ServerResource
 							  .and(USERS.HAS_ACCESS_TO_GATEKEEPER.eq((byte) 1))
 							  .fetchOptionalInto(UserTypes.class)
 							  .orElse(null);
+
+				if (canAccess)
+				{
+					// Keep track of this last login event
+					user.setLastLogin(new Timestamp(System.currentTimeMillis()));
+					user.store(USERS.LAST_LOGIN);
+				}
 			}
 			else
 			{

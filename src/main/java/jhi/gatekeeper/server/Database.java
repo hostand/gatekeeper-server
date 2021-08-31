@@ -1,9 +1,11 @@
 package jhi.gatekeeper.server;
 
+import jhi.gatekeeper.server.database.GatekeeperDb;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.jooq.*;
 import org.jooq.conf.*;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
 import java.io.*;
@@ -13,7 +15,6 @@ import java.util.TimeZone;
 import java.util.logging.*;
 
 import jhi.gatekeeper.server.auth.BCrypt;
-import jhi.gatekeeper.server.database.GerminateGatekeeper;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.resource.TokenResource;
@@ -68,6 +69,63 @@ public class Database
 
 		if (initAndUpdate)
 		{
+			boolean databaseExists = true;
+			// Check if the germinatebase table exists
+			try (Connection conn = getConnection();
+				 PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(1) AS count FROM information_schema.tables WHERE table_schema = ? AND table_name = ?"))
+			{
+				stmt.setString(1, databaseName);
+				stmt.setString(2, "users");
+				ResultSet rs = stmt.executeQuery();
+
+				while (rs.next())
+					databaseExists = rs.getInt("count") > 0;
+
+				rs.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+
+			if (!databaseExists)
+			{
+				// Set up the database initially
+				try
+				{
+					URL url = Database.class.getClassLoader().getResource("jhi/gatekeeper/server/util/databasesetup/db_setup.sql");
+
+					if (url != null)
+					{
+						Logger.getLogger("").log(Level.INFO, "RUNNING DATABASE CREATION SCRIPT!");
+						executeFile(new File(url.toURI()));
+					}
+					else
+					{
+						throw new IOException("Setup SQL file not found!");
+					}
+				}
+				catch (IOException | URISyntaxException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				Logger.getLogger("").log(Level.INFO, "DATABASE EXISTS, NO NEED TO CREATE IT!");
+			}
+
+			// Convert the database to UTF-8
+			try (Connection conn = getConnection())
+			{
+				DSLContext context = Database.getContext(conn);
+				context.execute("ALTER DATABASE `" + databaseName + "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+			}
+			catch (SQLException | DataAccessException e)
+			{
+				e.printStackTrace();
+			}
+
 			// Run database update
 			try
 			{
@@ -180,7 +238,7 @@ public class Database
 		Settings settings = new Settings()
 			.withRenderMapping(new RenderMapping()
 				.withSchemata(
-					new MappedSchema().withInput(GerminateGatekeeper.GERMINATE_GATEKEEPER.getQualifiedName().first())
+					new MappedSchema().withInput(GatekeeperDb.GATEKEEPER_DB.getQualifiedName().first())
 									  .withOutput(databaseName)));
 
 		return DSL.using(connection, SQLDialect.MYSQL, settings);
