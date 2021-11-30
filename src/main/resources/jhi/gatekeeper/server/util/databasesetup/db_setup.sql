@@ -39,6 +39,7 @@ CREATE TABLE `database_systems`  (
 -- ----------------------------
 -- Records of database_systems
 -- ----------------------------
+INSERT INTO `database_systems` VALUES (-1, 'gatekeeper', '--', 'Gatekeeper Database');
 
 -- ----------------------------
 -- Table structure for institutions
@@ -98,7 +99,7 @@ CREATE TABLE `schema_version`  (
 INSERT INTO `schema_version` VALUES (1, '1', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'germinate3', '2018-12-11 10:49:35', 0, 1);
 INSERT INTO `schema_version` VALUES (2, '3.6.0', 'update', 'SQL', 'V3.6.0__update.sql', 1602255684, 'germinate3', '2018-12-11 10:49:35', 20, 1);
 INSERT INTO `schema_version` VALUES (3, '4.0.0', 'update', 'SQL', 'V4.0.0__update.sql', -1057957509, 'root', '2020-02-27 17:54:31', 22, 1);
-INSERT INTO `schema_version` VALUES (4, '4.21.08.31', 'update', 'SQL', 'V4.21.08.31__update.sql', -2056903133, 'root', '2021-08-31 17:54:31', 22, 1);
+INSERT INTO `schema_version` VALUES (4, '4.21.08.31', 'update', 'SQL', 'V4.21.08.31__update.sql', -2056903133, 'root', '2021-08-31 11:37:41', 22, 1);
 
 -- ----------------------------
 -- Table structure for unapproved_users
