@@ -21,6 +21,7 @@ email.username=<email address username>
 email.password=<email address password>
 email.server=<email server url>
 email.port=<email server port>
+email.use.tls.1.2=<should tls version 1.2 be used? true or false>
 
 # Database properties. Server name, database name and user name are required.
 # A password may be optional depending on your configuration and the port only needs to be provided if it's not 3306. 

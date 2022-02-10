@@ -183,6 +183,8 @@ public class Email
 
 			Properties props = new Properties();
 			props.put("mail.smtp.starttls.enable", "true");
+			if (PropertyWatcher.getBoolean(ServerProperty.EMAIL_USE_TLS_1_2))
+				props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 			props.put("mail.smtp.host", server);
 			props.put("mail.smtp.port", StringUtils.isEmpty(port) ? "587" : port);
 			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");

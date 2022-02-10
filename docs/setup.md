@@ -57,7 +57,7 @@ services:
     container_name: mysql
 
   tomcat:
-      image: cropgeeks/gatekeeper:release-x86-4.1.1
+      image: cropgeeks/gatekeeper:release-x86-4.2.1
       environment:
         - JAVA_OPTS:-Xmx512m
       ports:
@@ -108,7 +108,7 @@ docker run -d \
     -v /path/to/your/gatekeeper/config:/data/gatekeeper \
     -p 9080:8080 \
     --restart unless-stopped \
-    cropgeeks/gatekeeper:release-x86-4.1.1
+    cropgeeks/gatekeeper:release-x86-4.2.1
 ```
 
 Make sure you have at least a `config.properties` file in the location at `/path/to/your/gatekeeper/config`. See <a href="config.html">Configuration</a> for additional config options. This file will contain the database configuration and also this property:
@@ -157,7 +157,7 @@ The steps involved to build the client of Gatekeeper are as follows:
 You can either download the code from GitHub directly via the [releases](https://github.com/germinateplatform/gatekeeper-vue/releases) or you can check out the latest release via the command line: 
 
 ```shell
-git clone -b '4.1.1' --depth 1 https://github.com/germinateplatform/gatekeeper-vue.git
+git clone -b '4.2.1' --depth 1 https://github.com/germinateplatform/gatekeeper-vue.git
 ```
 
 #### Configure Gatekeeper Client
@@ -201,7 +201,7 @@ Let's go through these steps one at a time.
 You can either download the code from GitHub directly via the [releases](https://github.com/germinateplatform/gatekeeper-server/releases) or you can check out the latest release via the command line: 
 
 ```shell
-git clone -b '4.1.1' --depth 1 https://github.com/germinateplatform/gatekeeper-server.git
+git clone -b '4.2.1' --depth 1 https://github.com/germinateplatform/gatekeeper-server.git
 ```
 
 #### Configure Gatekeeper Server
@@ -218,7 +218,7 @@ tomcat.manager.port=<port of tomcat, e.g. '8080'>
 tomcat.manager.username=<tomcat username>
 tomcat.manager.password=<tomcat password>
 
-project.name=<the relative path inside tomcat, e.g. 'gatekeeper' -> http://localhost:8080/gatekeeper/v4.1.1>
+project.name=<the relative path inside tomcat, e.g. 'gatekeeper' -> http://localhost:8080/gatekeeper/v4.2.1>
 ```
 
 Change `config.properties` like this:
@@ -241,7 +241,7 @@ Once all previous steps are complete, building Gatekeeper Server is as simple as
 gradle deployTomcat
 ```
 
-After the build process is complete, the Gatekeeper API will be available at the specified location (`<tomcat-url>/<project.name>/v4.1.1`).
+After the build process is complete, the Gatekeeper API will be available at the specified location (`<tomcat-url>/<project.name>/v4.2.1`).
 
 
 ## Proxy
