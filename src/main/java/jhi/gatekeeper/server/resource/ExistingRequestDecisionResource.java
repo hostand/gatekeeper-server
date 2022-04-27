@@ -1,9 +1,11 @@
 package jhi.gatekeeper.server.resource;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -22,11 +24,12 @@ import static jhi.gatekeeper.server.database.tables.Users.*;
 /**
  * @author Sebastian Raubach
  */
-public class ExistingRequestDecisionResource extends ServerResource
+@Path("request/existing/{requestId}/decision")
+@Secured(UserType.ADMIN)
+public class ExistingRequestDecisionResource extends ContextResource
 {
-	private Integer id;
-
-	public static boolean decide(Integer id, RequestDecision request)
+	public static boolean decide(Integer id, RequestDecision request, HttpServletResponse resp)
+		throws SQLException, IOException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -76,44 +79,35 @@ public class ExistingRequestDecisionResource extends ServerResource
 			}
 			else
 			{
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode());
+				return false;
 			}
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return false;
 		}
 	}
 
-	@Override
-	public void doInit()
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postDecision(RequestDecision request, @PathParam("requestId") Integer requestId)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (requestId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("requestId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
+		if (request == null || !Objects.equals(request.getRequestId(), requestId))
 		{
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode());
+			return false;
 		}
-	}
 
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(RequestDecision request)
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
-		if (request == null || !Objects.equals(request.getRequestId(), id))
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-
-		return decide(id, request);
+		return decide(requestId, request, resp);
 	}
 }

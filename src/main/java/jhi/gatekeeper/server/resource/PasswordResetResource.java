@@ -16,10 +16,11 @@
 
 package jhi.gatekeeper.server.resource;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.*;
@@ -35,14 +36,18 @@ import static jhi.gatekeeper.server.database.tables.PasswordResetLog.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
- * {@link ServerResource} handling {@link PasswordResetResource} requests.
+ * {@link ContextResource} handling {@link PasswordResetResource} requests.
  *
  * @author Sebastian Raubach
  */
-public class PasswordResetResource extends ServerResource
+@Path("passwordreset")
+public class PasswordResetResource extends ContextResource
 {
-	@Post("json")
-	public boolean postJson(PasswordResetRequest request)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postPasswordReset(PasswordResetRequest request)
+		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -53,7 +58,10 @@ public class PasswordResetResource extends ServerResource
 									  .fetchAnyInto(UsersRecord.class);
 
 			if (user == null)
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());
+			{
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_USER.name());
+				return false;
+			}
 
 			String newPassword = UUID.randomUUID().toString();
 
@@ -61,7 +69,7 @@ public class PasswordResetResource extends ServerResource
 
 			PasswordResetLogRecord record = context.newRecord(PASSWORD_RESET_LOG);
 			record.setUserId(user.getId());
-			record.setIpAddress(getRequest().getClientInfo().getUpstreamAddress());
+			record.setIpAddress(req.getRemoteAddr());
 			record.setTimestamp(new Timestamp(System.currentTimeMillis()));
 			record.store();
 
@@ -74,15 +82,11 @@ public class PasswordResetResource extends ServerResource
 
 			return true;
 		}
-		catch (SQLException e)
-		{
-			Logger.getLogger("").log(Level.SEVERE, "SQLException", e);
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 		catch (EmailException e)
 		{
 			Logger.getLogger("").log(Level.SEVERE, "EmailException", e);
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return false;
 		}
 	}
 }

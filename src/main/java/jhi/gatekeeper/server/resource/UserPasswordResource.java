@@ -1,52 +1,50 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.Objects;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
-import jhi.gatekeeper.server.Database;
-import jhi.gatekeeper.server.auth.*;
+import jhi.gatekeeper.server.*;
+import jhi.gatekeeper.server.auth.BCrypt;
 import jhi.gatekeeper.server.database.tables.pojos.Users;
 import jhi.gatekeeper.server.exception.EmailException;
-import jhi.gatekeeper.server.util.Email;
+import jhi.gatekeeper.server.util.*;
+import org.jooq.DSLContext;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.Objects;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
  * @author Sebastian Raubach
  */
+@Path("user/{userId}/password")
+@Secured
 public class UserPasswordResource extends PaginatedServerResource
 {
-	private Integer id = null;
+	@PathParam("userId")
+	Integer userId;
 
-	@Override
-	public void doInit()
+	@PATCH
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean patchPassword(PasswordUpdate update)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (update == null || userId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("userId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
+
+		AuthenticationFilter.UserDetails sessionUser = (AuthenticationFilter.UserDetails) securityContext.getUserPrincipal();
+
+		if (sessionUser == null || !Objects.equals(sessionUser.getId(), userId))
 		{
+			resp.sendError(Response.Status.UNAUTHORIZED.getStatusCode());
+			return false;
 		}
-	}
-
-	@Patch("json")
-	public boolean postJson(PasswordUpdate update)
-	{
-		if (update == null || id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
-
-		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
-
-		if (sessionUser == null || !Objects.equals(sessionUser.getId(), id))
-			throw new ResourceException(Status.CLIENT_ERROR_UNAUTHORIZED);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -56,7 +54,10 @@ public class UserPasswordResource extends PaginatedServerResource
 								.fetchAnyInto(Users.class);
 
 			if (user == null)
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());
+			{
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_USER.name());
+				return false;
+			}
 
 			// Check if they are the same
 			boolean same = BCrypt.checkpw(update.getOldPassword(), user.getPassword());
@@ -71,7 +72,7 @@ public class UserPasswordResource extends PaginatedServerResource
 					   .execute();
 
 				// Terminate this "session".
-				CustomVerifier.removeToken(CustomVerifier.getFromSession(getRequest(), getResponse()).getToken(), getRequest(), getResponse());
+				AuthenticationFilter.removeToken(sessionUser.getToken(), req, resp);
 
 				if (!user.getUsername().equals("admin"))
 					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
@@ -80,18 +81,15 @@ public class UserPasswordResource extends PaginatedServerResource
 			}
 			else
 			{
-				throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+				resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+				return false;
 			}
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+			return false;
 		}
 	}
 }

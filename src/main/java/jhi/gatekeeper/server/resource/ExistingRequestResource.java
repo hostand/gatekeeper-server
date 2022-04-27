@@ -1,19 +1,18 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.restlet.data.Status;
-import org.restlet.resource.Delete;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.*;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
+import org.jooq.*;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 import static jhi.gatekeeper.server.database.tables.AccessRequests.*;
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
@@ -24,51 +23,43 @@ import static jhi.gatekeeper.server.database.tables.ViewAccessRequestUserDetails
 /**
  * @author Sebastian Raubach
  */
-public class ExistingRequestResource extends ServerResource
+@Path("request/existing")
+@Secured(UserType.ADMIN)
+public class ExistingRequestResource extends ContextResource
 {
-	private Integer id;
-
-	@Override
-	public void doInit()
+	@DELETE
+	@Path("/{requestId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteExistingRequest(@PathParam("requestId") Integer requestId)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (requestId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("requestId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-	}
-
-	@OnlyAdmin
-	@Delete("json")
-	public boolean deleteJson()
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			return context.deleteFrom(ACCESS_REQUESTS)
-						  .where(ACCESS_REQUESTS.ID.eq(id))
+						  .where(ACCESS_REQUESTS.ID.eq(requestId))
 						  .execute() > 0;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(NewAccessRequest request)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postExistingRequest(NewAccessRequest request)
+		throws IOException, SQLException
 	{
 		if (request == null || request.getUserId() == null || request.getDatabaseSystemId() == null)
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.NOT_FOUND_PAYLOAD.name());
+		{
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode(), StatusMessage.NOT_FOUND_PAYLOAD.name());
+			return false;
+		}
 
 		Locale locale = request.getJavaLocale();
 
@@ -85,7 +76,10 @@ public class ExistingRequestResource extends ServerResource
 
 			// If either are null, fail
 			if (user == null || database == null)
-				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.NOT_FOUND_USER.name());
+			{
+				resp.sendError(Response.Status.BAD_REQUEST.getStatusCode(), StatusMessage.NOT_FOUND_USER.name());
+				return false;
+			}
 
 			boolean alreadyHasAccess = context.fetchExists(USER_HAS_ACCESS_TO_DATABASES, USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(user.getId())
 																															 .and(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(database.getId())));
@@ -94,9 +88,15 @@ public class ExistingRequestResource extends ServerResource
 																								   .and(ACCESS_REQUESTS.HAS_BEEN_REJECTED.eq((byte) 0)));
 
 			if (alreadyHasAccess)
-				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USER_ALREADY_HAS_ACCESS.name());
+			{
+				resp.sendError(Response.Status.CONFLICT.getStatusCode(), StatusMessage.CONFLICT_USER_ALREADY_HAS_ACCESS.name());
+				return false;
+			}
 			if (alreadyRequested)
-				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USER_ALREADY_REQUESTED_ACCESS.name());
+			{
+				resp.sendError(Response.Status.CONFLICT.getStatusCode(), StatusMessage.CONFLICT_USER_ALREADY_REQUESTED_ACCESS.name());
+				return false;
+			}
 
 			if (request.getNeedsApproval() == 1)
 			{
@@ -116,43 +116,46 @@ public class ExistingRequestResource extends ServerResource
 				record.store();
 				RequestDecision decision = new RequestDecision(record.getId(), Decision.APPROVE, null);
 				decision.setJavaLocale(locale);
-				ExistingRequestDecisionResource.decide(record.getId(), decision);
+				ExistingRequestDecisionResource.decide(record.getId(), decision, resp);
 				Email.sendAdministratorNotification(locale, database, false);
 				return true;
 			}
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return false;
 		}
 	}
 
-	@OnlyAdmin
-	@Get("json")
-	public List<ViewAccessRequestUserDetails> getJson()
+	@GET
+	@Path("/{requestId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ViewAccessRequestUserDetails> getExistingRequestById(@PathParam("requestId") Integer requestId)
+		throws SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<ViewAccessRequestUserDetailsRecord> step = context.selectFrom(VIEW_ACCESS_REQUEST_USER_DETAILS);
 
-			if (id != null)
-				step.where(VIEW_ACCESS_REQUEST_USER_DETAILS.ID.eq(id));
+			if (requestId != null)
+				step.where(VIEW_ACCESS_REQUEST_USER_DETAILS.ID.eq(requestId));
 
 			return step.orderBy(VIEW_ACCESS_REQUEST_USER_DETAILS.CREATED_ON)
 					   .fetch()
 					   .into(ViewAccessRequestUserDetails.class);
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
+	}
+
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ViewAccessRequestUserDetails> getExistingRequests()
+		throws SQLException
+	{
+		return this.getExistingRequestById(null);
 	}
 }

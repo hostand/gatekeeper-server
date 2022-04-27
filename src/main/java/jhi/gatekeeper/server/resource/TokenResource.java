@@ -16,17 +16,19 @@
 
 package jhi.gatekeeper.server.resource;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.database.tables.records.UsersRecord;
+import jhi.gatekeeper.server.util.Secured;
 import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.*;
 
 import jhi.gatekeeper.resource.*;
-import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 
@@ -36,30 +38,42 @@ import static jhi.gatekeeper.server.database.tables.UserTypes.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
- * {@link ServerResource} handling {@link TokenResource} requests.
+ * {@link ContextResource} handling {@link TokenResource} requests.
  *
  * @author Sebastian Raubach
  */
-public class TokenResource extends ServerResource
+@Path("token")
+public class TokenResource extends ContextResource
 {
 	public static Integer SALT = 10;
 
-	@Delete("json")
-	public boolean deleteJson(Users user)
+	@DELETE
+	@Secured
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteToken(Users user)
+		throws IOException
 	{
 		if (user == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_TOKEN.name());
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_TOKEN.name());
+			return false;
+		}
 
-		CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
+		AuthenticationFilter.UserDetails sessionUser = (AuthenticationFilter.UserDetails) securityContext.getUserPrincipal();
 
 		if (sessionUser == null || !Objects.equals(sessionUser.getToken(), user.getPassword()))
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+		{
+			resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+			return false;
+		}
 
 		try
 		{
 			// Try and see if it's a valid UUID
 			UUID.fromString(user.getPassword());
-			return CustomVerifier.removeToken(user.getPassword(), getRequest(), getResponse());
+			AuthenticationFilter.removeToken(user.getPassword(), req, resp);
+			return true;
 		}
 		catch (Exception e)
 		{
@@ -68,13 +82,17 @@ public class TokenResource extends ServerResource
 		}
 	}
 
-	@Post("json")
-	public Token postJson(Users request)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Token postToken(Users request)
+		throws IOException, SQLException
 	{
 		boolean canAccess;
 		String token;
 		UsersRecord user;
 		UserTypes type;
+		String userType = "Unknown";
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -99,6 +117,9 @@ public class TokenResource extends ServerResource
 							  .fetchOptionalInto(UserTypes.class)
 							  .orElse(null);
 
+				if (type != null)
+					userType = type.getDescription();
+
 				if (canAccess)
 				{
 					// Keep track of this last login event
@@ -109,20 +130,15 @@ public class TokenResource extends ServerResource
 			else
 			{
 				Logger.getLogger("").log(Level.SEVERE, "User not found: " + request.getUsername());
-				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.FORBIDDEN_INVALID_CREDENTIALS.name());
+				resp.sendError(Response.Status.BAD_REQUEST.getStatusCode(), StatusMessage.FORBIDDEN_INVALID_CREDENTIALS.name());
+				return null;
 			}
-		}
-		catch (SQLException e)
-		{
-			Logger.getLogger("").info(e.getMessage());
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 
 		if (canAccess)
 		{
 			token = UUID.randomUUID().toString();
-			CustomVerifier.addToken(getRequest(), getResponse(), token, user.getId());
+			AuthenticationFilter.addToken(this.req, this.resp, token, userType, user.getId());
 
 			// The salt may have changed since the last time, so update the password in the database with the new salt.
 			String saltedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(SALT));
@@ -143,9 +159,10 @@ public class TokenResource extends ServerResource
 		}
 		else
 		{
-			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INVALID_CREDENTIALS.name());
+			resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_INVALID_CREDENTIALS.name());
+			return null;
 		}
 
-		return new Token(token, user.getId(), user.getUsername(), user.getFullName(), user.getEmailAddress(), type, CustomVerifier.AGE, System.currentTimeMillis());
+		return new Token(token, user.getId(), user.getUsername(), user.getFullName(), user.getEmailAddress(), type, AuthenticationFilter.AGE, System.currentTimeMillis());
 	}
 }

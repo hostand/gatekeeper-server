@@ -20,8 +20,8 @@ package jhi.gatekeeper.server.util;
 import java.util.*;
 import java.util.logging.*;
 
-import javax.mail.*;
-import javax.mail.internet.*;
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 
 import jhi.gatekeeper.resource.ServerProperty;
 import jhi.gatekeeper.server.database.tables.pojos.*;

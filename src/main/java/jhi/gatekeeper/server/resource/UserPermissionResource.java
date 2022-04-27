@@ -1,18 +1,17 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.restlet.data.Status;
-import org.restlet.resource.Delete;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.List;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.ViewUserPermissions;
 import jhi.gatekeeper.server.util.*;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
 import static jhi.gatekeeper.server.database.tables.ViewUserPermissions.*;
@@ -20,37 +19,24 @@ import static jhi.gatekeeper.server.database.tables.ViewUserPermissions.*;
 /**
  * @author Sebastian Raubach
  */
+@Path("user/{userId}/permission")
+@Secured(UserType.ADMIN)
 public class UserPermissionResource extends PaginatedServerResource
 {
-	public static final String PARAM_DATABASE_SERVER = "databaseServer";
-	public static final String PARAM_DATABASE_NAME   = "databaseName";
+	@PathParam("userId")
+	Integer userId;
 
-	private Integer id = null;
-	private String  databaseServer;
-	private String  databaseName;
-
-	@Override
-	public void doInit()
-	{
-		super.doInit();
-
-		try
-		{
-			this.id = Integer.parseInt(getRequestAttributes().get("userId").toString());
-		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-		this.databaseServer = getQueryValue(PARAM_DATABASE_SERVER);
-		this.databaseName = getQueryValue(PARAM_DATABASE_NAME);
-	}
-
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(ViewUserPermissions permission)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean pstUserPermission(ViewUserPermissions permission)
+		throws IOException, SQLException
 	{
 		if (permission == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_PAYLOAD.name());
+			return false;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -63,19 +49,19 @@ public class UserPermissionResource extends PaginatedServerResource
 
 			return result > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Get("json")
-	public PaginatedResult<List<ViewUserPermissions>> getJson()
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<ViewUserPermissions>> getUserPermissions(@QueryParam("databaseName") String databaseName, @QueryParam("databaseServer") String databaseServer)
+		throws IOException, SQLException
 	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
+		if (userId == null)
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return null;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -84,7 +70,7 @@ public class UserPermissionResource extends PaginatedServerResource
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(VIEW_USER_PERMISSIONS);
 
-			step.where(VIEW_USER_PERMISSIONS.USER_ID.eq(id));
+			step.where(VIEW_USER_PERMISSIONS.USER_ID.eq(userId));
 
 			if (query != null && !"".equals(query))
 			{
@@ -121,19 +107,19 @@ public class UserPermissionResource extends PaginatedServerResource
 
 			return new PaginatedResult<>(result, count);
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Delete("json")
-	public boolean deleteJson(ViewUserPermissions permission)
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteUserPermission(ViewUserPermissions permission)
+		throws IOException, SQLException
 	{
 		if (permission == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_PAYLOAD.name());
+			return false;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -146,19 +132,19 @@ public class UserPermissionResource extends PaginatedServerResource
 
 			return result > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Patch("json")
-	public boolean patchJson(ViewUserPermissions permission)
+	@PATCH
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean patchUserPermission(ViewUserPermissions permission)
+		throws IOException, SQLException
 	{
 		if (permission == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_PAYLOAD.name());
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_PAYLOAD.name());
+			return false;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -170,11 +156,6 @@ public class UserPermissionResource extends PaginatedServerResource
 								.execute();
 
 			return result > 0;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }

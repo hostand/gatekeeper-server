@@ -1,13 +1,7 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.restlet.data.Status;
-import org.restlet.resource.Delete;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.*;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.auth.BCrypt;
@@ -16,6 +10,11 @@ import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
 import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
+import org.jooq.*;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 import static jhi.gatekeeper.server.database.tables.UnapprovedUsers.*;
 import static jhi.gatekeeper.server.database.tables.Users.*;
@@ -24,52 +23,44 @@ import static jhi.gatekeeper.server.database.tables.ViewUnapprovedUserDetails.*;
 /**
  * @author Sebastian Raubach
  */
-public class NewRequestResource extends ServerResource
+@Path("request/new")
+@Secured(UserType.ADMIN)
+public class NewRequestResource extends ContextResource
 {
-	private Integer id;
-
-	@Override
-	public void doInit()
+	@DELETE
+	@Path("/{requestId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteNewRequest(@PathParam("requestId") Integer requestId)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (requestId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("requestId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-	}
-
-	@OnlyAdmin
-	@Delete("json")
-	public boolean deleteJson()
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			return context.deleteFrom(UNAPPROVED_USERS)
-						  .where(UNAPPROVED_USERS.ID.eq(id))
+						  .where(UNAPPROVED_USERS.ID.eq(requestId))
 						  .execute() > 0;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(NewUnapprovedUser request)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postNewRequest(NewUnapprovedUser request)
+		throws IOException, SQLException
 	{
 		if (request == null || request.getDatabaseSystemId() == null
 			|| StringUtils.isEmpty(request.getUserUsername(), request.getUserPassword(), request.getUserEmailAddress(), request.getUserFullName()))
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, StatusMessage.BAD_REQUEST_MISSING_FIELDS.name());
+		{
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode(), StatusMessage.BAD_REQUEST_MISSING_FIELDS.name());
+			return false;
+		}
 
 		Locale locale = request.getJavaLocale();
 
@@ -83,7 +74,10 @@ public class NewRequestResource extends ServerResource
 																																			   .or(UNAPPROVED_USERS.USER_EMAIL_ADDRESS.eq(request.getUserEmailAddress()))));
 
 			if (userExists || requestExists)
-				throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, StatusMessage.CONFLICT_USERNAME_EMAIL_ALREADY_IN_USE.name());
+			{
+				resp.sendError(Response.Status.CONFLICT.getStatusCode(), StatusMessage.CONFLICT_USERNAME_EMAIL_ALREADY_IN_USE.name());
+				return false;
+			}
 
 			request.setUserPassword(BCrypt.hashpw(request.getUserPassword(), BCrypt.gensalt(TokenResource.SALT)));
 			UnapprovedUsers newUser = request.getUnapprovedUser();
@@ -107,39 +101,42 @@ public class NewRequestResource extends ServerResource
 
 			return true;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return false;
 		}
 	}
 
-	@OnlyAdmin
-	@Get("json")
-	public List<ViewUnapprovedUserDetails> getJson()
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ViewUnapprovedUserDetails> getNewRequests()
+		throws IOException, SQLException
+	{
+		return this.getNewRequestById(null);
+	}
+
+	@GET
+	@Path("requestId")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ViewUnapprovedUserDetails> getNewRequestById(@PathParam("requestId") Integer requestId)
+		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			SelectWhereStep<ViewUnapprovedUserDetailsRecord> step = context.selectFrom(VIEW_UNAPPROVED_USER_DETAILS);
 
-			if (id != null)
-				step.where(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(id));
+			if (requestId != null)
+				step.where(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(requestId));
 
 			return step.where(VIEW_UNAPPROVED_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0))
 					   .orderBy(VIEW_UNAPPROVED_USER_DETAILS.CREATED_ON)
 					   .fetch()
 					   .into(ViewUnapprovedUserDetails.class);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }

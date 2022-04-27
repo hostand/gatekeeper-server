@@ -1,57 +1,39 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.restlet.data.Status;
-import org.restlet.resource.Delete;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.List;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.DatabaseSystems;
 import jhi.gatekeeper.server.database.tables.records.DatabaseSystemsRecord;
-import jhi.gatekeeper.server.util.OnlyAdmin;
+import jhi.gatekeeper.server.util.Secured;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 
 /**
  * @author Sebastian Raubach
  */
+@Path("database")
+@Secured(UserType.ADMIN)
 public class DatabaseResource extends PaginatedServerResource
 {
-	public static final String PARAM_DATABASE = "database";
-	public static final String PARAM_SERVER   = "server";
-
-	private Integer id = null;
-	private String  queryDatabase;
-	private String  queryServer;
-
-	@Override
-	public void doInit()
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Integer postDatabase(DatabaseSystems database)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (database.getId() != null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("databaseId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
+			return null;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-
-		this.queryDatabase = getQueryValue(PARAM_DATABASE);
-		this.queryServer = getQueryValue(PARAM_SERVER);
-	}
-
-	@OnlyAdmin
-	@Post("json")
-	public Integer postJson(DatabaseSystems database)
-	{
-		if (id != null || database.getId() != null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -61,39 +43,47 @@ public class DatabaseResource extends PaginatedServerResource
 
 			return record.getId();
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Delete("json")
-	public boolean deleteJson()
+	@DELETE
+	@Path("/{databaseId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteJson(@PathParam("databaseId") Integer databaseId)
+		throws IOException, SQLException
 	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
+		if (databaseId == null)
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.deleteFrom(DATABASE_SYSTEMS)
-								.where(DATABASE_SYSTEMS.ID.eq(id))
+								.where(DATABASE_SYSTEMS.ID.eq(databaseId))
 								.execute();
 
 			return result > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Get("json")
-	public PaginatedResult<List<DatabaseSystems>> getJson()
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<DatabaseSystems>> getDatabases(@QueryParam("queryServer") String queryServer, @QueryParam("queryDatabase") String queryDatabase)
+		throws IOException, SQLException
+	{
+		return this.getDatabaseById(null, queryServer, queryDatabase);
+	}
+
+	@GET
+	@Path("/{databaseId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<DatabaseSystems>> getDatabaseById(@PathParam("databaseId") Integer databaseId, @QueryParam("queryServer") String queryServer, @QueryParam("queryDatabase") String queryDatabase)
+		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -102,9 +92,9 @@ public class DatabaseResource extends PaginatedServerResource
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(DATABASE_SYSTEMS);
 
-			if (id != null)
+			if (databaseId != null)
 			{
-				step.where(DATABASE_SYSTEMS.ID.eq(id));
+				step.where(DATABASE_SYSTEMS.ID.eq(databaseId));
 			}
 			else
 			{
@@ -141,11 +131,6 @@ public class DatabaseResource extends PaginatedServerResource
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 
 			return new PaginatedResult<>(result, count);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }

@@ -1,62 +1,51 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.List;
-
-import jhi.gatekeeper.resource.PaginatedResult;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.Institutions;
-import jhi.gatekeeper.server.util.OnlyAdmin;
+import jhi.gatekeeper.server.util.Secured;
+import org.jooq.*;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 import static jhi.gatekeeper.server.database.tables.Institutions.*;
 
 /**
  * @author Sebastian Raubach
  */
+@Path("institution")
+@Secured(UserType.ADMIN)
 public class InstitutionResource extends PaginatedServerResource
 {
-	private Integer id = null;
-
-	@Override
-	public void doInit()
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postInstitution(Institutions newInstitution)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (newInstitution == null || newInstitution.getId() != null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("institutionId").toString());
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-	}
-
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(Institutions newInstitution)
-	{
-		if (newInstitution == null || newInstitution.getId() != null || id != null)
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			return context.newRecord(INSTITUTIONS, newInstitution).store() > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Get("json")
-	public PaginatedResult<List<Institutions>> getJson()
+	@GET
+	@Path("/{institutionId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<Institutions>> getInstitutionById(@PathParam("institutionId") Integer institutionId)
+		throws SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -65,8 +54,8 @@ public class InstitutionResource extends PaginatedServerResource
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(INSTITUTIONS);
 
-			if (id != null)
-				step.where(INSTITUTIONS.ID.eq(id));
+			if (institutionId != null)
+				step.where(INSTITUTIONS.ID.eq(institutionId));
 
 			List<Institutions> result = step.limit(pageSize)
 											.offset(pageSize * currentPage)
@@ -76,10 +65,14 @@ public class InstitutionResource extends PaginatedServerResource
 
 			return new PaginatedResult<>(result, count);
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
+	}
+
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<Institutions>> getInstitutions()
+		throws SQLException
+	{
+		return this.getInstitutionById(null);
 	}
 }

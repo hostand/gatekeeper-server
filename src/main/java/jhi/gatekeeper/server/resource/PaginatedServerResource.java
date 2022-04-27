@@ -1,88 +1,47 @@
 package jhi.gatekeeper.server.resource;
 
+import jakarta.ws.rs.*;
 import jhi.gatekeeper.server.util.StringUtils;
-import org.restlet.resource.*;
+import org.jooq.*;
+import org.jooq.impl.DSL;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-
-/**
- * @author Sebastian Raubach
- */
-public class PaginatedServerResource extends ServerResource
+public abstract class PaginatedServerResource extends ContextResource
 {
-	public static final String PARAM_PAGE      = "page";
-	public static final String PARAM_LIMIT     = "limit";
-	public static final String PARAM_QUERY     = "query";
-	public static final String PARAM_ASCENDING = "ascending";
-	public static final String PARAM_ORDER_BY  = "orderBy";
+	@DefaultValue("-1")
+	@QueryParam("prevCount")
+	protected long previousCount;
 
-	protected int     currentPage;
-	protected int     pageSize;
-	protected String  query;
-	protected Boolean ascending;
-	protected String  orderBy;
+	@DefaultValue("0")
+	@QueryParam("page")
+	protected int currentPage;
 
-	@Override
-	protected void doInit()
-		throws ResourceException
+	@DefaultValue("2147483647")
+	@QueryParam("limit")
+	protected int pageSize;
+
+	@QueryParam("ascending")
+	private int isAscending;
+
+	protected Boolean ascending = null;
+
+	@QueryParam("orderBy")
+	protected String orderBy;
+
+	@QueryParam("query")
+	protected String query;
+
+	protected <T extends Record> SelectForUpdateStep<T> setPaginationAndOrderBy(SelectOrderByStep<T> step)
 	{
-		super.doInit();
+		if (ascending != null && orderBy != null)
+		{
+			if (ascending)
+				step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
+			else
+				step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
+		}
 
-		try
-		{
-			this.currentPage = Integer.parseInt(getQueryValue(PARAM_PAGE));
-		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-			this.currentPage = 0;
-		}
-		try
-		{
-			this.pageSize = Integer.parseInt(getQueryValue(PARAM_LIMIT));
-		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-			this.pageSize = Integer.MAX_VALUE;
-		}
-		try
-		{
-			this.query = getQueryValue(PARAM_QUERY);
-		}
-		catch (NullPointerException e)
-		{
-			this.query = null;
-		}
-		try
-		{
-			this.orderBy = getQueryValue(PARAM_ORDER_BY);
-		}
-		catch (NullPointerException e)
-		{
-			this.orderBy = null;
-		}
-		try
-		{
-			int value = Integer.parseInt(getQueryValue(PARAM_ASCENDING));
-			ascending = value == 1;
-		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-			this.ascending = null;
-		}
-	}
-
-	protected String getRequestAttributeAsString(String parameter)
-	{
-		try
-		{
-			return URLDecoder.decode(getRequestAttributes().get(parameter).toString(), StandardCharsets.UTF_8.name());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return step.limit(pageSize)
+				   .offset(pageSize * currentPage);
 	}
 
 	protected static String getSafeColumn(String column)

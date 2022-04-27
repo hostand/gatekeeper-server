@@ -1,19 +1,18 @@
 package jhi.gatekeeper.server.resource;
 
-import jhi.gatekeeper.server.util.*;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.restlet.data.Status;
-import org.restlet.resource.Delete;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.*;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
-import jhi.gatekeeper.server.Database;
+import jhi.gatekeeper.server.*;
 import jhi.gatekeeper.server.auth.*;
 import jhi.gatekeeper.server.database.tables.pojos.*;
+import jhi.gatekeeper.server.util.Secured;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -23,64 +22,46 @@ import static jhi.gatekeeper.server.database.tables.ViewUserDetails.*;
 /**
  * @author Sebastian Raubach
  */
+@Path("user")
 public class UserResource extends PaginatedServerResource
 {
-	public static final String PARAM_USERNAME = "username";
-	public static final String PARAM_DATABASE = "database";
-	public static final String PARAM_SERVER   = "server";
-
-	private Integer id       = null;
-	private String  username = null;
-	private String  database = null;
-	private String  server   = null;
-
-	@Override
-	public void doInit()
+	@DELETE
+	@Path("/{userId}")
+	@Secured(UserType.ADMIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean deleteUser(@PathParam("userId") Integer userId)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (userId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("userId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-
-		this.username = getQueryValue(PARAM_USERNAME);
-		this.database = getQueryValue(PARAM_DATABASE);
-		this.server = getQueryValue(PARAM_SERVER);
-	}
-
-	@OnlyAdmin
-	@Delete("json")
-	public boolean deleteJson()
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			int result = context.deleteFrom(USERS)
-								.where(USERS.ID.eq(id))
+								.where(USERS.ID.eq(userId))
 								.execute();
 
 			return result > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(Users newUser)
+	@POST
+	@Secured(UserType.ADMIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postUser(Users newUser)
+		throws IOException, SQLException
 	{
-		if (newUser == null || newUser.getId() != null || id != null)
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+		if (newUser == null || newUser.getId() != null)
+		{
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode());
+			return false;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -88,44 +69,63 @@ public class UserResource extends PaginatedServerResource
 			newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(TokenResource.SALT)));
 			return context.newRecord(USERS, newUser).store() > 0;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 	}
 
-	@Get("json")
-	public PaginatedResult<List<ViewUserDetails>> getJson()
+	@GET
+	@Secured
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<ViewUserDetails>> getUsers(@QueryParam("username") String username, @QueryParam("database") String database, @QueryParam("server") String server)
+		throws IOException, SQLException
+	{
+		return this.getUserById(null, username, database, server);
+	}
+
+	@GET
+	@Path("/{userId}")
+	@Secured
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<ViewUserDetails>> getUserById(@PathParam("userId") Integer userId, @QueryParam("username") String username, @QueryParam("database") String database, @QueryParam("server") String server)
+		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
-			CustomVerifier.UserDetails sessionUser = CustomVerifier.getFromSession(getRequest(), getResponse());
+			AuthenticationFilter.UserDetails userDetails = (AuthenticationFilter.UserDetails) securityContext.getUserPrincipal();
 
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(VIEW_USER_DETAILS);
 
-			if (id != null)
+			if (userId != null)
 			{
 				// A user must be allowed to request their own details, but nothing else
-				if (!Objects.equals(id, sessionUser.getId()))
-					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+				if (!Objects.equals(userId, userDetails.getId()))
+				{
+					resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_ACCESS_TO_OTHER_USER.name());
+					return null;
+				}
 				else
-					step.where(VIEW_USER_DETAILS.ID.eq(id));
+					step.where(VIEW_USER_DETAILS.ID.eq(userId));
 			}
 			else if (username != null)
 			{
-				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
-					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+				if (userDetails.getUserType() != UserType.ADMIN)
+				{
+					resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+					return null;
+				}
 				else
 					step.where(VIEW_USER_DETAILS.USERNAME.eq(username));
 			}
 			else if (database != null && server != null)
 			{
-				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
-					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+				if (userDetails.getUserType() != UserType.ADMIN)
+				{
+					resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+					return null;
+				}
 				else
 					step.where(DSL.exists(DSL.selectOne()
 											 .from(DATABASE_SYSTEMS)
@@ -136,8 +136,11 @@ public class UserResource extends PaginatedServerResource
 			}
 			else
 			{
-				if (!CustomVerifier.isAdmin(getRequest(), getResponse()))
-					throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+				if (userDetails.getUserType() != UserType.ADMIN)
+				{
+					resp.sendError(Response.Status.FORBIDDEN.getStatusCode(), StatusMessage.FORBIDDEN_INSUFFICIENT_PERMISSIONS.name());
+					return null;
+				}
 
 				if (query != null && !"".equals(query))
 				{
@@ -170,11 +173,6 @@ public class UserResource extends PaginatedServerResource
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 
 			return new PaginatedResult<>(result, count);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }

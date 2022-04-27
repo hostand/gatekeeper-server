@@ -1,18 +1,19 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.*;
-
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.DatabaseSystems;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
+import org.jooq.DSLContext;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.Institutions.*;
@@ -23,11 +24,12 @@ import static jhi.gatekeeper.server.database.tables.Users.*;
 /**
  * @author Sebastian Raubach
  */
-public class NewRequestDecisionResource extends ServerResource
+@Path("request/new/{requestId}/decision")
+@Secured(UserType.ADMIN)
+public class NewRequestDecisionResource extends ContextResource
 {
-	private Integer id;
-
-	public static boolean decide(Integer id, RequestDecision request)
+	public static boolean decide(Integer id, RequestDecision request, HttpServletResponse resp)
+		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -37,7 +39,10 @@ public class NewRequestDecisionResource extends ServerResource
 														  .fetchAnyInto(UNAPPROVED_USERS);
 
 			if (unapprovedUser == null)
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());
+			{
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_USER.name());
+				return false;
+			}
 
 			switch (request.getDecision())
 			{
@@ -58,7 +63,10 @@ public class NewRequestDecisionResource extends ServerResource
 											 .fetchAnyInto(InstitutionsRecord.class);
 
 						if (institution == null)
-							throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_INSTITUTION.name());
+						{
+							resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_INSTITUTION.name());
+							return false;
+						}
 					}
 					else
 					{
@@ -110,41 +118,31 @@ public class NewRequestDecisionResource extends ServerResource
 			}
 			return true;
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
-		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return false;
 		}
 	}
 
-	@Override
-	public void doInit()
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean postJson(RequestDecision request, @PathParam("requestId") Integer requestId)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (requestId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("requestId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
+		if (request == null || !Objects.equals(request.getRequestId(), requestId))
 		{
+			resp.sendError(Response.Status.BAD_REQUEST.getStatusCode());
+			return false;
 		}
-	}
 
-	@OnlyAdmin
-	@Post("json")
-	public boolean postJson(RequestDecision request)
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
-		if (request == null || !Objects.equals(request.getRequestId(), id))
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
-
-		return decide(id, request);
+		return decide(requestId, request, resp);
 	}
 }

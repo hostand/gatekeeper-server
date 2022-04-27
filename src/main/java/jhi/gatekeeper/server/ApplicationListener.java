@@ -2,8 +2,8 @@ package jhi.gatekeeper.server;
 
 import java.util.logging.*;
 
-import javax.servlet.*;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebListener;
 
 import jhi.gatekeeper.resource.ServerProperty;
 import jhi.gatekeeper.server.resource.TokenResource;

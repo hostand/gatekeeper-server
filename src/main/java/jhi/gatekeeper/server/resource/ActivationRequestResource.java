@@ -1,18 +1,18 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.Locale;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.DatabaseSystems;
 import jhi.gatekeeper.server.database.tables.records.UnapprovedUsersRecord;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
+import org.jooq.DSLContext;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.Locale;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UnapprovedUsers.*;
@@ -20,13 +20,20 @@ import static jhi.gatekeeper.server.database.tables.UnapprovedUsers.*;
 /**
  * @author Sebastian Raubach
  */
-public class ActivationRequestResource extends ServerResource
+@Path("request/activation")
+public class ActivationRequestResource extends ContextResource
 {
-	@Post("json")
-	public ActivationDecision getJson(ActivationRequest request)
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public ActivationDecision postActivation(ActivationRequest request)
+		throws IOException, SQLException
 	{
 		if (StringUtils.isEmpty(request.getActivationKey()))
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_KEY.name());
+		{
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ACTIVATION_KEY.name());
+			return null;
+		}
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -36,7 +43,10 @@ public class ActivationRequestResource extends ServerResource
 													   .fetchAnyInto(UnapprovedUsersRecord.class);
 
 			if (userRequest == null)
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ACTIVATION_REQUEST.name());
+			{
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ACTIVATION_REQUEST.name());
+				return null;
+			}
 
 			DatabaseSystems database = context.selectFrom(DATABASE_SYSTEMS)
 											  .where(DATABASE_SYSTEMS.ID.eq(userRequest.getDatabaseSystemId()))
@@ -59,7 +69,7 @@ public class ActivationRequestResource extends ServerResource
 			{
 				RequestDecision decision = new RequestDecision(userRequest.getId(), Decision.APPROVE, null);
 				decision.setJavaLocale(request.getJavaLocale());
-				boolean result = NewRequestDecisionResource.decide(userRequest.getId(), decision);
+				boolean result = NewRequestDecisionResource.decide(userRequest.getId(), decision, resp);
 				Email.sendAdministratorNotification(locale, database, false);
 
 				if (result)
@@ -71,17 +81,14 @@ public class ActivationRequestResource extends ServerResource
 		catch (NullPointerException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode());
+			return null;
 		}
 		catch (EmailException e)
 		{
 			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_SERVICE_UNAVAILABLE, StatusMessage.UNAVAILABLE_EMAIL.name());
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
+			resp.sendError(Response.Status.SERVICE_UNAVAILABLE.getStatusCode(), StatusMessage.UNAVAILABLE_EMAIL.name());
+			return null;
 		}
 	}
 }

@@ -1,55 +1,53 @@
 package jhi.gatekeeper.server.resource;
 
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
+import jhi.gatekeeper.resource.*;
+import jhi.gatekeeper.server.util.*;
 import org.jooq.DSLContext;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
 
+import java.io.IOException;
 import java.sql.*;
 
-import jhi.gatekeeper.resource.StatusMessage;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.Users;
-import jhi.gatekeeper.server.util.OnlyAdmin;
 
 import static jhi.gatekeeper.server.database.tables.Users.*;
 
 /**
  * @author Sebastian Raubach
  */
+@Path("user/{userId}/gatekeeper")
+@Secured(UserType.ADMIN)
 public class UserGatekeeperResource extends PaginatedServerResource
 {
-	private Integer id = null;
+	@PathParam("userId")
+	Integer userId;
 
-	@Override
-	public void doInit()
+	@PATCH
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public boolean patchGatekeeperAccess(Byte update)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (update == null || userId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("userId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
+			return false;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-	}
-
-	@OnlyAdmin
-	@Patch("json")
-	public boolean postJson(Byte update)
-	{
-		if (update == null || id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID_OR_PAYLOAD.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
 			Users user = context.selectFrom(USERS)
-								.where(USERS.ID.eq(id))
+								.where(USERS.ID.eq(userId))
 								.fetchAnyInto(Users.class);
 
 			if (user == null)
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_USER.name());
+			{
+				resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_USER.name());
+				return false;
+			}
 
 			context.update(USERS)
 				   .set(USERS.HAS_ACCESS_TO_GATEKEEPER, update)
@@ -57,11 +55,6 @@ public class UserGatekeeperResource extends PaginatedServerResource
 				   .execute();
 
 			return true;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }

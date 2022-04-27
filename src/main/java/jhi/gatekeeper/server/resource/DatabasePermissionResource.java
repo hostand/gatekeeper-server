@@ -1,51 +1,38 @@
 package jhi.gatekeeper.server.resource;
 
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.restlet.data.Status;
-import org.restlet.resource.*;
-
-import java.sql.*;
-import java.util.List;
-
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.ViewUserPermissions;
 import jhi.gatekeeper.server.util.*;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.List;
 
 import static jhi.gatekeeper.server.database.tables.ViewUserPermissions.*;
 
 /**
  * @author Sebastian Raubach
  */
+@Path("database/{databaseId}/permission")
+@Secured(UserType.ADMIN)
 public class DatabasePermissionResource extends PaginatedServerResource
 {
-	public static final String PARAM_DATABASE_USERNAME = "username";
-
-	private Integer id = null;
-	private String  username;
-
-	@Override
-	public void doInit()
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public PaginatedResult<List<ViewUserPermissions>> getDatabaseUserPermissions(@PathParam("databaseId") Integer databaseId, @QueryParam("username") String username)
+		throws IOException, SQLException
 	{
-		super.doInit();
-
-		try
+		if (databaseId == null)
 		{
-			this.id = Integer.parseInt(getRequestAttributes().get("databaseId").toString());
+			resp.sendError(Response.Status.NOT_FOUND.getStatusCode(), StatusMessage.NOT_FOUND_ID.name());
+			return null;
 		}
-		catch (NullPointerException | NumberFormatException e)
-		{
-		}
-		this.username = getQueryValue(PARAM_DATABASE_USERNAME);
-	}
-
-	@OnlyAdmin
-	@Get("json")
-	public PaginatedResult<List<ViewUserPermissions>> getJson()
-	{
-		if (id == null)
-			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, StatusMessage.NOT_FOUND_ID.name());
 
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
@@ -54,7 +41,7 @@ public class DatabasePermissionResource extends PaginatedServerResource
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(VIEW_USER_PERMISSIONS);
 
-			step.where(VIEW_USER_PERMISSIONS.DATABASE_ID.eq(id));
+			step.where(VIEW_USER_PERMISSIONS.DATABASE_ID.eq(databaseId));
 
 			if (query != null && !"".equals(query))
 			{
@@ -87,11 +74,6 @@ public class DatabasePermissionResource extends PaginatedServerResource
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 
 			return new PaginatedResult<>(result, count);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			throw new ResourceException(Status.SERVER_ERROR_INTERNAL);
 		}
 	}
 }
