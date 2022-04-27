@@ -5,7 +5,7 @@ import jakarta.ws.rs.core.*;
 import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.*;
-import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.database.tables.records.AccessRequestsRecord;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
 import org.jooq.*;
@@ -25,7 +25,7 @@ import static jhi.gatekeeper.server.database.tables.ViewAccessRequestUserDetails
  */
 @Path("request/existing")
 @Secured(UserType.ADMIN)
-public class ExistingRequestResource extends ContextResource
+public class ExistingRequestResource extends PaginatedServerResource
 {
 	@DELETE
 	@Path("/{requestId}")
@@ -133,27 +133,42 @@ public class ExistingRequestResource extends ContextResource
 	@Path("/{requestId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ViewAccessRequestUserDetails> getExistingRequestById(@PathParam("requestId") Integer requestId)
+	public PaginatedResult<List<ViewAccessRequestUserDetails>> getExistingRequestById(@PathParam("requestId") Integer requestId)
 		throws SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
-			SelectWhereStep<ViewAccessRequestUserDetailsRecord> step = context.selectFrom(VIEW_ACCESS_REQUEST_USER_DETAILS);
+			SelectConditionStep<Record> step = context.select().hint("SQL_CALC_FOUND_ROWS").from(VIEW_ACCESS_REQUEST_USER_DETAILS)
+													  .where(VIEW_ACCESS_REQUEST_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0));
 
 			if (requestId != null)
-				step.where(VIEW_ACCESS_REQUEST_USER_DETAILS.ID.eq(requestId));
+				step.and(VIEW_ACCESS_REQUEST_USER_DETAILS.ID.eq(requestId));
 
-			return step.orderBy(VIEW_ACCESS_REQUEST_USER_DETAILS.CREATED_ON)
-					   .fetch()
-					   .into(ViewAccessRequestUserDetails.class);
+			if (query != null)
+				step.and(VIEW_ACCESS_REQUEST_USER_DETAILS.USERNAME.contains(query)
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.DATABASE_SERVER_NAME.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.DATABASE_SYSTEM_NAME.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.EMAIL_ADDRESS.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.NAME.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.ACRONYM.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.ADDRESS.contains(query))
+																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.FULL_NAME.contains(query)));
+
+			List<ViewAccessRequestUserDetails> result = setPaginationAndOrderBy(step)
+				.fetch()
+				.into(ViewAccessRequestUserDetails.class);
+
+			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
+
+			return new PaginatedResult<>(result, count);
 		}
 	}
 
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ViewAccessRequestUserDetails> getExistingRequests()
+	public PaginatedResult<List<ViewAccessRequestUserDetails>> getExistingRequests()
 		throws SQLException
 	{
 		return this.getExistingRequestById(null);

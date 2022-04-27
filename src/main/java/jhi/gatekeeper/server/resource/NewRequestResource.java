@@ -6,7 +6,7 @@ import jhi.gatekeeper.resource.*;
 import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.auth.BCrypt;
 import jhi.gatekeeper.server.database.tables.pojos.*;
-import jhi.gatekeeper.server.database.tables.records.*;
+import jhi.gatekeeper.server.database.tables.records.UnapprovedUsersRecord;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
 import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
@@ -25,7 +25,7 @@ import static jhi.gatekeeper.server.database.tables.ViewUnapprovedUserDetails.*;
  */
 @Path("request/new")
 @Secured(UserType.ADMIN)
-public class NewRequestResource extends ContextResource
+public class NewRequestResource extends PaginatedServerResource
 {
 	@DELETE
 	@Path("/{requestId}")
@@ -112,7 +112,7 @@ public class NewRequestResource extends ContextResource
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ViewUnapprovedUserDetails> getNewRequests()
+	public PaginatedResult<List<ViewUnapprovedUserDetails>> getNewRequests()
 		throws IOException, SQLException
 	{
 		return this.getNewRequestById(null);
@@ -122,21 +122,35 @@ public class NewRequestResource extends ContextResource
 	@Path("requestId")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ViewUnapprovedUserDetails> getNewRequestById(@PathParam("requestId") Integer requestId)
+	public PaginatedResult<List<ViewUnapprovedUserDetails>> getNewRequestById(@PathParam("requestId") Integer requestId)
 		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
 			 DSLContext context = Database.getContext(conn))
 		{
-			SelectWhereStep<ViewUnapprovedUserDetailsRecord> step = context.selectFrom(VIEW_UNAPPROVED_USER_DETAILS);
+			SelectConditionStep<Record> step = context.select().hint("SQL_CALC_FOUND_ROWS").from(VIEW_UNAPPROVED_USER_DETAILS)
+													  .where(VIEW_UNAPPROVED_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0));
 
 			if (requestId != null)
-				step.where(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(requestId));
+				step.and(VIEW_UNAPPROVED_USER_DETAILS.ID.eq(requestId));
 
-			return step.where(VIEW_UNAPPROVED_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0))
-					   .orderBy(VIEW_UNAPPROVED_USER_DETAILS.CREATED_ON)
-					   .fetch()
-					   .into(ViewUnapprovedUserDetails.class);
+			if (query != null)
+				step.and(VIEW_UNAPPROVED_USER_DETAILS.USERNAME.contains(query)
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.DATABASE_SERVER_NAME.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.DATABASE_SYSTEM_NAME.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.EMAIL_ADDRESS.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.NAME.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.ACRONYM.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.ADDRESS.contains(query))
+															  .or(VIEW_UNAPPROVED_USER_DETAILS.FULL_NAME.contains(query)));
+
+			List<ViewUnapprovedUserDetails> result = setPaginationAndOrderBy(step)
+				.fetch()
+				.into(ViewUnapprovedUserDetails.class);
+
+			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
+
+			return new PaginatedResult<>(result, count);
 		}
 	}
 }

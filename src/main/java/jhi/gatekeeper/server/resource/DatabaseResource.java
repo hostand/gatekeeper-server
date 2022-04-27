@@ -8,7 +8,6 @@ import jhi.gatekeeper.server.database.tables.pojos.DatabaseSystems;
 import jhi.gatekeeper.server.database.tables.records.DatabaseSystemsRecord;
 import jhi.gatekeeper.server.util.Secured;
 import org.jooq.*;
-import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.sql.*;
@@ -110,23 +109,11 @@ public class DatabaseResource extends PaginatedServerResource
 					step.where(DATABASE_SYSTEMS.SERVER_NAME.eq(queryServer)
 														   .and(DATABASE_SYSTEMS.SYSTEM_NAME.eq(queryDatabase)));
 				}
-
-				if (ascending != null && orderBy != null)
-				{
-					// Camelcase to underscore
-					orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
-
-					if (ascending)
-						step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
-					else
-						step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
-				}
 			}
 
-			List<DatabaseSystems> result = step.limit(pageSize)
-											   .offset(pageSize * currentPage)
-											   .fetch()
-											   .into(DatabaseSystems.class);
+			List<DatabaseSystems> result = setPaginationAndOrderBy(step)
+				.fetch()
+				.into(DatabaseSystems.class);
 
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 

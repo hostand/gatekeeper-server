@@ -20,7 +20,7 @@ public abstract class PaginatedServerResource extends ContextResource
 	protected int pageSize;
 
 	@QueryParam("ascending")
-	private int isAscending;
+	private Integer isAscending;
 
 	protected Boolean ascending = null;
 
@@ -32,6 +32,9 @@ public abstract class PaginatedServerResource extends ContextResource
 
 	protected <T extends Record> SelectForUpdateStep<T> setPaginationAndOrderBy(SelectOrderByStep<T> step)
 	{
+		if (isAscending != null)
+			this.ascending = this.isAscending == 1;
+
 		if (ascending != null && orderBy != null)
 		{
 			if (ascending)

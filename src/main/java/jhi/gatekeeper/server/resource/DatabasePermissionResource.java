@@ -7,7 +7,6 @@ import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.ViewUserPermissions;
 import jhi.gatekeeper.server.util.*;
 import org.jooq.*;
-import org.jooq.impl.DSL;
 
 import java.io.IOException;
 import java.sql.*;
@@ -55,21 +54,9 @@ public class DatabasePermissionResource extends PaginatedServerResource
 					step.where(VIEW_USER_PERMISSIONS.USERNAME.eq(username));
 			}
 
-			if (ascending != null && orderBy != null)
-			{
-				// Camelcase to underscore
-				orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
-
-				if (ascending)
-					step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
-				else
-					step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
-			}
-
-			List<ViewUserPermissions> result = step.limit(pageSize)
-												   .offset(pageSize * currentPage)
-												   .fetch()
-												   .into(ViewUserPermissions.class);
+			List<ViewUserPermissions> result = setPaginationAndOrderBy(step)
+				.fetch()
+				.into(ViewUserPermissions.class);
 
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 

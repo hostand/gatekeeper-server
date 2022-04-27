@@ -57,9 +57,8 @@ public class InstitutionResource extends PaginatedServerResource
 			if (institutionId != null)
 				step.where(INSTITUTIONS.ID.eq(institutionId));
 
-			List<Institutions> result = step.limit(pageSize)
-											.offset(pageSize * currentPage)
-											.fetchInto(Institutions.class);
+			List<Institutions> result = setPaginationAndOrderBy(step)
+				.fetchInto(Institutions.class);
 
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 

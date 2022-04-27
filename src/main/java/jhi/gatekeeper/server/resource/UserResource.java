@@ -152,21 +152,9 @@ public class UserResource extends PaginatedServerResource
 														 .or(VIEW_USER_DETAILS.FULL_NAME.like(query))
 														 .or(VIEW_USER_DETAILS.ACRONYM.like(query)));
 				}
-
-				if (ascending != null && orderBy != null)
-				{
-					// Camelcase to underscore
-					orderBy = orderBy.replaceAll("(.)(\\p{Upper})", "$1_$2").toLowerCase();
-
-					if (ascending)
-						step.orderBy(DSL.field(getSafeColumn(orderBy)).asc());
-					else
-						step.orderBy(DSL.field(getSafeColumn(orderBy)).desc());
-				}
 			}
 
-			List<ViewUserDetails> result = step.limit(pageSize)
-											   .offset(pageSize * currentPage)
+			List<ViewUserDetails> result = setPaginationAndOrderBy(step)
 											   .fetch()
 											   .into(ViewUserDetails.class);
 
