@@ -71,7 +71,7 @@ public class DatabaseResource extends PaginatedServerResource
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public PaginatedResult<List<DatabaseSystems>> getDatabases(@QueryParam("queryServer") String queryServer, @QueryParam("queryDatabase") String queryDatabase)
+	public PaginatedResult<List<DatabaseSystems>> getDatabases(@QueryParam("server") String queryServer, @QueryParam("database") String queryDatabase)
 		throws IOException, SQLException
 	{
 		return this.getDatabaseById(null, queryServer, queryDatabase);
@@ -81,7 +81,7 @@ public class DatabaseResource extends PaginatedServerResource
 	@Path("/{databaseId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public PaginatedResult<List<DatabaseSystems>> getDatabaseById(@PathParam("databaseId") Integer databaseId, @QueryParam("queryServer") String queryServer, @QueryParam("queryDatabase") String queryDatabase)
+	public PaginatedResult<List<DatabaseSystems>> getDatabaseById(@PathParam("databaseId") Integer databaseId, @QueryParam("server") String queryServer, @QueryParam("database") String queryDatabase)
 		throws IOException, SQLException
 	{
 		try (Connection conn = Database.getConnection();
