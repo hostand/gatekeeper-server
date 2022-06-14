@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.bmuschko:gradle-cargo-plugin:2.7.0'
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.9.0'
     }
 }
 
@@ -117,7 +117,7 @@ war {
 // Deploy the created .war file to Tomcat
 task deployTomcat (type: CargoRedeployRemote) {
     dependsOn = [war]
-    containerId = project.findProperty('tomcat.manager.version') ?: "tomcat8x"
+    containerId = project.findProperty('tomcat.manager.version') ?: "tomcat10x"
     protocol = project.findProperty('tomcat.manager.protocol') ?: "http"
     hostname = project.findProperty('tomcat.manager.hostname') ?: "localhost"
     port = (project.findProperty('tomcat.manager.port') ?: "8080") as Integer
