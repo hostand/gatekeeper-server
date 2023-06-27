@@ -39,9 +39,9 @@ public class UserResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			int result = context.deleteFrom(USERS)
 								.where(USERS.ID.eq(userId))
 								.execute();
@@ -63,9 +63,9 @@ public class UserResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			newUser.setPassword(BCrypt.hashpw(newUser.getPassword(), BCrypt.gensalt(TokenResource.SALT)));
 			return context.newRecord(USERS, newUser).store() > 0;
 		}
@@ -89,9 +89,9 @@ public class UserResource extends PaginatedServerResource
 	public PaginatedResult<List<ViewUserDetails>> getUserById(@PathParam("userId") Integer userId, @QueryParam("username") String username, @QueryParam("database") String database, @QueryParam("server") String server)
 		throws IOException, SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			AuthenticationFilter.UserDetails userDetails = (AuthenticationFilter.UserDetails) securityContext.getUserPrincipal();
 
 			SelectWhereStep<Record> step = context.select()

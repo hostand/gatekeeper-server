@@ -36,9 +36,9 @@ public class UserGatekeeperResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(userId))
 								.fetchAnyInto(Users.class);

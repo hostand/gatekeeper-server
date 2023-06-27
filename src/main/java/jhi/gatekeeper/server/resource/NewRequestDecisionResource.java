@@ -31,9 +31,9 @@ public class NewRequestDecisionResource extends ContextResource
 	public static boolean decide(Integer id, RequestDecision request, HttpServletResponse resp)
 		throws IOException, SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			UnapprovedUsersRecord unapprovedUser = context.selectFrom(UNAPPROVED_USERS)
 														  .where(UNAPPROVED_USERS.ID.eq(id))
 														  .fetchAnyInto(UNAPPROVED_USERS);

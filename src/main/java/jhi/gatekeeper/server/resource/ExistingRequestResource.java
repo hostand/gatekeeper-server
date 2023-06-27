@@ -40,9 +40,9 @@ public class ExistingRequestResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			return context.deleteFrom(ACCESS_REQUESTS)
 						  .where(ACCESS_REQUESTS.ID.eq(requestId))
 						  .execute() > 0;
@@ -63,9 +63,9 @@ public class ExistingRequestResource extends PaginatedServerResource
 
 		Locale locale = request.getJavaLocale();
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			// Get the user and the database
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(request.getUserId()))
@@ -136,9 +136,9 @@ public class ExistingRequestResource extends PaginatedServerResource
 	public PaginatedResult<List<ViewAccessRequestUserDetails>> getExistingRequestById(@PathParam("requestId") Integer requestId)
 		throws SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectConditionStep<Record> step = context.select().hint("SQL_CALC_FOUND_ROWS").from(VIEW_ACCESS_REQUEST_USER_DETAILS)
 													  .where(VIEW_ACCESS_REQUEST_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0));
 

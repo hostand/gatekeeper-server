@@ -26,9 +26,9 @@ public class StatCountResource extends PaginatedServerResource
 	public ViewCounts getStatsCount()
 		throws SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			return context.selectFrom(VIEW_COUNTS)
 						  .fetchAnyInto(ViewCounts.class);
 		}

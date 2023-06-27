@@ -31,9 +31,9 @@ public class ExistingRequestDecisionResource extends ContextResource
 	public static boolean decide(Integer id, RequestDecision request, HttpServletResponse resp)
 		throws SQLException, IOException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			// Get the request with the given id
 			AccessRequestsRecord accessRequest = context.selectFrom(ACCESS_REQUESTS)
 														.where(ACCESS_REQUESTS.ID.eq(id))

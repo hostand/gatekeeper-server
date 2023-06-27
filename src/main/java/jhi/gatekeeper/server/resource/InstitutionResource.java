@@ -33,9 +33,9 @@ public class InstitutionResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			return context.newRecord(INSTITUTIONS, newInstitution).store() > 0;
 		}
 	}
@@ -47,9 +47,9 @@ public class InstitutionResource extends PaginatedServerResource
 	public PaginatedResult<List<Institutions>> getInstitutionById(@PathParam("institutionId") Integer institutionId)
 		throws SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(INSTITUTIONS);

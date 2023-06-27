@@ -94,9 +94,9 @@ public class TokenResource extends ContextResource
 		UserTypes type;
 		String userType = "Unknown";
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			user = context.selectFrom(USERS)
 						  .where(USERS.USERNAME.eq(request.getUsername()))
 						  .fetchAny();
@@ -143,9 +143,9 @@ public class TokenResource extends ContextResource
 			// The salt may have changed since the last time, so update the password in the database with the new salt.
 			String saltedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt(SALT));
 
-			try (Connection conn = Database.getConnection();
-				 DSLContext context = Database.getContext(conn))
+			try (Connection conn = Database.getConnection())
 			{
+				DSLContext context = Database.getContext(conn);
 				context.update(USERS)
 					   .set(USERS.PASSWORD, saltedPassword)
 					   .where(USERS.ID.eq(user.getId()))

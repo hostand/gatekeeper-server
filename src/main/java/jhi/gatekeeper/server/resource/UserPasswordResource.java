@@ -46,9 +46,9 @@ public class UserPasswordResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			Users user = context.selectFrom(USERS)
 								.where(USERS.ID.eq(sessionUser.getId()))
 								.fetchAnyInto(Users.class);

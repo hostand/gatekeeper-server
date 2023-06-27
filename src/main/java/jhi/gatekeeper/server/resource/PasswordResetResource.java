@@ -49,9 +49,9 @@ public class PasswordResetResource extends ContextResource
 	public boolean postPasswordReset(PasswordResetRequest request)
 		throws IOException, SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			UsersRecord user = context.selectFrom(USERS)
 									  .where(USERS.USERNAME.eq(request.getUsername())
 														   .and(USERS.EMAIL_ADDRESS.eq(request.getEmail())))

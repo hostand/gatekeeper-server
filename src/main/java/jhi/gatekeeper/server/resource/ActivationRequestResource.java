@@ -35,9 +35,9 @@ public class ActivationRequestResource extends ContextResource
 			return null;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			UnapprovedUsersRecord userRequest = context.selectFrom(UNAPPROVED_USERS)
 													   .where(UNAPPROVED_USERS.ACTIVATION_KEY.eq(request.getActivationKey()))
 													   .fetchAnyInto(UnapprovedUsersRecord.class);

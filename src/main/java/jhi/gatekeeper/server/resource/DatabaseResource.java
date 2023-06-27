@@ -34,9 +34,9 @@ public class DatabaseResource extends PaginatedServerResource
 			return null;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			DatabaseSystemsRecord record = context.newRecord(DATABASE_SYSTEMS, database);
 			record.store();
 
@@ -57,9 +57,9 @@ public class DatabaseResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			int result = context.deleteFrom(DATABASE_SYSTEMS)
 								.where(DATABASE_SYSTEMS.ID.eq(databaseId))
 								.execute();
@@ -84,9 +84,9 @@ public class DatabaseResource extends PaginatedServerResource
 	public PaginatedResult<List<DatabaseSystems>> getDatabaseById(@PathParam("databaseId") Integer databaseId, @QueryParam("server") String queryServer, @QueryParam("database") String queryDatabase)
 		throws IOException, SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(DATABASE_SYSTEMS);

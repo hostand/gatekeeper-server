@@ -33,9 +33,9 @@ public class DatabasePermissionResource extends PaginatedServerResource
 			return null;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(VIEW_USER_PERMISSIONS);

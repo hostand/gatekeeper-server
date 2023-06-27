@@ -9,6 +9,7 @@ import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 
 import java.io.*;
+import java.io.File;
 import java.net.*;
 import java.sql.*;
 import java.util.TimeZone;
@@ -60,7 +61,7 @@ public class Database
 		// Get an initial connection to try if it works
 		try (Connection conn = getConnection())
 		{
-			DSL.using(conn, SQLDialect.MYSQL).close();
+			DSL.using(conn, SQLDialect.MYSQL);
 		}
 		catch (SQLException e)
 		{
@@ -166,9 +167,9 @@ public class Database
 		}
 
 		// Check if an admin user exists, if not, create it
-		try (Connection conn = getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			DatabaseSystems db = context.selectFrom(DATABASE_SYSTEMS)
 										.where(DATABASE_SYSTEMS.SERVER_NAME.eq("--"))
 										.and(DATABASE_SYSTEMS.SYSTEM_NAME.eq("gatekeeper"))

@@ -13,6 +13,7 @@
 
 		<generate>
 			<pojos>true</pojos>
+			<javaTimeTypes>false</javaTimeTypes>
 		</generate>
 
 		<target>

@@ -37,9 +37,9 @@ public class UserPermissionResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			int result = context.insertInto(USER_HAS_ACCESS_TO_DATABASES)
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_ID, permission.getUserId())
 								.set(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID, permission.getDatabaseId())
@@ -62,9 +62,9 @@ public class UserPermissionResource extends PaginatedServerResource
 			return null;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectWhereStep<Record> step = context.select()
 												  .hint("SQL_CALC_FOUND_ROWS")
 												  .from(VIEW_USER_PERMISSIONS);
@@ -108,9 +108,9 @@ public class UserPermissionResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			int result = context.deleteFrom(USER_HAS_ACCESS_TO_DATABASES)
 								.where(USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(permission.getUserId()))
 								.and(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(permission.getDatabaseId()))
@@ -133,9 +133,9 @@ public class UserPermissionResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			int result = context.update(USER_HAS_ACCESS_TO_DATABASES)
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID, permission.getUserTypeId())
 								.where(USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(permission.getUserId())

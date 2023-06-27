@@ -40,9 +40,9 @@ public class NewRequestResource extends PaginatedServerResource
 			return false;
 		}
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			return context.deleteFrom(UNAPPROVED_USERS)
 						  .where(UNAPPROVED_USERS.ID.eq(requestId))
 						  .execute() > 0;
@@ -64,9 +64,9 @@ public class NewRequestResource extends PaginatedServerResource
 
 		Locale locale = request.getJavaLocale();
 
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			boolean userExists = context.fetchExists(USERS, USERS.USERNAME.eq(request.getUserUsername())
 																		  .or(USERS.EMAIL_ADDRESS.eq(request.getUserEmailAddress())));
 			boolean requestExists = context.fetchExists(UNAPPROVED_USERS, UNAPPROVED_USERS.HAS_BEEN_REJECTED.eq((byte) 0)
@@ -119,15 +119,15 @@ public class NewRequestResource extends PaginatedServerResource
 	}
 
 	@GET
-	@Path("requestId")
+	@Path("/{requestId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public PaginatedResult<List<ViewUnapprovedUserDetails>> getNewRequestById(@PathParam("requestId") Integer requestId)
 		throws IOException, SQLException
 	{
-		try (Connection conn = Database.getConnection();
-			 DSLContext context = Database.getContext(conn))
+		try (Connection conn = Database.getConnection())
 		{
+			DSLContext context = Database.getContext(conn);
 			SelectConditionStep<Record> step = context.select().hint("SQL_CALC_FOUND_ROWS").from(VIEW_UNAPPROVED_USER_DETAILS)
 													  .where(VIEW_UNAPPROVED_USER_DETAILS.HAS_BEEN_REJECTED.eq((byte) 0));
 
