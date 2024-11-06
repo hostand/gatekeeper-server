@@ -8,6 +8,7 @@ import jhi.gatekeeper.server.database.tables.pojos.DatabaseSystems;
 import jhi.gatekeeper.server.database.tables.records.DatabaseSystemsRecord;
 import jhi.gatekeeper.server.util.Secured;
 import org.jooq.*;
+import org.jooq.Record;
 
 import java.io.IOException;
 import java.sql.*;

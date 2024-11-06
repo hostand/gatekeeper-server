@@ -11,6 +11,7 @@ public enum ServerProperty
 	DATABASE_PASSWORD("database.password", null, false),
 	DATABASE_PORT("database.port", null, false),
 	DATA_DIRECTORY_EXTERNAL("data.directory.external", null, false),
+	DEBUG_IS_DEVELOPMENT("debug.is.development", null, false),
 	EMAIL_SERVER("email.server", null, true),
 	EMAIL_USERNAME("email.username", null, true),
 	EMAIL_ADDRESS("email.address", null, true),

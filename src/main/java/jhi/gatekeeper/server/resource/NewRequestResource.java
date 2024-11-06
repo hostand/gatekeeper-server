@@ -11,6 +11,7 @@ import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
 import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
 import org.jooq.*;
+import org.jooq.Record;
 
 import java.io.IOException;
 import java.sql.*;

@@ -9,6 +9,7 @@ import jhi.gatekeeper.server.database.tables.records.AccessRequestsRecord;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
 import org.jooq.*;
+import org.jooq.Record;
 
 import java.io.IOException;
 import java.sql.*;

@@ -3,6 +3,7 @@ package jhi.gatekeeper.server.resource;
 import jakarta.ws.rs.*;
 import jhi.gatekeeper.server.util.StringUtils;
 import org.jooq.*;
+import org.jooq.Record;
 import org.jooq.impl.DSL;
 
 public abstract class PaginatedServerResource extends ContextResource
