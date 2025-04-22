@@ -18,6 +18,7 @@ public class UserHasAccessToDatabases implements Serializable {
     private Integer userId;
     private Integer databaseId;
     private Integer userTypeId;
+    private Byte    primaryContact;
 
     public UserHasAccessToDatabases() {}
 
@@ -25,16 +26,19 @@ public class UserHasAccessToDatabases implements Serializable {
         this.userId = value.userId;
         this.databaseId = value.databaseId;
         this.userTypeId = value.userTypeId;
+        this.primaryContact = value.primaryContact;
     }
 
     public UserHasAccessToDatabases(
         Integer userId,
         Integer databaseId,
-        Integer userTypeId
+        Integer userTypeId,
+        Byte    primaryContact
     ) {
         this.userId = userId;
         this.databaseId = databaseId;
         this.userTypeId = userTypeId;
+        this.primaryContact = primaryContact;
     }
 
     /**
@@ -85,6 +89,22 @@ public class UserHasAccessToDatabases implements Serializable {
         this.userTypeId = userTypeId;
     }
 
+    /**
+     * Getter for
+     * <code>gatekeeper_db.user_has_access_to_databases.primary_contact</code>.
+     */
+    public Byte getPrimaryContact() {
+        return this.primaryContact;
+    }
+
+    /**
+     * Setter for
+     * <code>gatekeeper_db.user_has_access_to_databases.primary_contact</code>.
+     */
+    public void setPrimaryContact(Byte primaryContact) {
+        this.primaryContact = primaryContact;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("UserHasAccessToDatabases (");
@@ -92,6 +112,7 @@ public class UserHasAccessToDatabases implements Serializable {
         sb.append(userId);
         sb.append(", ").append(databaseId);
         sb.append(", ").append(userTypeId);
+        sb.append(", ").append(primaryContact);
 
         sb.append(")");
         return sb.toString();

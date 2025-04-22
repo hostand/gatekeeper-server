@@ -1,6 +1,9 @@
 package jhi.gatekeeper.server;
 
+import jhi.gatekeeper.resource.ServerProperty;
 import jhi.gatekeeper.server.database.GatekeeperDb;
+import jhi.gatekeeper.server.util.*;
+import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.jooq.*;
@@ -19,7 +22,6 @@ import jhi.gatekeeper.server.auth.BCrypt;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.resource.TokenResource;
-import jhi.gatekeeper.server.util.ScriptRunner;
 
 import static jhi.gatekeeper.server.database.tables.DatabaseSystems.*;
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
@@ -191,7 +193,7 @@ public class Database
 				// Create a default Admin user with password "password".
 				UsersRecord admin = context.newRecord(USERS);
 				admin.setUsername("admin");
-				admin.setPassword(BCrypt.hashpw("password", BCrypt.gensalt(TokenResource.SALT)));
+				admin.setPassword(BCrypt.hashpw(PropertyWatcher.get(ServerProperty.GENERAL_ADMIN_PASSWORD), BCrypt.gensalt(TokenResource.SALT)));
 				admin.setFullName("The Admin");
 				admin.setEmailAddress("--");
 				admin.store();
@@ -200,6 +202,7 @@ public class Database
 				access.setUserId(admin.getId());
 				access.setDatabaseId(db.getId());
 				access.setUserTypeId(type.getId());
+				access.setPrimaryContact((byte) 1);
 				access.store();
 			}
 		}
@@ -207,6 +210,8 @@ public class Database
 		{
 			e.printStackTrace();
 		}
+
+		Email.initPrimaryContactMap(null);
 	}
 
 	private static void executeFile(File sqlFile)

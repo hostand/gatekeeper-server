@@ -33,7 +33,7 @@ public class ExistingRequestResource extends PaginatedServerResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public boolean deleteExistingRequest(@PathParam("requestId") Integer requestId)
-		throws IOException, SQLException
+			throws IOException, SQLException
 	{
 		if (requestId == null)
 		{
@@ -54,7 +54,7 @@ public class ExistingRequestResource extends PaginatedServerResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public boolean postExistingRequest(NewAccessRequest request)
-		throws IOException, SQLException
+			throws IOException, SQLException
 	{
 		if (request == null || request.getUserId() == null || request.getDatabaseSystemId() == null)
 		{
@@ -135,7 +135,7 @@ public class ExistingRequestResource extends PaginatedServerResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public PaginatedResult<List<ViewAccessRequestUserDetails>> getExistingRequestById(@PathParam("requestId") Integer requestId)
-		throws SQLException
+			throws SQLException
 	{
 		try (Connection conn = Database.getConnection())
 		{
@@ -157,8 +157,8 @@ public class ExistingRequestResource extends PaginatedServerResource
 																  .or(VIEW_ACCESS_REQUEST_USER_DETAILS.FULL_NAME.contains(query)));
 
 			List<ViewAccessRequestUserDetails> result = setPaginationAndOrderBy(step)
-				.fetch()
-				.into(ViewAccessRequestUserDetails.class);
+					.fetch()
+					.into(ViewAccessRequestUserDetails.class);
 
 			Integer count = context.fetchOne("SELECT FOUND_ROWS()").into(Integer.class);
 
@@ -170,7 +170,7 @@ public class ExistingRequestResource extends PaginatedServerResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public PaginatedResult<List<ViewAccessRequestUserDetails>> getExistingRequests()
-		throws SQLException
+			throws SQLException
 	{
 		return this.getExistingRequestById(null);
 	}

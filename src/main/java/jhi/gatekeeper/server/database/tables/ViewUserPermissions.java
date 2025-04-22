@@ -11,7 +11,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -54,6 +54,11 @@ public class ViewUserPermissions extends TableImpl<ViewUserPermissionsRecord> {
     public final TableField<ViewUserPermissionsRecord, String> USERNAME = createField(DSL.name("username"), SQLDataType.VARCHAR(45), this, "");
 
     /**
+     * The column <code>gatekeeper_db.view_user_permissions.email</code>.
+     */
+    public final TableField<ViewUserPermissionsRecord, String> EMAIL = createField(DSL.name("email"), SQLDataType.VARCHAR(128), this, "");
+
+    /**
      * The column <code>gatekeeper_db.view_user_permissions.database_id</code>.
      */
     public final TableField<ViewUserPermissionsRecord, Integer> DATABASE_ID = createField(DSL.name("database_id"), SQLDataType.INTEGER.defaultValue(DSL.inline("0", SQLDataType.INTEGER)), this, "");
@@ -78,12 +83,18 @@ public class ViewUserPermissions extends TableImpl<ViewUserPermissionsRecord> {
      */
     public final TableField<ViewUserPermissionsRecord, String> USER_TYPE = createField(DSL.name("user_type"), SQLDataType.VARCHAR(64), this, "");
 
+    /**
+     * The column
+     * <code>gatekeeper_db.view_user_permissions.user_is_primary_contact</code>.
+     */
+    public final TableField<ViewUserPermissionsRecord, Byte> USER_IS_PRIMARY_CONTACT = createField(DSL.name("user_is_primary_contact"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
+
     private ViewUserPermissions(Name alias, Table<ViewUserPermissionsRecord> aliased) {
         this(alias, aliased, null);
     }
 
     private ViewUserPermissions(Name alias, Table<ViewUserPermissionsRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `view_user_permissions` as select `germinate_gatekeeper_template_4_21_08_31`.`users`.`id` AS `user_id`,`germinate_gatekeeper_template_4_21_08_31`.`users`.`username` AS `username`,`germinate_gatekeeper_template_4_21_08_31`.`database_systems`.`id` AS `database_id`,`germinate_gatekeeper_template_4_21_08_31`.`database_systems`.`system_name` AS `system_name`,`germinate_gatekeeper_template_4_21_08_31`.`database_systems`.`server_name` AS `server_name`,`germinate_gatekeeper_template_4_21_08_31`.`user_types`.`id` AS `user_type_id`,`germinate_gatekeeper_template_4_21_08_31`.`user_types`.`description` AS `user_type` from (((`germinate_gatekeeper_template_4_21_08_31`.`user_has_access_to_databases` left join `germinate_gatekeeper_template_4_21_08_31`.`users` on((`germinate_gatekeeper_template_4_21_08_31`.`users`.`id` = `germinate_gatekeeper_template_4_21_08_31`.`user_has_access_to_databases`.`user_id`))) left join `germinate_gatekeeper_template_4_21_08_31`.`user_types` on((`germinate_gatekeeper_template_4_21_08_31`.`user_types`.`id` = `germinate_gatekeeper_template_4_21_08_31`.`user_has_access_to_databases`.`user_type_id`))) left join `germinate_gatekeeper_template_4_21_08_31`.`database_systems` on((`germinate_gatekeeper_template_4_21_08_31`.`database_systems`.`id` = `germinate_gatekeeper_template_4_21_08_31`.`user_has_access_to_databases`.`database_id`)))"));
+        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `view_user_permissions` as select `germinate_gatekeeper_template_4_25_04_21`.`users`.`id` AS `user_id`,`germinate_gatekeeper_template_4_25_04_21`.`users`.`username` AS `username`,`germinate_gatekeeper_template_4_25_04_21`.`users`.`email_address` AS `email`,`germinate_gatekeeper_template_4_25_04_21`.`database_systems`.`id` AS `database_id`,`germinate_gatekeeper_template_4_25_04_21`.`database_systems`.`system_name` AS `system_name`,`germinate_gatekeeper_template_4_25_04_21`.`database_systems`.`server_name` AS `server_name`,`germinate_gatekeeper_template_4_25_04_21`.`user_types`.`id` AS `user_type_id`,`germinate_gatekeeper_template_4_25_04_21`.`user_types`.`description` AS `user_type`,`germinate_gatekeeper_template_4_25_04_21`.`user_has_access_to_databases`.`primary_contact` AS `user_is_primary_contact` from (((`germinate_gatekeeper_template_4_25_04_21`.`user_has_access_to_databases` left join `germinate_gatekeeper_template_4_25_04_21`.`users` on((`germinate_gatekeeper_template_4_25_04_21`.`users`.`id` = `germinate_gatekeeper_template_4_25_04_21`.`user_has_access_to_databases`.`user_id`))) left join `germinate_gatekeeper_template_4_25_04_21`.`user_types` on((`germinate_gatekeeper_template_4_25_04_21`.`user_types`.`id` = `germinate_gatekeeper_template_4_25_04_21`.`user_has_access_to_databases`.`user_type_id`))) left join `germinate_gatekeeper_template_4_25_04_21`.`database_systems` on((`germinate_gatekeeper_template_4_25_04_21`.`database_systems`.`id` = `germinate_gatekeeper_template_4_25_04_21`.`user_has_access_to_databases`.`database_id`)))"));
     }
 
     /**
@@ -145,11 +156,11 @@ public class ViewUserPermissions extends TableImpl<ViewUserPermissionsRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Integer, String, Integer, String, String, Integer, String> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row9<Integer, String, String, Integer, String, String, Integer, String, Byte> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }

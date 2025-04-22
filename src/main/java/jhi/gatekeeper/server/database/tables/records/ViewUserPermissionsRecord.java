@@ -7,8 +7,8 @@ package jhi.gatekeeper.server.database.tables.records;
 import jhi.gatekeeper.server.database.tables.ViewUserPermissions;
 
 import org.jooq.Field;
-import org.jooq.Record7;
-import org.jooq.Row7;
+import org.jooq.Record9;
+import org.jooq.Row9;
 import org.jooq.impl.TableRecordImpl;
 
 
@@ -16,7 +16,7 @@ import org.jooq.impl.TableRecordImpl;
  * VIEW
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
-public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissionsRecord> implements Record7<Integer, String, Integer, String, String, Integer, String> {
+public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissionsRecord> implements Record9<Integer, String, String, Integer, String, String, Integer, String, Byte> {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,87 +49,117 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     /**
+     * Setter for <code>gatekeeper_db.view_user_permissions.email</code>.
+     */
+    public void setEmail(String value) {
+        set(2, value);
+    }
+
+    /**
+     * Getter for <code>gatekeeper_db.view_user_permissions.email</code>.
+     */
+    public String getEmail() {
+        return (String) get(2);
+    }
+
+    /**
      * Setter for <code>gatekeeper_db.view_user_permissions.database_id</code>.
      */
     public void setDatabaseId(Integer value) {
-        set(2, value);
+        set(3, value);
     }
 
     /**
      * Getter for <code>gatekeeper_db.view_user_permissions.database_id</code>.
      */
     public Integer getDatabaseId() {
-        return (Integer) get(2);
+        return (Integer) get(3);
     }
 
     /**
      * Setter for <code>gatekeeper_db.view_user_permissions.system_name</code>.
      */
     public void setSystemName(String value) {
-        set(3, value);
+        set(4, value);
     }
 
     /**
      * Getter for <code>gatekeeper_db.view_user_permissions.system_name</code>.
      */
     public String getSystemName() {
-        return (String) get(3);
+        return (String) get(4);
     }
 
     /**
      * Setter for <code>gatekeeper_db.view_user_permissions.server_name</code>.
      */
     public void setServerName(String value) {
-        set(4, value);
+        set(5, value);
     }
 
     /**
      * Getter for <code>gatekeeper_db.view_user_permissions.server_name</code>.
      */
     public String getServerName() {
-        return (String) get(4);
+        return (String) get(5);
     }
 
     /**
      * Setter for <code>gatekeeper_db.view_user_permissions.user_type_id</code>.
      */
     public void setUserTypeId(Integer value) {
-        set(5, value);
+        set(6, value);
     }
 
     /**
      * Getter for <code>gatekeeper_db.view_user_permissions.user_type_id</code>.
      */
     public Integer getUserTypeId() {
-        return (Integer) get(5);
+        return (Integer) get(6);
     }
 
     /**
      * Setter for <code>gatekeeper_db.view_user_permissions.user_type</code>.
      */
     public void setUserType(String value) {
-        set(6, value);
+        set(7, value);
     }
 
     /**
      * Getter for <code>gatekeeper_db.view_user_permissions.user_type</code>.
      */
     public String getUserType() {
-        return (String) get(6);
+        return (String) get(7);
+    }
+
+    /**
+     * Setter for
+     * <code>gatekeeper_db.view_user_permissions.user_is_primary_contact</code>.
+     */
+    public void setUserIsPrimaryContact(Byte value) {
+        set(8, value);
+    }
+
+    /**
+     * Getter for
+     * <code>gatekeeper_db.view_user_permissions.user_is_primary_contact</code>.
+     */
+    public Byte getUserIsPrimaryContact() {
+        return (Byte) get(8);
     }
 
     // -------------------------------------------------------------------------
-    // Record7 type implementation
+    // Record9 type implementation
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Integer, String, Integer, String, String, Integer, String> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row9<Integer, String, String, Integer, String, String, Integer, String, Byte> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 
     @Override
-    public Row7<Integer, String, Integer, String, String, Integer, String> valuesRow() {
-        return (Row7) super.valuesRow();
+    public Row9<Integer, String, String, Integer, String, String, Integer, String, Byte> valuesRow() {
+        return (Row9) super.valuesRow();
     }
 
     @Override
@@ -143,28 +173,38 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     @Override
-    public Field<Integer> field3() {
+    public Field<String> field3() {
+        return ViewUserPermissions.VIEW_USER_PERMISSIONS.EMAIL;
+    }
+
+    @Override
+    public Field<Integer> field4() {
         return ViewUserPermissions.VIEW_USER_PERMISSIONS.DATABASE_ID;
     }
 
     @Override
-    public Field<String> field4() {
+    public Field<String> field5() {
         return ViewUserPermissions.VIEW_USER_PERMISSIONS.SYSTEM_NAME;
     }
 
     @Override
-    public Field<String> field5() {
+    public Field<String> field6() {
         return ViewUserPermissions.VIEW_USER_PERMISSIONS.SERVER_NAME;
     }
 
     @Override
-    public Field<Integer> field6() {
+    public Field<Integer> field7() {
         return ViewUserPermissions.VIEW_USER_PERMISSIONS.USER_TYPE_ID;
     }
 
     @Override
-    public Field<String> field7() {
+    public Field<String> field8() {
         return ViewUserPermissions.VIEW_USER_PERMISSIONS.USER_TYPE;
+    }
+
+    @Override
+    public Field<Byte> field9() {
+        return ViewUserPermissions.VIEW_USER_PERMISSIONS.USER_IS_PRIMARY_CONTACT;
     }
 
     @Override
@@ -178,28 +218,38 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     @Override
-    public Integer component3() {
+    public String component3() {
+        return getEmail();
+    }
+
+    @Override
+    public Integer component4() {
         return getDatabaseId();
     }
 
     @Override
-    public String component4() {
+    public String component5() {
         return getSystemName();
     }
 
     @Override
-    public String component5() {
+    public String component6() {
         return getServerName();
     }
 
     @Override
-    public Integer component6() {
+    public Integer component7() {
         return getUserTypeId();
     }
 
     @Override
-    public String component7() {
+    public String component8() {
         return getUserType();
+    }
+
+    @Override
+    public Byte component9() {
+        return getUserIsPrimaryContact();
     }
 
     @Override
@@ -213,28 +263,38 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     @Override
-    public Integer value3() {
+    public String value3() {
+        return getEmail();
+    }
+
+    @Override
+    public Integer value4() {
         return getDatabaseId();
     }
 
     @Override
-    public String value4() {
+    public String value5() {
         return getSystemName();
     }
 
     @Override
-    public String value5() {
+    public String value6() {
         return getServerName();
     }
 
     @Override
-    public Integer value6() {
+    public Integer value7() {
         return getUserTypeId();
     }
 
     @Override
-    public String value7() {
+    public String value8() {
         return getUserType();
+    }
+
+    @Override
+    public Byte value9() {
+        return getUserIsPrimaryContact();
     }
 
     @Override
@@ -250,37 +310,49 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     }
 
     @Override
-    public ViewUserPermissionsRecord value3(Integer value) {
+    public ViewUserPermissionsRecord value3(String value) {
+        setEmail(value);
+        return this;
+    }
+
+    @Override
+    public ViewUserPermissionsRecord value4(Integer value) {
         setDatabaseId(value);
         return this;
     }
 
     @Override
-    public ViewUserPermissionsRecord value4(String value) {
+    public ViewUserPermissionsRecord value5(String value) {
         setSystemName(value);
         return this;
     }
 
     @Override
-    public ViewUserPermissionsRecord value5(String value) {
+    public ViewUserPermissionsRecord value6(String value) {
         setServerName(value);
         return this;
     }
 
     @Override
-    public ViewUserPermissionsRecord value6(Integer value) {
+    public ViewUserPermissionsRecord value7(Integer value) {
         setUserTypeId(value);
         return this;
     }
 
     @Override
-    public ViewUserPermissionsRecord value7(String value) {
+    public ViewUserPermissionsRecord value8(String value) {
         setUserType(value);
         return this;
     }
 
     @Override
-    public ViewUserPermissionsRecord values(Integer value1, String value2, Integer value3, String value4, String value5, Integer value6, String value7) {
+    public ViewUserPermissionsRecord value9(Byte value) {
+        setUserIsPrimaryContact(value);
+        return this;
+    }
+
+    @Override
+    public ViewUserPermissionsRecord values(Integer value1, String value2, String value3, Integer value4, String value5, String value6, Integer value7, String value8, Byte value9) {
         value1(value1);
         value2(value2);
         value3(value3);
@@ -288,6 +360,8 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
         value5(value5);
         value6(value6);
         value7(value7);
+        value8(value8);
+        value9(value9);
         return this;
     }
 
@@ -305,16 +379,18 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
     /**
      * Create a detached, initialised ViewUserPermissionsRecord
      */
-    public ViewUserPermissionsRecord(Integer userId, String username, Integer databaseId, String systemName, String serverName, Integer userTypeId, String userType) {
+    public ViewUserPermissionsRecord(Integer userId, String username, String email, Integer databaseId, String systemName, String serverName, Integer userTypeId, String userType, Byte userIsPrimaryContact) {
         super(ViewUserPermissions.VIEW_USER_PERMISSIONS);
 
         setUserId(userId);
         setUsername(username);
+        setEmail(email);
         setDatabaseId(databaseId);
         setSystemName(systemName);
         setServerName(serverName);
         setUserTypeId(userTypeId);
         setUserType(userType);
+        setUserIsPrimaryContact(userIsPrimaryContact);
     }
 
     /**
@@ -326,11 +402,13 @@ public class ViewUserPermissionsRecord extends TableRecordImpl<ViewUserPermissio
         if (value != null) {
             setUserId(value.getUserId());
             setUsername(value.getUsername());
+            setEmail(value.getEmail());
             setDatabaseId(value.getDatabaseId());
             setSystemName(value.getSystemName());
             setServerName(value.getServerName());
             setUserTypeId(value.getUserTypeId());
             setUserType(value.getUserType());
+            setUserIsPrimaryContact(value.getUserIsPrimaryContact());
         }
     }
 }

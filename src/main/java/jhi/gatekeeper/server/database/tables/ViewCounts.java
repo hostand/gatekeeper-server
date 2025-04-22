@@ -62,7 +62,7 @@ public class ViewCounts extends TableImpl<ViewCountsRecord> {
     }
 
     private ViewCounts(Name alias, Table<ViewCountsRecord> aliased, Field<?>[] parameters) {
-        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `view_counts` as select (select count(1) from `germinate_gatekeeper_template_4_21_08_31`.`users`) AS `users`,((select count(1) from `germinate_gatekeeper_template_4_21_08_31`.`unapproved_users` where (`germinate_gatekeeper_template_4_21_08_31`.`unapproved_users`.`has_been_rejected` = 0)) + (select count(1) from `germinate_gatekeeper_template_4_21_08_31`.`access_requests` where (`germinate_gatekeeper_template_4_21_08_31`.`access_requests`.`has_been_rejected` = 0))) AS `requests`,(select count(1) from `germinate_gatekeeper_template_4_21_08_31`.`database_systems`) AS `databases`"));
+        super(alias, null, aliased, parameters, DSL.comment("VIEW"), TableOptions.view("create view `view_counts` as select (select count(1) from `germinate_gatekeeper_template_4_25_04_21`.`users`) AS `users`,((select count(1) from `germinate_gatekeeper_template_4_25_04_21`.`unapproved_users` where (`germinate_gatekeeper_template_4_25_04_21`.`unapproved_users`.`has_been_rejected` = 0)) + (select count(1) from `germinate_gatekeeper_template_4_25_04_21`.`access_requests` where (`germinate_gatekeeper_template_4_25_04_21`.`access_requests`.`has_been_rejected` = 0))) AS `requests`,(select count(1) from `germinate_gatekeeper_template_4_25_04_21`.`database_systems`) AS `databases`"));
     }
 
     /**

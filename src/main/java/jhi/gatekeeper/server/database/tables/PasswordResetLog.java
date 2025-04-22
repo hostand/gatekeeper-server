@@ -124,7 +124,7 @@ public class PasswordResetLog extends TableImpl<PasswordResetLogRecord> {
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.users</code> table.
+     * <code>germinate_gatekeeper_template_4_25_04_21.users</code> table.
      */
     public Users users() {
         if (_users == null)

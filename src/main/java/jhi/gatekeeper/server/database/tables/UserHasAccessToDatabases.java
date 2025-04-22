@@ -17,7 +17,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -67,6 +67,12 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
      * <code>gatekeeper_db.user_has_access_to_databases.user_type_id</code>.
      */
     public final TableField<UserHasAccessToDatabasesRecord, Integer> USER_TYPE_ID = createField(DSL.name("user_type_id"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column
+     * <code>gatekeeper_db.user_has_access_to_databases.primary_contact</code>.
+     */
+    public final TableField<UserHasAccessToDatabasesRecord, Byte> PRIMARY_CONTACT = createField(DSL.name("primary_contact"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.inline("0", SQLDataType.TINYINT)), this, "");
 
     private UserHasAccessToDatabases(Name alias, Table<UserHasAccessToDatabasesRecord> aliased) {
         this(alias, aliased, null);
@@ -130,7 +136,7 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.users</code> table.
+     * <code>germinate_gatekeeper_template_4_25_04_21.users</code> table.
      */
     public Users users() {
         if (_users == null)
@@ -141,7 +147,7 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.database_systems</code>
+     * <code>germinate_gatekeeper_template_4_25_04_21.database_systems</code>
      * table.
      */
     public DatabaseSystems databaseSystems() {
@@ -153,7 +159,7 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.user_types</code> table.
+     * <code>germinate_gatekeeper_template_4_25_04_21.user_types</code> table.
      */
     public UserTypes userTypes() {
         if (_userTypes == null)
@@ -189,11 +195,11 @@ public class UserHasAccessToDatabases extends TableImpl<UserHasAccessToDatabases
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Integer, Integer, Integer> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<Integer, Integer, Integer, Byte> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

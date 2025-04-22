@@ -11,7 +11,7 @@ import org.jooq.Record;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.List;
+import java.util.*;
 
 import static jhi.gatekeeper.server.database.tables.UserHasAccessToDatabases.*;
 import static jhi.gatekeeper.server.database.tables.ViewUserPermissions.*;
@@ -45,7 +45,10 @@ public class UserPermissionResource extends PaginatedServerResource
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_ID, permission.getUserId())
 								.set(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID, permission.getDatabaseId())
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID, permission.getUserTypeId())
+								.set(USER_HAS_ACCESS_TO_DATABASES.PRIMARY_CONTACT, permission.getUserIsPrimaryContact() == ((byte)1) ? permission.getUserIsPrimaryContact() : (byte) 0)
 								.execute();
+
+			Email.initPrimaryContactMap(Collections.singletonList(permission.getDatabaseId()));
 
 			return result > 0;
 		}
@@ -118,6 +121,8 @@ public class UserPermissionResource extends PaginatedServerResource
 								.and(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID.eq(permission.getUserTypeId()))
 								.execute();
 
+			Email.initPrimaryContactMap(Collections.singletonList(permission.getDatabaseId()));
+
 			return result > 0;
 		}
 	}
@@ -139,9 +144,12 @@ public class UserPermissionResource extends PaginatedServerResource
 			DSLContext context = Database.getContext(conn);
 			int result = context.update(USER_HAS_ACCESS_TO_DATABASES)
 								.set(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID, permission.getUserTypeId())
+								.set(USER_HAS_ACCESS_TO_DATABASES.PRIMARY_CONTACT, permission.getUserIsPrimaryContact())
 								.where(USER_HAS_ACCESS_TO_DATABASES.USER_ID.eq(permission.getUserId())
 																		   .and(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(permission.getDatabaseId())))
 								.execute();
+
+			Email.initPrimaryContactMap(Collections.singletonList(permission.getDatabaseId()));
 
 			return result > 0;
 		}

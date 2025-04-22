@@ -8,6 +8,7 @@ import jhi.gatekeeper.server.auth.BCrypt;
 import jhi.gatekeeper.server.database.tables.pojos.Users;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.*;
+import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
 import org.jooq.DSLContext;
 
 import java.io.IOException;
@@ -75,7 +76,13 @@ public class UserPasswordResource extends PaginatedServerResource
 				AuthenticationFilter.removeToken(sessionUser.getToken(), req, resp);
 
 				if (!user.getUsername().equals("admin"))
+				{
 					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
+				} else {
+					// Remember the changed admin password in the config file for easier lookup if required.
+					PropertyWatcher.set(ServerProperty.GENERAL_ADMIN_PASSWORD, update.getNewPassword());
+					PropertyWatcher.storeProperties();
+				}
 
 				return true;
 			}

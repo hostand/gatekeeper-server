@@ -183,7 +183,7 @@ public class UnapprovedUsers extends TableImpl<UnapprovedUsersRecord> {
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.institutions</code> table.
+     * <code>germinate_gatekeeper_template_4_25_04_21.institutions</code> table.
      */
     public Institutions institutions() {
         if (_institutions == null)
@@ -194,7 +194,7 @@ public class UnapprovedUsers extends TableImpl<UnapprovedUsersRecord> {
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.database_systems</code>
+     * <code>germinate_gatekeeper_template_4_25_04_21.database_systems</code>
      * table.
      */
     public DatabaseSystems databaseSystems() {

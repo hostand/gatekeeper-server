@@ -158,7 +158,7 @@ public class Users extends TableImpl<UsersRecord> {
 
     /**
      * Get the implicit join path to the
-     * <code>germinate_gatekeeper_template_4_21_08_31.institutions</code> table.
+     * <code>germinate_gatekeeper_template_4_25_04_21.institutions</code> table.
      */
     public Institutions institutions() {
         if (_institutions == null)

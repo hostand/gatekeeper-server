@@ -17,7 +17,7 @@ public class NewUnapprovedUser extends LocaleRequest
 	private String  institutionAcronym;
 	private String  institutionAddress;
 	private Integer databaseSystemId;
-	private Byte    needsApproval;
+	private Byte needsApproval;
 
 	public NewUnapprovedUser()
 	{

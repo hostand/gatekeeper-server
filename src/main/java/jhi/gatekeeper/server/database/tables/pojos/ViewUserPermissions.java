@@ -17,40 +17,48 @@ public class ViewUserPermissions implements Serializable {
 
     private Integer userId;
     private String  username;
+    private String  email;
     private Integer databaseId;
     private String  systemName;
     private String  serverName;
     private Integer userTypeId;
     private String  userType;
+    private Byte    userIsPrimaryContact;
 
     public ViewUserPermissions() {}
 
     public ViewUserPermissions(ViewUserPermissions value) {
         this.userId = value.userId;
         this.username = value.username;
+        this.email = value.email;
         this.databaseId = value.databaseId;
         this.systemName = value.systemName;
         this.serverName = value.serverName;
         this.userTypeId = value.userTypeId;
         this.userType = value.userType;
+        this.userIsPrimaryContact = value.userIsPrimaryContact;
     }
 
     public ViewUserPermissions(
         Integer userId,
         String  username,
+        String  email,
         Integer databaseId,
         String  systemName,
         String  serverName,
         Integer userTypeId,
-        String  userType
+        String  userType,
+        Byte    userIsPrimaryContact
     ) {
         this.userId = userId;
         this.username = username;
+        this.email = email;
         this.databaseId = databaseId;
         this.systemName = systemName;
         this.serverName = serverName;
         this.userTypeId = userTypeId;
         this.userType = userType;
+        this.userIsPrimaryContact = userIsPrimaryContact;
     }
 
     /**
@@ -79,6 +87,20 @@ public class ViewUserPermissions implements Serializable {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * Getter for <code>gatekeeper_db.view_user_permissions.email</code>.
+     */
+    public String getEmail() {
+        return this.email;
+    }
+
+    /**
+     * Setter for <code>gatekeeper_db.view_user_permissions.email</code>.
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /**
@@ -151,17 +173,35 @@ public class ViewUserPermissions implements Serializable {
         this.userType = userType;
     }
 
+    /**
+     * Getter for
+     * <code>gatekeeper_db.view_user_permissions.user_is_primary_contact</code>.
+     */
+    public Byte getUserIsPrimaryContact() {
+        return this.userIsPrimaryContact;
+    }
+
+    /**
+     * Setter for
+     * <code>gatekeeper_db.view_user_permissions.user_is_primary_contact</code>.
+     */
+    public void setUserIsPrimaryContact(Byte userIsPrimaryContact) {
+        this.userIsPrimaryContact = userIsPrimaryContact;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("ViewUserPermissions (");
 
         sb.append(userId);
         sb.append(", ").append(username);
+        sb.append(", ").append(email);
         sb.append(", ").append(databaseId);
         sb.append(", ").append(systemName);
         sb.append(", ").append(serverName);
         sb.append(", ").append(userTypeId);
         sb.append(", ").append(userType);
+        sb.append(", ").append(userIsPrimaryContact);
 
         sb.append(")");
         return sb.toString();

@@ -19,6 +19,7 @@ public enum ServerProperty
 	EMAIL_PORT("email.port", null, false),
 	EMAIL_USE_TLS("email.use.tls.enable", "true", true),
 	EMAIL_USE_TLS_1_2("email.use.tls.1.2", "false", false),
+	GENERAL_ADMIN_PASSWORD("general.admin.password", "password", true),
 	SALT("salt", "10", false),
 	WEB_BASE("web.base", null, true);
 

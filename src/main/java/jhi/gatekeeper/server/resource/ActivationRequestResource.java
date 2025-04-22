@@ -52,10 +52,10 @@ public class ActivationRequestResource extends ContextResource
 											  .where(DATABASE_SYSTEMS.ID.eq(userRequest.getDatabaseSystemId()))
 											  .fetchAnyInto(DatabaseSystems.class);
 
-			Byte needsApproval = userRequest.getNeedsApproval();
+			Boolean needsApproval = userRequest.getNeedsApproval() == 1;
 			Locale locale = request.getJavaLocale();
 
-			if (needsApproval == 1)
+			if (needsApproval)
 			{
 				Email.sendAwaitingApproval(locale, userRequest);
 				Email.sendAdministratorNotification(locale, database, true);

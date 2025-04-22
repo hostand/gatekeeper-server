@@ -17,28 +17,97 @@
 
 package jhi.gatekeeper.server.util;
 
+import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.*;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 
 import jhi.gatekeeper.resource.ServerProperty;
+import jhi.gatekeeper.server.Database;
 import jhi.gatekeeper.server.database.tables.pojos.*;
 import jhi.gatekeeper.server.database.tables.records.*;
 import jhi.gatekeeper.server.exception.EmailException;
 import jhi.gatekeeper.server.util.watcher.PropertyWatcher;
+import org.jooq.*;
+
+import static jhi.gatekeeper.server.database.tables.ViewUserPermissions.VIEW_USER_PERMISSIONS;
 
 /**
  * @author Sebastian Raubach
  */
 public class Email
 {
+	private static final ConcurrentHashMap<Integer, List<ViewUserPermissions>> dbToPrimaryContact = new ConcurrentHashMap<>();
+
 	private static String server;
 	private static String address;
 	private static String username;
 	private static String password;
 	private static String port;
+
+	public static void initPrimaryContactMap(List<Integer> dbSystems)
+	{
+		try (Connection conn = Database.getConnection())
+		{
+			DSLContext context = Database.getContext(conn);
+
+			if (CollectionUtils.isEmpty(dbSystems)) {
+				// Remove all to fetch again
+				dbToPrimaryContact.clear();
+			} else {
+				// Only remove requested ones
+				dbSystems.forEach(db -> dbToPrimaryContact.put(db, new ArrayList<>()));
+			}
+
+			// Fetch all users that are primary contacts
+			SelectConditionStep<ViewUserPermissionsRecord> query = context.selectFrom(VIEW_USER_PERMISSIONS)
+																		  .where(VIEW_USER_PERMISSIONS.USER_IS_PRIMARY_CONTACT.eq((byte) 1));
+
+			// Filter by system ids
+			if (!CollectionUtils.isEmpty(dbSystems))
+				query.and(VIEW_USER_PERMISSIONS.DATABASE_ID.in(dbSystems));
+
+			query.forEach(vp -> {
+				List<ViewUserPermissions> ids = dbToPrimaryContact.get(vp.getDatabaseId());
+
+				if (ids == null)
+					ids = new ArrayList<>();
+
+				ids.add(vp.into(ViewUserPermissions.class));
+				dbToPrimaryContact.put(vp.getDatabaseId(), ids);
+			});
+
+			// Query all admins as a fallback
+			query = context.selectFrom(VIEW_USER_PERMISSIONS)
+																		  .where(VIEW_USER_PERMISSIONS.USER_TYPE_ID.eq(1));
+
+			// Filter by system ids
+			if (!CollectionUtils.isEmpty(dbSystems))
+				query.and(VIEW_USER_PERMISSIONS.DATABASE_ID.in(dbSystems));
+
+			query.forEach(vp -> {
+				List<ViewUserPermissions> ids = dbToPrimaryContact.get(vp.getDatabaseId());
+
+				if (ids == null)
+					ids = new ArrayList<>();
+
+				// Only add admin ID if there hasn't been a primary contact in the first query.
+				if (ids.isEmpty())
+				{
+					ids.add(vp.into(ViewUserPermissions.class));
+					dbToPrimaryContact.put(vp.getDatabaseId(), ids);
+				}
+			});
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			Logger.getLogger("").severe(e.getMessage());
+		}
+	}
 
 	public static void init()
 	{
@@ -61,20 +130,34 @@ public class Email
 	public static void sendAdministratorNotification(Locale locale, DatabaseSystems system, boolean needsReview)
 		throws EmailException
 	{
-		if (needsReview)
-		{
-			String url = PropertyWatcher.get(ServerProperty.WEB_BASE);
+		List<ViewUserPermissions> toNotify = dbToPrimaryContact.get(system.getId());
 
-			send(address,
-				I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_REGISTRATION_ADMIN_NOTIFICATION),
-				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_REGISTRATION_ADMIN_NOTIFICATION, system.getServerName() + ": " + system.getSystemName(), url));
+		if (CollectionUtils.isEmpty(toNotify)) {
+			// Add a default fallback to Gatekeeper's admin email address as a last resort
+			toNotify = new ArrayList<>();
+			ViewUserPermissions permissions = new ViewUserPermissions();
+			permissions.setEmail(address);
+			toNotify.add(permissions);
 		}
-		else
+
+		for (ViewUserPermissions permissions : toNotify)
 		{
-			send(address,
-				I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION),
-				I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
+			if (needsReview)
+			{
+				String url = PropertyWatcher.get(ServerProperty.WEB_BASE);
+
+				send(permissions.getEmail(),
+						I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_REGISTRATION_ADMIN_NOTIFICATION),
+						I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_REGISTRATION_ADMIN_NOTIFICATION, system.getServerName() + ": " + system.getSystemName(), url));
+			}
+			else
+			{
+				send(permissions.getEmail(),
+						I18n.getString(Locale.ENGLISH, I18n.EMAIL_TITLE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION),
+						I18n.getString(Locale.ENGLISH, I18n.EMAIL_MESSAGE_USER_ACTIVATED_AUTOMATICALLY_ADMIN_NOTIFICATION, system.getServerName() + " " + system.getSystemName()));
+			}
 		}
+
 	}
 
 	public static void sendNewPassword(Locale locale, UsersRecord user, String password)
