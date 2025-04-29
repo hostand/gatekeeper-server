@@ -181,14 +181,14 @@ public class Database
 									.where(USER_TYPES.DESCRIPTION.eq("Administrator"))
 									.fetchAnyInto(UserTypes.class);
 
-			Integer adminCount = context.selectCount()
-									.from(USERS)
-									.leftJoin(USER_HAS_ACCESS_TO_DATABASES).on(USERS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_ID))
-									.where(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(db.getId()))
-									.and(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID.eq(type.getId()))
-									.fetchAnyInto(Integer.class);
+			UsersRecord user = context.select()
+									  .from(USERS)
+									  .leftJoin(USER_HAS_ACCESS_TO_DATABASES).on(USERS.ID.eq(USER_HAS_ACCESS_TO_DATABASES.USER_ID))
+									  .where(USER_HAS_ACCESS_TO_DATABASES.DATABASE_ID.eq(db.getId()))
+									  .and(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID.eq(type.getId()))
+									  .fetchAnyInto(UsersRecord.class);
 
-			if (adminCount == null || adminCount < 1)
+			if (user == null)
 			{
 				// Create a default Admin user with password "password".
 				UsersRecord admin = context.newRecord(USERS);
@@ -204,6 +204,13 @@ public class Database
 				access.setUserTypeId(type.getId());
 				access.setPrimaryContact((byte) 1);
 				access.store();
+			}
+			else
+			{
+				// Update the password from the config file on each load. If it has been changed in the meantime via UI,
+				// this will already be reflected in the config file.
+				user.setPassword(BCrypt.hashpw(PropertyWatcher.get(ServerProperty.GENERAL_ADMIN_PASSWORD), BCrypt.gensalt(TokenResource.SALT)));
+				user.store(USERS.PASSWORD);
 			}
 		}
 		catch (SQLException e)
@@ -234,7 +241,7 @@ public class Database
 	}
 
 	public static Connection getConnection()
-		throws SQLException
+			throws SQLException
 	{
 		return DriverManager.getConnection(getDatabaseUrl(), username, password);
 	}
@@ -242,10 +249,10 @@ public class Database
 	public static DSLContext getContext(Connection connection)
 	{
 		Settings settings = new Settings()
-			.withRenderMapping(new RenderMapping()
-				.withSchemata(
-					new MappedSchema().withInput(GatekeeperDb.GATEKEEPER_DB.getQualifiedName().first())
-									  .withOutput(databaseName)));
+				.withRenderMapping(new RenderMapping()
+						.withSchemata(
+								new MappedSchema().withInput(GatekeeperDb.GATEKEEPER_DB.getQualifiedName().first())
+												  .withOutput(databaseName)));
 
 		return DSL.using(connection, SQLDialect.MYSQL, settings);
 	}

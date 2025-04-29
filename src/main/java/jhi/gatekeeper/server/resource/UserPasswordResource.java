@@ -31,7 +31,7 @@ public class UserPasswordResource extends PaginatedServerResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public boolean patchPassword(PasswordUpdate update)
-		throws IOException, SQLException
+			throws IOException, SQLException
 	{
 		if (update == null || userId == null)
 		{
@@ -75,13 +75,15 @@ public class UserPasswordResource extends PaginatedServerResource
 				// Terminate this "session".
 				AuthenticationFilter.removeToken(sessionUser.getToken(), req, resp);
 
-				if (!user.getUsername().equals("admin"))
+				if (user.getUsername().equals("admin"))
 				{
-					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
-				} else {
 					// Remember the changed admin password in the config file for easier lookup if required.
 					PropertyWatcher.set(ServerProperty.GENERAL_ADMIN_PASSWORD, update.getNewPassword());
 					PropertyWatcher.storeProperties();
+				}
+				else
+				{
+					Email.sendPasswordChangeInfo(update.getJavaLocale(), user);
 				}
 
 				return true;
