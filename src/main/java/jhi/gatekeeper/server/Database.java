@@ -188,12 +188,16 @@ public class Database
 									  .and(USER_HAS_ACCESS_TO_DATABASES.USER_TYPE_ID.eq(type.getId()))
 									  .fetchAnyInto(UsersRecord.class);
 
+			String adminPassword = PropertyWatcher.get(ServerProperty.GENERAL_ADMIN_PASSWORD);
 			if (user == null)
 			{
+				if (StringUtils.isEmpty(adminPassword))
+					adminPassword = "password";
+
 				// Create a default Admin user with password "password".
 				UsersRecord admin = context.newRecord(USERS);
 				admin.setUsername("admin");
-				admin.setPassword(BCrypt.hashpw(PropertyWatcher.get(ServerProperty.GENERAL_ADMIN_PASSWORD), BCrypt.gensalt(TokenResource.SALT)));
+				admin.setPassword(BCrypt.hashpw(adminPassword, BCrypt.gensalt(TokenResource.SALT)));
 				admin.setFullName("The Admin");
 				admin.setEmailAddress("--");
 				admin.store();
@@ -205,11 +209,11 @@ public class Database
 				access.setPrimaryContact((byte) 1);
 				access.store();
 			}
-			else
+			else if (StringUtils.isEmpty(adminPassword))
 			{
 				// Update the password from the config file on each load. If it has been changed in the meantime via UI,
 				// this will already be reflected in the config file.
-				user.setPassword(BCrypt.hashpw(PropertyWatcher.get(ServerProperty.GENERAL_ADMIN_PASSWORD), BCrypt.gensalt(TokenResource.SALT)));
+				user.setPassword(BCrypt.hashpw(adminPassword, BCrypt.gensalt(TokenResource.SALT)));
 				user.store(USERS.PASSWORD);
 			}
 		}

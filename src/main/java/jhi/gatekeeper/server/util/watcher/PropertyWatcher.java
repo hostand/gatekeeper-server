@@ -18,6 +18,7 @@
 package jhi.gatekeeper.server.util.watcher;
 
 import de.poiu.apron.PropertyFile;
+import jhi.gatekeeper.server.resource.TokenResource;
 import org.apache.commons.io.monitor.*;
 
 import java.io.*;
@@ -125,6 +126,18 @@ public class PropertyWatcher
 		try (FileInputStream stream = new FileInputStream(config))
 		{
 			properties = PropertyFile.from(stream);
+
+			Integer salt;
+			try
+			{
+				salt = getInteger(ServerProperty.SALT);
+			}
+			catch (Exception e)
+			{
+				salt = 10;
+			}
+
+			TokenResource.SALT = salt;
 		}
 		catch (IOException | NullPointerException e)
 		{

@@ -23,18 +23,6 @@ public class ApplicationListener implements ServletContextListener
 
 		PropertyWatcher.initialize();
 		Email.init();
-
-		Integer salt;
-		try
-		{
-			salt = PropertyWatcher.getInteger(ServerProperty.SALT);
-		}
-		catch (Exception e)
-		{
-			salt = 10;
-		}
-
-		TokenResource.SALT = salt;
 	}
 
 	@Override
