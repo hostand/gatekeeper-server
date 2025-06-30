@@ -28,10 +28,7 @@ sourceCompatibility = JavaVersion.VERSION_21
 repositories {
     mavenCentral()
     maven {
-        url 'https://repo.spring.io/plugins-release/'
-    }
-    maven {
-        url 'https://maven.imagej.net/content/repositories/public/'
+        url 'https://maven.scijava.org/content/repositories/public/'
     }
 }
 

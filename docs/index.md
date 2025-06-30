@@ -17,6 +17,9 @@ There are a few sub-pages that contain specific information about Gatekeeper's s
 - <a href="setup.html">View setup instructions</a>
 - <a href="config.html">View configuration options</a>
 - <a href="migration.html">View migration information</a>
+- <a href="adding-users.html">Adding database systems</a>
+- <a href="adding-users.html">Adding users</a>
+- <a href="adding-users-by-request.html">Handling access requests</a>
 
 <img src="img/hutton-black.svg" height="100" alt="Logo">
 <br />
