@@ -20,15 +20,15 @@ apply plugin: 'com.bmuschko.cargo-base'
 
 compileJava.options.encoding = 'UTF-8'
 
-group 'uk.ac.hutton.gatekeeper'
-version '4.8.7'
+group = 'uk.ac.hutton.gatekeeper'
+version = '4.8.7'
 
 sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
     mavenCentral()
     maven {
-        url 'https://maven.scijava.org/content/repositories/public/'
+        url = 'https://maven.scijava.org/content/repositories/public/'
     }
 }
 
